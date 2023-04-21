@@ -1,0 +1,683 @@
+<template>
+    <header>
+      <div class="container">
+        <div class="profile">
+          <div class="profile-image">
+            <img :src="userInfo.avatarUrl" alt="头像" />
+          </div>
+  
+          <div class="profile-user-settings">
+            <h1 class="profile-user-name">{{ userInfo.username }}</h1>
+  
+            <button class="btn profile-edit-btn">编辑信息</button>
+  
+            <button class="btn profile-settings-btn" aria-label="profile settings">
+              <i class="fas fa-cog" aria-hidden="true"></i>
+            </button>
+          </div>
+  
+          <div class="profile-stats">
+            <ul>
+              <li>
+                <span class="profile-stat-count">{{ userInfo.posts }}</span> 作品
+              </li>
+              <li>
+                <span class="profile-stat-count">{{ userInfo.followers }}</span>
+                粉丝
+              </li>
+              <li>
+                <span class="profile-stat-count">{{ userInfo.following }}</span>
+                关注
+              </li>
+            </ul>
+          </div>
+  
+          <div class="profile-bio">
+            <p>
+              <span class="profile-real-name">{{ userInfo.username }}</span>
+              {{ userInfo.signs }}
+            </p>
+          </div>
+        </div>
+        <!-- End of profile section -->
+      </div>
+      <!-- End of container -->
+    </header>
+  
+    <main>
+      <div class="container">
+        <q-infinite-scroll @load="onLoad">
+          <div class="gallery">
+            <div v-for="item in list" :key="item.id">
+              <div class="gallery-item" tabindex="0">
+                <img :src="item.imgUrl" class="gallery-image" alt="" />
+                <div class="gallery-item-info">
+                  <div class="views">
+                    <span><svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M24 36C35.0457 36 44 24 44 24C44 24 35.0457 12 24 12C12.9543 12 4 24 4 24C4 24 12.9543 36 24 36Z"
+                          fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" />
+                        <path
+                          d="M24 29C26.7614 29 29 26.7614 29 24C29 21.2386 26.7614 19 24 19C21.2386 19 19 21.2386 19 24C19 26.7614 21.2386 29 24 29Z"
+                          fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" />
+                      </svg></span>
+                    <span>{{ item.views }}</span>
+                  </div>
+                  <div class="love" @click="agreePost(item)">
+                    <svg :class="{ 'liked': item.isLiked }" width="30" height="30" viewBox="0 0 48 48" fill="#ffffff"
+                      xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M4.18898 22.1733C4.08737 21.0047 5.00852 20 6.18146 20H10C11.1046 20 12 20.8954 12 22V41C12 42.1046 11.1046 43 10 43H7.83363C6.79622 43 5.93102 42.2068 5.84115 41.1733L4.18898 22.1733Z"
+                         stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                      <path
+                        d="M18 21.3745C18 20.5388 18.5194 19.7908 19.2753 19.4345C20.9238 18.6574 23.7329 17.0938 25 14.9805C26.6331 12.2569 26.9411 7.33595 26.9912 6.20878C26.9982 6.05099 26.9937 5.89301 27.0154 5.73656C27.2861 3.78446 31.0543 6.06492 32.5 8.47612C33.2846 9.78471 33.3852 11.504 33.3027 12.8463C33.2144 14.2825 32.7933 15.6699 32.3802 17.0483L31.5 19.9845H42.3569C43.6832 19.9845 44.6421 21.2518 44.2816 22.5281L38.9113 41.5436C38.668 42.4051 37.8818 43 36.9866 43H20C18.8954 43 18 42.1046 18 41V21.3745Z"
+                         stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <span>{{ item.likes }}</span>
+                  </div>
+                  <div class="comments">
+                    <svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M33 38H22V30H36V22H44V38H39L36 41L33 38Z" stroke="#ffffff" stroke-width="4"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M4 6H36V30H17L13 34L9 30H4V6Z" fill="none" stroke="#ffffff" stroke-width="4"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                      <path d="M12 22H18" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+                      <path d="M12 14H24" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+                    </svg>
+                    <span>{{ item.comments }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <template v-slot:loading>
+            <loading-comp />
+          </template>
+        </q-infinite-scroll>
+        <!-- End of gallery -->
+      </div>
+      <!-- End of container -->
+    </main>
+  </template>
+  
+  <script setup>
+  import { ref } from "vue";
+  import LoadingComp from "@/components/tools/LoadingComp.vue";
+  
+  const userInfo = {
+    username: "KAMUZUKI",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces",
+    posts: 32,
+    followers: 188,
+    following: 206,
+    signs: "I'm a photographer and a web developer.",
+  };
+  
+  const agreePost = (item) => {
+    item.isLiked = !item.isLiked;
+    item.likes += ((item.isLiked)?1:-1);
+  };
+  
+  const list = ref([
+    {
+      id: 1,
+      imgUrl:
+        "https://images.unsplash.com/photo-1497445462247-4330a224fdb1?w=500&h=500&fit=crop",
+      views: 2907,
+      likes: 23,
+      comments: 12,
+      isLiked: true,
+    },
+    {
+      id: 2,
+      imgUrl:
+        "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=500&h=500&fit=crop",
+      views: 2907,
+      likes: 23,
+      comments: 12,
+      isLiked: false,
+    },
+    {
+      id: 3,
+      imgUrl:
+        "https://images.unsplash.com/photo-1502630859934-b3b41d18206c?w=500&h=500&fit=crop",
+      views: 2907,
+      likes: 23,
+      comments: 12,
+      isLiked: false,
+    },
+    {
+      id: 4,
+      imgUrl:
+        "https://images.unsplash.com/photo-1498471731312-b6d2b8280c61?w=500&h=500&fit=crop",
+      views: 2907,
+      likes: 23,
+      comments: 12,
+      isLiked: false,
+    },
+    {
+      id: 5,
+      imgUrl:
+        "https://images.unsplash.com/photo-1515023115689-589c33041d3c?w=500&h=500&fit=crop",
+      views: 2907,
+      likes: 23,
+      comments: 12,
+      isLiked: false,
+    },
+    {
+      id: 6,
+      imgUrl:
+        "https://images.unsplash.com/photo-1504214208698-ea1916a2195a?w=500&h=500&fit=crop",
+      views: 2907,
+      likes: 23,
+      comments: 12,
+      isLiked: false,
+    },
+    {
+      id: 7,
+      imgUrl:
+        "https://images.unsplash.com/photo-1515814472071-4d632dbc5d4a?w=500&h=500&fit=crop",
+      views: 2907,
+      likes: 23,
+      comments: 12,
+      isLiked: false,
+    },
+    {
+      id: 8,
+      imgUrl:
+        "https://images.unsplash.com/photo-1511407397940-d57f68e81203?w=500&h=500&fit=crop",
+      views: 2907,
+      likes: 23,
+      comments: 12,
+      isLiked: false,
+    },
+    {
+      id: 9,
+      imgUrl:
+        "https://images.unsplash.com/photo-1518481612222-68bbe828ecd1?w=500&h=500&fit=crop",
+      views: 2907,
+      likes: 23,
+      comments: 12,
+      isLiked: false,
+    },
+    {
+      id: 10,
+      imgUrl:
+        "https://images.unsplash.com/photo-1505058707965-09a4469a87e4?w=500&h=500&fit=crop",
+      views: 2907,
+      likes: 23,
+      comments: 12,
+      isLiked: false,
+    },
+    {
+      id: 11,
+      imgUrl:
+        "https://images.unsplash.com/photo-1423012373122-fff0a5d28cc9?w=500&h=500&fit=crop",
+      views: 2907,
+      likes: 23,
+      comments: 12,
+      isLiked: false,
+    },
+    {
+      id: 12,
+      imgUrl:
+        "https://images.unsplash.com/photo-1505058707965-09a4469a87e4?w=500&h=500&fit=crop",
+      views: 2907,
+      likes: 23,
+      comments: 12,
+      isLiked: false,
+    },
+  ]);
+  
+  const onLoad = (index, done) => {
+    setTimeout(() => {
+      list.value.push(
+        {
+          id: 1,
+          imgUrl:
+            "https://images.unsplash.com/photo-1497445462247-4330a224fdb1?w=500&h=500&fit=crop",
+          views: 2907,
+          likes: 23,
+          comments: 12,
+          isLiked: false,
+        },
+        {
+          id: 2,
+          imgUrl:
+            "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=500&h=500&fit=crop",
+          views: 2907,
+          likes: 23,
+          comments: 12,
+          isLiked: false,
+        },
+        {
+          id: 3,
+          imgUrl:
+            "https://images.unsplash.com/photo-1502630859934-b3b41d18206c?w=500&h=500&fit=crop",
+          views: 2907,
+          likes: 23,
+          comments: 12,
+          isLiked: false,
+        },
+        {
+          id: 4,
+          imgUrl:
+            "https://images.unsplash.com/photo-1498471731312-b6d2b8280c61?w=500&h=500&fit=crop",
+          views: 2907,
+          likes: 23,
+          comments: 12,
+          isLiked: false,
+        },
+        {
+          id: 5,
+          imgUrl:
+            "https://images.unsplash.com/photo-1515023115689-589c33041d3c?w=500&h=500&fit=crop",
+          views: 2907,
+          likes: 23,
+          comments: 12,
+          isLiked: false,
+        },
+        {
+          id: 6,
+          imgUrl:
+            "https://images.unsplash.com/photo-1504214208698-ea1916a2195a?w=500&h=500&fit=crop",
+          views: 2907,
+          likes: 23,
+          comments: 12,
+          isLiked: false,
+        },
+        {
+          id: 7,
+          imgUrl:
+            "https://images.unsplash.com/photo-1515814472071-4d632dbc5d4a?w=500&h=500&fit=crop",
+          views: 2907,
+          likes: 23,
+          comments: 12,
+          isLiked: false,
+        },
+        {
+          id: 8,
+          imgUrl:
+            "https://images.unsplash.com/photo-1511407397940-d57f68e81203?w=500&h=500&fit=crop",
+          views: 2907,
+          likes: 23,
+          comments: 12,
+          isLiked: false,
+        },
+        {
+          id: 9,
+          imgUrl:
+            "https://images.unsplash.com/photo-1497445462247-4330a224fdb1?w=500&h=500&fit=crop",
+          views: 2907,
+          likes: 23,
+          comments: 12,
+          isLiked: false,
+        }
+      );
+      done();
+    }, 2000);
+  };
+  </script>
+  
+  <style scoped>
+  .liked{
+    fill: #f00;
+  }
+  
+  :root {
+    font-size: 10px;
+  }
+  
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: "Open Sans", Arial, sans-serif;
+    min-height: 100vh;
+    background-color: #fafafa;
+    color: #262626;
+    padding-bottom: 3rem;
+  }
+  
+  img {
+    display: block;
+  }
+  
+  .container {
+    max-width: 93.5rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  
+  .btn {
+    display: inline-block;
+    font: inherit;
+    background: none;
+    border: none;
+    color: inherit;
+    padding: 0;
+    cursor: pointer;
+  }
+  
+  .btn:focus {
+    outline: 0.5rem auto #4d90fe;
+  }
+  
+  .visually-hidden {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+  }
+  
+  /* Profile Section */
+  
+  .profile {
+    padding: 5rem 0;
+  }
+  
+  .profile::after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+  
+  .profile-image {
+    float: left;
+    width: calc(33.333% - 1rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 3rem;
+  }
+  
+  .profile-image img {
+    border-radius: 50%;
+  }
+  
+  .profile-user-settings,
+  .profile-stats,
+  .profile-bio {
+    float: left;
+    width: calc(66.666% - 2rem);
+  }
+  
+  .profile-user-settings {
+    margin-top: 1.1rem;
+  }
+  
+  .profile-user-name {
+    display: inline-block;
+    font-size: 3.2rem;
+    font-weight: 300;
+  }
+  
+  .profile-edit-btn {
+    font-size: 1.4rem;
+    line-height: 1.8;
+    border: 0.1rem solid #dbdbdb;
+    border-radius: 0.3rem;
+    padding: 0 2.4rem;
+    margin-left: 2rem;
+  }
+  
+  .profile-settings-btn {
+    font-size: 2rem;
+    margin-left: 1rem;
+  }
+  
+  .profile-stats {
+    margin-top: 2.3rem;
+  }
+  
+  .profile-stats li {
+    display: inline-block;
+    font-size: 1.6rem;
+    line-height: 1.5;
+    margin-right: 4rem;
+    cursor: pointer;
+  }
+  
+  .profile-stats li:last-of-type {
+    margin-right: 0;
+  }
+  
+  .profile-bio {
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 1.5;
+    margin-top: 2.3rem;
+  }
+  
+  .profile-real-name,
+  .profile-stat-count,
+  .profile-edit-btn {
+    font-weight: 600;
+  }
+  
+  /* Gallery Section */
+  
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -1rem -1rem;
+    padding-bottom: 3rem;
+  }
+  
+  .gallery-item {
+    position: relative;
+    flex: 1 0 22rem;
+    margin: 1rem;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  .gallery-item:hover .gallery-item-info,
+  .gallery-item:focus .gallery-item-info {
+    display: flex;
+    justify-content: space-around;
+    vertical-align: middle;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  
+  .gallery-item-info {
+    display: none;
+  }
+  
+  .gallery-item-info li {
+    display: inline-block;
+    font-size: 1.7rem;
+    font-weight: 600;
+  }
+  
+  .gallery-item-likes {
+    margin-right: 2.2rem;
+  }
+  
+  .gallery-item-type {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2.5rem;
+    text-shadow: 0.2rem 0.2rem 0.2rem rgba(0, 0, 0, 0.1);
+  }
+  
+  .fa-clone,
+  .fa-comment {
+    transform: rotateY(180deg);
+  }
+  
+  .gallery-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Media Query */
+  @media screen and (max-width: 40rem) {
+    .profile {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 4rem 0;
+    }
+  
+    .profile::after {
+      display: none;
+    }
+  
+    .profile-image,
+    .profile-user-settings,
+    .profile-bio,
+    .profile-stats {
+      float: none;
+      width: auto;
+    }
+  
+    .profile-image img {
+      width: 7.7rem;
+    }
+  
+    .profile-user-settings {
+      flex-basis: calc(100% - 10.7rem);
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+  
+    .profile-user-name {
+      font-size: 2.2rem;
+    }
+  
+    .profile-edit-btn {
+      order: 1;
+      padding: 0;
+      text-align: center;
+      margin-top: 1rem;
+    }
+  
+    .profile-edit-btn {
+      margin-left: 0;
+    }
+  
+    .profile-bio {
+      font-size: 1.4rem;
+      margin-top: 1.5rem;
+    }
+  
+    .profile-edit-btn,
+    .profile-bio,
+    .profile-stats {
+      flex-basis: 100%;
+    }
+  
+    .profile-stats {
+      order: 1;
+      margin-top: 1.5rem;
+    }
+  
+    .profile-stats ul {
+      display: flex;
+      text-align: center;
+      padding: 1.2rem 0;
+      border-top: 0.1rem solid #dadada;
+      border-bottom: 0.1rem solid #dadada;
+    }
+  
+    .profile-stats li {
+      font-size: 1.4rem;
+      flex: 1;
+      margin: 0;
+    }
+  
+    .profile-stat-count {
+      display: block;
+    }
+  }
+  
+  /* Spinner Animation */
+  
+  @keyframes loader {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /*
+  
+  The following code will only run if your browser supports CSS grid.
+  
+  Remove or comment-out the code block below to see how the browser will fall-back to flexbox & floated styling. 
+  
+  */
+  
+  @supports (display: grid) {
+    .profile {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      grid-template-rows: repeat(3, auto);
+      grid-column-gap: 3rem;
+      align-items: center;
+    }
+  
+    .profile-image {
+      grid-row: 1 / -1;
+    }
+  
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+      grid-gap: 2rem;
+    }
+  
+    .profile-image,
+    .profile-user-settings,
+    .profile-stats,
+    .profile-bio,
+    .gallery-item,
+    .gallery {
+      width: auto;
+      margin: 0;
+    }
+  
+    @media (max-width: 40rem) {
+      .profile {
+        grid-template-columns: auto 1fr;
+        grid-row-gap: 1.5rem;
+      }
+  
+      .profile-image {
+        grid-row: 1 / 2;
+      }
+  
+      .profile-user-settings {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-gap: 1rem;
+      }
+  
+      .profile-edit-btn,
+      .profile-stats,
+      .profile-bio {
+        grid-column: 1 / -1;
+      }
+  
+      .profile-user-settings,
+      .profile-edit-btn,
+      .profile-settings-btn,
+      .profile-bio,
+      .profile-stats {
+        margin: 0;
+      }
+    }
+  }
+  </style>
