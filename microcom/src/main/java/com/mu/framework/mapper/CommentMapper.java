@@ -1,0 +1,20 @@
+package com.mu.framework.mapper;
+
+import com.mu.framework.domain.Comment;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
+
+/**
+* @author MUZUKI
+* @description 针对表【comment】的数据库操作Mapper
+* @createDate 2023-03-02 20:33:40
+* @Entity generator.domain.Comment
+*/
+public interface CommentMapper extends BaseMapper<Comment> {
+    List<Comment> getCommentsByArticleId(int articleId);
+}
+
+
+
+
