@@ -17,10 +17,10 @@ import java.util.List;
  * 定时任务
  * @author MUZUKI
  */
-@Slf4j
-@Component
-@Configuration
-@EnableScheduling
+//@Slf4j
+//@Component
+//@Configuration
+//@EnableScheduling
 public class ScheduleTaskConfig {
     private static final Long MINUTE_30 = 1000 * 60 * 30L;
 
@@ -32,7 +32,7 @@ public class ScheduleTaskConfig {
 
     @Scheduled(cron = "0 */30 * * * ?")
     private void clearUser() {
-        log.info("定时任务 >>>>>>>>>> 清除注册时间超过30分钟的账户，以及其会话信息");
+//        log.info("定时任务 >>>>>>>>>> 清除注册时间超过30分钟的账户，以及其会话信息");
 
         List<User> userList = chatSessionService.onlineList();
         userList.forEach(user -> {
