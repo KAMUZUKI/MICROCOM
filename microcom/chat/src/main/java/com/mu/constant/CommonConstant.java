@@ -3,9 +3,9 @@ package com.mu.constant;
 /**
  * 系统常量值
  *
- * @author tycoding
- * @date 2019-06-14
+ * @author MUZUKI
  */
+
 public interface CommonConstant {
 
     /**
@@ -20,13 +20,13 @@ public interface CommonConstant {
 
     /**
      * 推送至指定用户消息
-     *      推送方Session Key前缀标识
+     * 推送方Session Key前缀标识
      */
     String CHAT_FROM_PREFIX = "CHAT_FROM_";
 
     /**
      * 推送至指定用户消息
-     *      接收方Session Key前缀标识
+     * 接收方Session Key前缀标识
      */
     String CHAT_TO_PREFIX = "_TO_";
 

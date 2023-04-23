@@ -1,8 +1,8 @@
 package com.mu.config;
 
-import cn.tycoding.constant.CommonConstant;
-import cn.tycoding.entity.User;
-import cn.tycoding.service.ChatSessionService;
+import com.mu.constant.CommonConstant;
+import com.mu.entity.User;
+import com.mu.service.ChatSessionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -11,14 +11,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 
 /**
  * 定时任务
- *
- * @author tycoding
- * @date 2019-06-17
+ * @author MUZUKI
  */
 @Slf4j
 @Component
@@ -39,7 +36,7 @@ public class ScheduleTaskConfig {
 
         List<User> userList = chatSessionService.onlineList();
         userList.forEach(user -> {
-            if ((new Date().getTime() - user.getId()) >= MINUTE_30) {
+            if ((System.currentTimeMillis() - user.getId()) >= MINUTE_30) {
                 chatSessionService.delete(user.getId().toString());
                 if (redisTemplate.boundValueOps(CommonConstant.CHAT_COMMON_PREFIX + user.getId()).get() != null) {
                     redisTemplate.delete(CommonConstant.CHAT_COMMON_PREFIX + user.getId());

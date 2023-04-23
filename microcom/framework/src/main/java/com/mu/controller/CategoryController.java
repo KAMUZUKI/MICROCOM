@@ -1,9 +1,10 @@
 package com.mu.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.util.SaResult;
+import cn.hutool.extra.servlet.ServletUtil;
 import com.mu.domain.Category;
-import com.mu.model.JsonModel;
 import com.mu.service.impl.CategoryServiceImpl;
-import com.mu.utils.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,25 +25,22 @@ public class CategoryController {
     @Autowired
     CategoryServiceImpl categoryService;
 
-    private JsonModel jm = new JsonModel();
-
     @RequestMapping(value = "/getCategory")
-    public JsonModel getCategory() {
-        jm.setCode(1).setData(categoryService.getCategory());
-        return jm;
+    public SaResult getCategory() {
+        return SaResult.ok().setData(categoryService.getCategory());
     }
 
+    @SaCheckRole("admin")
     @RequestMapping(value = "/addCategory")
-    public JsonModel addCategory(HttpServletRequest request) {
-        Category category = HttpUtils.parseRequestToT(request, Category.class);
-        jm.setCode(categoryService.addCategory(category));
-        return jm;
+    public SaResult addCategory(HttpServletRequest request) {
+        Category category = ServletUtil.toBean(request, Category.class, true);
+        return SaResult.ok().setData(categoryService.addCategory(category));
     }
 
+    @SaCheckRole("admin")
     @RequestMapping(value = "/deleteCategory")
-    public JsonModel deleteCategory(HttpServletRequest request) {
+    public SaResult deleteCategory(HttpServletRequest request) {
         int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-        jm.setCode(categoryService.deleteCategory(categoryId));
-        return jm;
+        return SaResult.ok().setData(categoryService.deleteCategory(categoryId));
     }
 }

@@ -4,10 +4,9 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.extra.servlet.ServletUtil;
 import com.mu.domain.User;
-import com.mu.model.JsonModel;
 import com.mu.service.impl.UserServiceImpl;
-import com.mu.utils.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,16 +27,15 @@ public class UserController {
 
     @RequestMapping(value = "login")
     public SaResult login(HttpServletRequest request) {
-        JsonModel jm = new JsonModel();
         String username = request.getParameter("account");
         String password = request.getParameter("password");
         User user = userService.login(username, SecureUtil.md5(password));
         if (user == null || user.equals("")) {
-            jm.setCode(0).setMsg("用户名或密码错误");
-            return SaResult.error("登录失败").setCode(0).setMsg("登录失败");
+            return SaResult.error("登录失败");
         }
         StpUtil.login(user.getId());
-        return SaResult.ok("登录成功").setCode(1).setMsg("登录成功").setData(user);
+        user.setPwd(null);
+        return SaResult.ok("登录成功").setData(user);
     }
 
     // 查询登录状态  ---- http://localhost:8081/user/isLogin
@@ -62,34 +60,34 @@ public class UserController {
     @SaCheckLogin
     @RequestMapping(value = "updateUserById")
     public SaResult updateUserById(HttpServletRequest request) {
-        User user = HttpUtils.parseRequestToT(request,User.class);
+        User user = ServletUtil.toBean(request, User.class, true);
         if (userService.updateUserById(user) == 1) {
-            return SaResult.ok("修改成功").setCode(1);
+            return SaResult.ok("修改成功");
         }
-        return SaResult.ok("修改失败").setCode(0);
+        return SaResult.ok("修改失败");
     }
 
     @RequestMapping(value = "register")
     public SaResult register(HttpServletRequest request) {
-        User user = HttpUtils.parseRequestToT(request,User.class);
+        User user = ServletUtil.toBean(request, User.class, true);
         user.setPwd(SecureUtil.md5((user.getPwd())));
         if (userService.register(user) == 1) {
-            return SaResult.ok("注册成功").setCode(1);
+            return SaResult.ok("注册成功");
         }
-        return SaResult.ok("注册失败").setCode(0);
+        return SaResult.ok("注册失败");
     }
 
     @SaCheckLogin
     @RequestMapping(value = "getAllUser")
     public SaResult getAllUser() {
-        return SaResult.ok("获取成功").setCode(1).setData(userService.getAllUser());
+        return SaResult.ok("获取成功").setData(userService.getAllUser());
     }
 
     @SaCheckLogin
     @RequestMapping(value = "getLikeList")
     public SaResult getLikeList(HttpServletRequest request) {
         int id = Integer.parseInt(request.getParameter("userId"));
-        return SaResult.ok("获取喜欢列表成功").setCode(1).setData(userService.getLikeList(id));
+        return SaResult.ok("获取喜欢列表成功").setData(userService.getLikeList(id));
     }
 
 }

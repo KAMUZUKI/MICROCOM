@@ -1,12 +1,12 @@
 package com.mu.controller;
 
-import cn.tycoding.entity.Message;
-import cn.tycoding.entity.User;
-import cn.tycoding.exception.GlobalException;
-import cn.tycoding.service.ChatSessionService;
-import cn.tycoding.utils.CoreUtil;
-import cn.tycoding.utils.R;
+import cn.dev33.satoken.util.SaResult;
 import com.alibaba.fastjson.JSONObject;
+import com.mu.entity.Message;
+import com.mu.entity.User;
+import com.mu.exception.GlobalException;
+import com.mu.service.ChatSessionService;
+import com.mu.utils.CoreUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,6 +30,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class WebsocketServerEndpoint {
 
     private static ChatSessionService chatSessionService;
+
     @Autowired
     public void setChatSessionService(ChatSessionService chatSessionService) {
         WebsocketServerEndpoint.chatSessionService = chatSessionService;
@@ -137,7 +138,7 @@ public class WebsocketServerEndpoint {
         entity.setTime(CoreUtil.format(new Date()));
         entity.setFrom(chatSessionService.findById(fromId));
         entity.setTo(chatSessionService.findById(toId));
-        return JSONObject.toJSONString(new R(entity));
+        return JSONObject.toJSONString(SaResult.ok().setData(entity));
     }
 
     /**

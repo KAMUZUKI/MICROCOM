@@ -1,7 +1,6 @@
 package com.mu.entity;
 
 import lombok.Data;
-
 import java.io.Serializable;
 
 /**

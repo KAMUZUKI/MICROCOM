@@ -1,7 +1,8 @@
 package com.mu.service;
 
-import cn.tycoding.entity.Message;
-import cn.tycoding.entity.User;
+
+import com.mu.entity.Message;
+import com.mu.entity.User;
 
 import java.util.List;
 

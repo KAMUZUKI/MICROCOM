@@ -1,13 +1,13 @@
 package com.mu.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.util.SaResult;
 import cn.hutool.extra.servlet.ServletUtil;
 import com.mu.domain.Article;
-import com.mu.model.JsonModel;
 import com.mu.service.impl.ArticleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,83 +24,73 @@ public class ArticleController {
     @Autowired
     private ArticleServiceImpl articleService;
 
+    @SaCheckLogin
     @RequestMapping(value = "/addArticle")
-    public JsonModel addArticle(HttpServletRequest request) {
-        ModelAndView mv = new ModelAndView();
-        JsonModel jm = new JsonModel();
-        Article article = ServletUtil.toBean(request, Article.class,true);
+    public SaResult addArticle(HttpServletRequest request) {
+        Article article = ServletUtil.toBean(request, Article.class, true);
         try {
-            jm.setCode(articleService.addArticle(article));
-        }catch (Exception e){
-            jm.setCode(0);
-            jm.setMsg("添加文章失败");
+            return SaResult.ok("添加文章成功").setData(articleService.addArticle(article));
+        } catch (Exception e) {
+            return SaResult.error("添加文章失败");
         }
-        return jm;
     }
 
+    @SaCheckLogin
     @RequestMapping(value = "/deleteArticle")
-    public JsonModel deleteArticle(HttpServletRequest request) {
-        JsonModel jm = new JsonModel();
+    public SaResult deleteArticle(HttpServletRequest request) {
         int articleId = Integer.parseInt(request.getParameter("articleId"));
-        jm.setCode(articleService.deleteArticle(articleId));
-        return jm;
+        return SaResult.ok().setCode(articleService.deleteArticle(articleId));
     }
 
+    @SaCheckLogin
     @RequestMapping(value = "/alterArticle")
-    public JsonModel alterArticle(HttpServletRequest request) {
-        JsonModel jm = new JsonModel();
-        Article article = ServletUtil.toBean(request, Article.class, true);;
-        jm.setCode(articleService.alterArticle(article));
-        return jm;
+    public SaResult alterArticle(HttpServletRequest request) {
+        Article article = ServletUtil.toBean(request, Article.class, true);
+        ;
+        return SaResult.ok().setCode(articleService.alterArticle(article));
     }
 
+    @SaCheckLogin
     @RequestMapping(value = "/getAllArticle")
-    public JsonModel getAllArticle() {
-        JsonModel jm = new JsonModel();
-        jm.setCode(1).setData(articleService.getAllArticle());
-        return jm;
+    public SaResult getAllArticle() {
+        return SaResult.ok().setData(articleService.getAllArticle());
     }
 
+    @SaCheckLogin
     @RequestMapping(value = "/getArticleById")
-    public JsonModel getArticleById(HttpServletRequest request) {
-        JsonModel jm = new JsonModel();
+    public SaResult getArticleById(HttpServletRequest request) {
         int articleId = Integer.parseInt(request.getParameter("articleId"));
-        jm.setCode(1).setData(articleService.getArticleById(articleId));
-        return jm;
+        return SaResult.ok().setData(articleService.getArticleById(articleId));
     }
 
+    @SaCheckLogin
     @RequestMapping(value = "/getArticleTop")
-    public JsonModel getArticleTop() {
-        JsonModel jm = new JsonModel();
-        jm.setCode(1).setData(articleService.getArticleTop());
-        return jm;
+    public SaResult getArticleTop() {
+        return SaResult.ok().setData(articleService.getArticleTop());
     }
 
+    @SaCheckLogin
     @RequestMapping(value = "/getAllTags")
-    public JsonModel getAllTags() {
-        JsonModel jm = new JsonModel();
-        jm.setCode(1).setData(articleService.getAllTags());
-        return jm;
+    public SaResult getAllTags() {
+        return SaResult.ok().setData(articleService.getAllTags());
     }
 
+    @SaCheckLogin
     @RequestMapping(value = "/getByCategory")
-    public JsonModel getArticleByCategory(HttpServletRequest request) {
-        JsonModel jm = new JsonModel();
+    public SaResult getArticleByCategory(HttpServletRequest request) {
         int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-        jm.setCode(1).setData(articleService.getArticleByCategory(categoryId));
-        return jm;
+        return SaResult.ok().setData(articleService.getArticleByCategory(categoryId));
     }
 
+    @SaCheckLogin
     @RequestMapping(value = "/changeData")
-    public JsonModel changeData(HttpServletRequest request) {
-        JsonModel jm = new JsonModel();
+    public SaResult changeData(HttpServletRequest request) {
         String articleId = request.getParameter("articleId");
         String userId = request.getParameter("userId");
-        if(articleService.changeData(articleId,userId)){
-            jm.setCode(1).setMsg("点赞成功");
-        }else {
-            jm.setCode(0).setMsg("点赞失败 等待检测网络重试");
+        if (articleService.changeData(articleId, userId)) {
+            return SaResult.ok("点赞成功");
+        } else {
+            return SaResult.error("点赞失败 等待检测网络重试");
         }
-        return jm;
     }
 }

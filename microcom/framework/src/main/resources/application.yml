@@ -6,7 +6,7 @@ redis:
 server:
   port: 8080
   servlet:
-      context-path: /microcom
+    context-path: /microcom
 
 meilisearch:
   host-url: http://localhost:7700
@@ -22,6 +22,7 @@ spring:
     password: muzuki
   redis:
     host: localhost
+    port: 6379
     # 连接超时时间（记得添加单位，Duration）
     timeout: 10000ms
     # Redis默认情况下有16个分片，这里配置具体使用的分片
@@ -36,6 +37,7 @@ spring:
         max-idle: 8
         # 连接池中的最小空闲连接 默认 0
         min-idle: 0
+
 
 #mybatis-plus:
 #  configuration:

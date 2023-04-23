@@ -1,11 +1,15 @@
 package com.mu.controller;
 
-import cn.tycoding.entity.Message;
-import cn.tycoding.exception.GlobalException;
-import cn.tycoding.service.ChatSessionService;
-import cn.tycoding.utils.R;
+import cn.dev33.satoken.util.SaResult;
+import com.alibaba.fastjson.JSONObject;
+import com.mu.constant.CommonConstant;
+import com.mu.entity.Message;
+import com.mu.entity.User;
+import com.mu.exception.GlobalException;
+import com.mu.service.ChatSessionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +26,22 @@ public class ChatController {
     @Autowired
     private ChatSessionService chatSessionService;
 
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    /**
+     * 加入聊天接口
+     *
+     * @param user
+     * @return
+     */
+    @ResponseBody
+    @PostMapping("/join")
+    public SaResult join(@RequestBody User user) {
+        redisTemplate.boundValueOps(CommonConstant.USER_PREFIX + user.getId()).set(JSONObject.toJSONString(user));
+        return SaResult.ok().setMsg("加入聊天成功");
+    }
+
     /**
      * 获取当前窗口用户信息
      *
@@ -29,8 +49,8 @@ public class ChatController {
      * @return
      */
     @GetMapping("/{id}")
-    public R info(@PathVariable("id") String id) {
-        return new R(chatSessionService.findById(id));
+    public SaResult info(@PathVariable("id") String id) {
+        return SaResult.ok().setData(chatSessionService.findById(id));
     }
 
     /**
@@ -41,14 +61,14 @@ public class ChatController {
      * @return
      */
     @PostMapping("/push/{toId}")
-    public R push(@PathVariable("toId") String toId, @RequestBody Message message) {
+    public SaResult push(@PathVariable("toId") String toId, @RequestBody Message message) {
         try {
             WebsocketServerEndpoint endpoint = new WebsocketServerEndpoint();
             endpoint.sendTo(toId, message);
-            return new R();
+            return SaResult.ok();
         } catch (GlobalException e) {
             e.printStackTrace();
-            return new R(500, e.getMsg());
+            return SaResult.ok().setMsg(e.getMsg());
         }
     }
 
@@ -58,8 +78,8 @@ public class ChatController {
      * @return
      */
     @GetMapping("/online/list")
-    public R onlineList() {
-        return new R(chatSessionService.onlineList());
+    public SaResult onlineList() {
+        return SaResult.ok().setData(chatSessionService.onlineList());
     }
 
     /**
@@ -68,8 +88,8 @@ public class ChatController {
      * @return
      */
     @GetMapping("/common")
-    public R commonList() {
-        return new R(chatSessionService.commonList());
+    public SaResult commonList() {
+        return SaResult.ok().setData(chatSessionService.commonList());
     }
 
     /**
@@ -80,9 +100,9 @@ public class ChatController {
      * @return
      */
     @GetMapping("/self/{fromId}/{toId}")
-    public R selfList(@PathVariable("fromId") String fromId, @PathVariable("toId") String toId) {
+    public SaResult selfList(@PathVariable("fromId") String fromId, @PathVariable("toId") String toId) {
         List<Message> list = chatSessionService.selfList(fromId, toId);
-        return new R(list);
+        return SaResult.ok().setData(list);
     }
 
     /**
@@ -92,8 +112,8 @@ public class ChatController {
      * @return
      */
     @DeleteMapping("/{id}")
-    public R logout(@PathVariable("id") String id) {
+    public SaResult logout(@PathVariable("id") String id) {
         chatSessionService.delete(id);
-        return new R();
+        return SaResult.ok();
     }
 }

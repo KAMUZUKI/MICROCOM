@@ -1,10 +1,10 @@
 package com.mu.auth;
 
+import cn.dev33.satoken.util.SaResult;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mu.domain.DingtalkUser;
-import com.mu.model.JsonModel;
 import com.mu.service.impl.DingtalkServiceImpl;
 import com.mu.utils.SystemUtils;
 import com.xkcoding.justauth.AuthRequestFactory;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -57,13 +58,11 @@ public class OAuthController {
     }
 
     @GetMapping("/login/{type}")
-    public JsonModel login(@PathVariable String type) throws IOException {
-        JsonModel jm = new JsonModel();
+    public SaResult login(@PathVariable String type) throws IOException {
         AuthRequest authRequest = factory.get(type);
         token = AuthStateUtils.createState();
         String authorizeUrl = authRequest.authorize(token);
-        jm.setCode(1).setMsg("成功").setData(authorizeUrl);
-        return jm;
+        return SaResult.ok("成功").setData(authorizeUrl);
     }
 
     @RequestMapping("/{type}/callback")
@@ -72,26 +71,25 @@ public class OAuthController {
         AuthRequest authRequest = factory.get(source);
         AuthResponse authResponse = authRequest.login(callback);
         String info = JSONUtil.toJsonStr(authResponse.getData());
-        Map map = JSON.parseObject(info,Map.class);
+        Map map = JSON.parseObject(info, Map.class);
         DingtalkUser dingtalkUser = JSON.parseObject(info, DingtalkUser.class);
         dingtalkService.addDingtalkUser(dingtalkUser);
         // 将用户信息转成url形式
-        String userinfo = SystemUtils.entityToUrlParam(dingtalkUser,false) ;
+        String userinfo = SystemUtils.entityToUrlParam(dingtalkUser, false);
         // 保存用户信息
-        stringRedisTemplate.opsForValue().setIfAbsent("dingtalkUser:token:" + token,info, Duration.ofDays(7));
+        stringRedisTemplate.opsForValue().setIfAbsent("dingtalkUser:token:" + token, info, Duration.ofDays(7));
         String url = "http://localhost:8081?token=" + token + "&" + userinfo;
         httpServletResponse.sendRedirect(url);
     }
 
     @GetMapping("/verify/{accessToken}")
-    public JsonModel verifyUser(@PathVariable("accessToken") String accessToken) {
+    public SaResult verifyUser(@PathVariable("accessToken") String accessToken) {
         String userInfo = stringRedisTemplate.opsForValue().get("dingtalkUser:token:" + accessToken);
-        JsonModel jm = new JsonModel();
         if (StringUtils.isEmpty(userInfo)) {
-            return jm.setCode(0).setMsg("用户未授权或已过期!");
+            return SaResult.ok("用户未授权或已过期!");
         } else {
-            Map<String,Object> map = JSON.parseObject(userInfo,Map.class);
-            return jm.setCode(1).setMsg("用户已授权").setData(map);
+            Map<String, Object> map = JSON.parseObject(userInfo, Map.class);
+            return SaResult.ok("用户已授权").setData(map);
         }
     }
 }

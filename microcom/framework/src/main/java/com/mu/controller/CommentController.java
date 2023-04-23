@@ -1,9 +1,10 @@
 package com.mu.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.util.SaResult;
 import cn.hutool.extra.servlet.ServletUtil;
 import com.mu.SensitiveWord.SensitiveFilter;
 import com.mu.domain.Comment;
-import com.mu.model.JsonModel;
 import com.mu.service.impl.CommentServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,27 +29,23 @@ public class CommentController {
     SensitiveFilter sensitiveFilter;
 
 
+    @SaCheckLogin
     @RequestMapping(value = "/addComment")
-    public JsonModel addComment(HttpServletRequest request) {
-        Comment comment = ServletUtil.toBean(request, Comment.class,false);
-        JsonModel jm = new JsonModel();
+    public SaResult addComment(HttpServletRequest request) {
+        Comment comment = ServletUtil.toBean(request, Comment.class, false);
         String searchkey = comment.getContent();
-
         //非法敏感词汇判断
-        int n = sensitiveFilter.CheckSensitiveWord(searchkey,0,1);
-        if(n > 0){
+        int n = sensitiveFilter.CheckSensitiveWord(searchkey, 0, 1);
+        if (n > 0) {
             //存在非法字符
-            return jm.setCode(0).setMsg("存在非法字符");
+            return SaResult.ok("存在非法字符");
         }
-        jm.setCode(1).setData(commentService.addComment(comment));
-        return jm;
+        return SaResult.ok("添加成功").setData(commentService.addComment(comment));
     }
 
     @RequestMapping(value = "/getComments")
-    public JsonModel getComments(HttpServletRequest request) {
+    public SaResult getComments(HttpServletRequest request) {
         int articleId = Integer.parseInt(request.getParameter("articleId"));
-        JsonModel jm = new JsonModel();
-        jm.setCode(1).setData(commentService.getComments(articleId));
-        return jm;
+        return SaResult.ok("获取评论成功").setData(commentService.getComments(articleId));
     }
 }

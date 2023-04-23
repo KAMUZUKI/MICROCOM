@@ -1,6 +1,6 @@
 package com.mu.utils;
 
-import cn.tycoding.entity.Message;
+import com.mu.entity.Message;
 
 import java.text.SimpleDateFormat;
 import java.util.Comparator;

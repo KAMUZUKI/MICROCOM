@@ -1,17 +1,16 @@
 package com.mu.service.impl;
 
-import cn.tycoding.constant.CommonConstant;
-import cn.tycoding.entity.Message;
-import cn.tycoding.entity.User;
-import cn.tycoding.service.ChatSessionService;
-import cn.tycoding.utils.CoreUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.mu.constant.CommonConstant;
+import com.mu.entity.Message;
+import com.mu.entity.User;
+import com.mu.service.ChatSessionService;
+import com.mu.utils.CoreUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 
