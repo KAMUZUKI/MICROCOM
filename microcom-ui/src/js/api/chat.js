@@ -1,33 +1,12 @@
-import axios from './axiosRequest'
+import axios from 'axios'
 
+let path = "http://localhost:7070"
 let api = {
-
-    /**
-     * 头像列表 -- 本地json文件加载
-     */
-    getAvatarList() {
-        return '/avatar/avatar.json'
-    },
-
-    /**
-     * 登录接口
-     */
-    login() {
-        return '/login'
-    },
-
-    /**
-     * 跳转至主页面
-     */
-    redirect(id) {
-        return '/' + id + '/chat'
-    },
-
+    
     /**
      * 根据ID获取用户信息
      */
     getUser(id) {
-        axios
         return '/chat/' + id
     },
 
@@ -35,7 +14,11 @@ let api = {
      * 获取在线用户列表
      */
     getOnline() {
-        return '/chat/online/list'
+        axios.get(path + 'online/list').then(res => {
+            return res.data.data
+        }).catch(err => {
+            return err
+        })
     },
 
     /**
@@ -62,8 +45,12 @@ let api = {
     /**
      * 向指定窗口推送消息
      */
-    pushId(toId) {
-        return '/chat/push/' + toId
+    pushId(message) {
+        axios.get(path + 'push/' + message.to,message).then(res => {
+            return res.data.data
+        }).catch(err => {
+            return err
+        })
     },
 
     /**

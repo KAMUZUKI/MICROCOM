@@ -30,8 +30,9 @@
 <script setup>
 import utils from "@/js/utils/utils.js"
 import { ref, defineProps, onMounted, watch } from "vue"
+import { message } from "ant-design-vue"
 import mockData from "@/js/data/mockData.js"
-import axiosRequest from "@/js/api/axiosRequest"
+import chat from "@/js/api/chat"
 
 const props = defineProps({
   currentChatId: {
@@ -41,26 +42,60 @@ const props = defineProps({
 })
 
 const messages = ref()
-const message = ref('')
+const inputMessage = ref('')
 const user = JSON.parse(sessionStorage.getItem("user")??"")
 
 const commitMessage = () => {
-  if (message.value) {
+  if (inputMessage.value == null || inputMessage.value.trim() == '') {
+      message.warn('请输入消息内容', 'warning')
+      return;
+  }else{
+    // 发送消息
     const messageInfo = { 
       name: user.name, 
       avatar: "https://cdn.quasar.dev/img/avatar.png", 
-      text: [message.value], 
+      text: [inputMessage.value], 
       sent: true, 
       stamp: new Date().getTime()
     }
+    const message = {
+      from: user.name,
+      text: inputMessage.value,
+      to: props.currentChatId,
+      time: new Date().getTime()
+    }
+    chat.pushId(message)
     messages.value.push(messageInfo)
-    axiosRequest("post",'',{
-      chatId: props.currentChatId,
-      message: messageInfo
-    })
-    message.value = ''
+    inputMessage.value = ''
   }
 }
+
+// const //推送消息
+//   send() {
+//       if (this.form.message == null || this.form.message.trim() == '') {
+//           this._message('请输入消息内容', 'warning')
+//           return;
+//       }
+//       if (!this.current_window_id) {
+//           this.websocket.send(this.form.message.replace(/[\r\n]/g,""))
+//           this.initCommonMessage()
+//       } else {
+//           let data = {
+//               message: this.form.message,
+//               from: this.user
+//           }
+//           this.$http.post(api.pushId(this.current_window_id), JSON.stringify(data)).then(response => {
+//               if (response.body.code == 200) {
+//                   this.initSelfMessage()
+//                   this.clean()
+//                   this._notify('提醒', '消息推送成功', 'success')
+//               } else {
+//                   this._notify('提醒', response.body.msg, 'error')
+//               }
+//           })
+//       }
+//       this.scroll()
+//   },
 
 onMounted(() => {
   messages.value = mockData.getChatMessage(1)

@@ -7,12 +7,12 @@
 
           <q-btn round flat>
             <q-avatar>
-              <img :src="currentConversation.avatar">
+              <img :src="currentConversation.head">
             </q-avatar>
           </q-btn>
 
           <span class="q-subtitle-1 q-pl-md">
-            {{ currentConversation.person }}
+            {{ currentConversation.name }}
           </span>
 
           <q-space />
@@ -101,9 +101,8 @@
       </q-drawer>
 
       <q-page-container class="bg-grey-2">
-        <chat-message ref="sendMessage" :currentChatId="currentChatId" />
+        <chat-message :currentChatId="currentChatId" />
       </q-page-container>
-
 
     </q-layout>
   </div>
@@ -113,9 +112,11 @@
 import ChatMessage from '@/views/ChatMessage.vue'
 import { useQuasar } from 'quasar'
 import { ref, computed, onBeforeMount, onMounted } from 'vue'
-import axios from 'axios'
+import { useStore } from 'vuex'
+import { message } from 'ant-design-vue'
 import mockData from '@/js/data/mockData'
 import api from '@/js/api/chat'
+import socket from '@/js/utils/socket'
 
 const $q = useQuasar()
 
@@ -128,7 +129,9 @@ const conversations = ref([])
 const currentConversationIndex = ref(0)
 //当前聊天窗口
 const currentChatId = ref(0)
-const sendMessage = ref()
+const store = useStore()
+const user = ref()
+var websocket = null
 
 const currentConversation = computed(() => {
   return conversations.value[currentConversationIndex.value]
@@ -149,41 +152,32 @@ const setCurrentConversation = (index, chatId) => {
 
 const initUser = () => {
   //加载当前用户信息
-  axios.get(api.getUser(this.form.id)).then(response => {
-    this.user = response.body.data
-  })
+  user.value = api.getUser(store.state.user.id)
 
   //加载在线用户列表
-  this.$http.get(api.getOnline()).then(response => {
-    let data = response.body.data;
-    if (data.length > 0) {
-      this.userList = data;
-      this.online = this.userList.length
-    }
-  })
+  conversations.value = api.getOnline()
+  console.log('onBeforeMount')
 }
 
+
 const initWebSocket = () => {
-  let $this = this;
-  this.websocket = new WebSocket(api.websocket(this.form.id))
+  websocket = socket(user.value.id)
   //链接发送错误时调用
-  this.websocket.onerror = function () {
-    $this._notify('提醒', 'WebSocket链接错误', 'error')
+  websocket.onerror = function () {
+    message.error('WebSocket链接错误')
   }
   //链接成功时调用
-  this.websocket.onopen = function () {
-    $this._notify('提醒', 'WebSocket链接成功', 'success')
+  websocket.onopen = function () {
+    message.success('WebSocket链接成功')
   }
   //接收到消息时回调
-  this.websocket.onmessage = function (event) {
-    $this.clean()
+  websocket.onmessage = function (event) {
     let entity = JSON.parse(event.data);
 
     //上线提醒
     if (entity.data == undefined) {
-      $this.initUser()
-      $this._notify('消息', entity.msg, 'info')
-      $this.scroll()
+      initUser()
+      message.info(entity.msg)
       return;
     }
 
@@ -191,27 +185,26 @@ const initWebSocket = () => {
     let data = JSON.parse(event.data).data
     if (data.to != undefined) {
       //单个窗口发送，仅推送到指定的窗口
-      if (data.from.id == $this.current_window_id) {
-        $this.messageList.push(data)
+      if (data.form.id == currentChatId.value) {
+        conversations.value.push(data)
       }
     } else {
       //群发，推送到官方群组窗口
-      $this.messageList.push(data)
+      conversations.value.push(data)
     }
-    $this.scroll()
   }
   //链接关闭时调用
-  this.websocket.onclose = function () {
-    $this._notify('提醒', 'WebSocket链接关闭', 'info')
+  websocket.onclose = function () {
+    message.warn('WebSocket链接关闭')
   }
 }
 
 onBeforeMount(() => {
   conversations.value = mockData.getConversations()
+  initUser()
 })
 
 onMounted(() => {
-  initUser()
   initWebSocket()
 })
 </script>
