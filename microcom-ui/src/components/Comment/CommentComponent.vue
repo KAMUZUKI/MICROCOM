@@ -80,7 +80,7 @@ export default defineComponent({
             params.append('articleId', articleId)
             axios.post(store.state.path+"/comment/getComments", params)
                 .then(res => {
-                    if (res.data.code == 1) {
+                    if (res.data.code == 200) {
                         CommentData.value = res.data.data
                         CommentData.value.forEach(item => {
                             item.head = 'http://q1.qlogo.cn/g?b=qq&nk='+item.head+'&s=100'
@@ -135,7 +135,7 @@ export default defineComponent({
             params.append('createTime',dayjs().format("YYYY-MM-DD HH:mm:ss"))
             axios.post(store.state.path +"/comment/addComment", params)
                 .then(res => {
-                    if (res.data.code == 1) {
+                    if (res.data.code == 200) {
                         comments.value.push({
                             articleid: articleId,
                             createBy: userDetial.value.username,

@@ -97,7 +97,7 @@ export default defineComponent({
       //TODO:获取数据
       axios.post(store.state.path+'/user/getAllUser')
         .then(res => {
-          if (res.data.code == 1) {
+          if (res.data.code == 200) {
             listDataTmp.value = res.data.data
             for (const [key, item] of Object.entries(listDataTmp.value)) {
               console.log(key)
@@ -129,7 +129,7 @@ export default defineComponent({
         params.append('type', user.type);
         axios.post(store.state.path+'/user/updateUserById', params)
           .then(res => {
-            if (res.data.code == 1) {
+            if (res.data.code == 200) {
               delete editableData[user.id];
               message.success('修改用户ID'+user.id+'成功');
             } else {
@@ -153,7 +153,7 @@ export default defineComponent({
       params.append('userId', userId);
       axios.post(store.state.path+'/user.action', params)
         .then(res => {
-          if (res.data.code == 1) {
+          if (res.data.code == 200) {
             dataSource.value = dataSource.value.filter(item => userId !== item.id);
             message.success('删除用户ID'+userId+'成功');
           } else {

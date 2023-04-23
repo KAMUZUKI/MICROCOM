@@ -50,7 +50,7 @@ export default defineComponent({
         axios.post(store.state.path+'/category/getCategory')
         .then(res=>{
             console.log(res.data)
-          if (res.data.code == 1) {
+          if (res.data.code == 200) {
             tmpData.value = res.data.data
             for (var i = 0; i < tmpData.value.length; i++) {
                 data.value.push(tmpData.value[i].name)

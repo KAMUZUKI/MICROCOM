@@ -96,7 +96,7 @@ export default defineComponent({
                 params.append('id', editInfo);
                 axios.post('http://localhost:8081/demo/info.action', params)
                     .then(res => {
-                        if (res.data.code == 1) {
+                        if (res.data.code == 200) {
                             formState.user = res.data.data
                             keywordOptions.value = res.data.data.label.split(',')
                             categoryOptions.value = JSON.parse(sessionStorage.getItem("categorys"))[res.data.data.categoryId]
@@ -145,7 +145,7 @@ export default defineComponent({
             params.append('createTime',formState.user.createTime)
             axios.post('http://localhost:8081/demo/info.action', params)
                 .then(res => {
-                    if (res.data.code == 1) {
+                    if (res.data.code == 200) {
                         message.success('文章发布成功')
                     } else {
                         message.error('文章发布失败')

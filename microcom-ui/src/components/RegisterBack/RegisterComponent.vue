@@ -123,7 +123,7 @@ export default defineComponent({
             params.append('head', formState.value.email.match(/(\w+)@/)[1]);
             axios.post(store.state.path + '/user.action', params)
                 .then(res => {
-                    if (res.data.code == 1) {
+                    if (res.data.code == 200) {
                         alert(res.data.msg)
                         openNotification.value.openNotificationWithIcon('success', '注册成功',res.data.msg);
                     } else {

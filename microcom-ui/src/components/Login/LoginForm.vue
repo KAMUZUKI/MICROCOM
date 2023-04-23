@@ -153,7 +153,7 @@ const getLikeList = () => {
   axios
     .post(store.state.path + "/user/getLikeList", params)
     .then((res) => {
-      if (res.data.code == 1) {
+      if (res.data.code == 200) {
         likeList.value = res.data.data;
         sessionStorage.setItem(
           "likeList",
@@ -180,8 +180,8 @@ const login = () => {
   axios
     .post(store.state.path + "/user/login", params)
     .then((res) => {
-      if (res.data.code == 1) {
-        let userinfo = res.data.data;
+      if (res.data.code == 200) {
+        var userinfo = res.data.data;
         user.value = {
           id: userinfo.id,
           username: userinfo.username,
@@ -190,7 +190,7 @@ const login = () => {
           type: userinfo.type,
         };
         likeList.value = userinfo.likeList;
-        sessionStorage.setItem("user", JSON.stringify(user.value));
+        sessionStorage.setItem("user", JSON.stringify(userinfo));
         store.state.user = user.value;
         store.state.user = JSON.parse(sessionStorage.getItem("user"));
         store.state.isLogin = true;
@@ -220,7 +220,7 @@ const loginWith = (source) => {
   axios
     .get(store.state.path + "/oauth/login/" + source)
     .then(({ data }) => {
-      if (data.code == "1") {
+      if (data.code == 200) {
         window.location = data.data;
       } else {
         openNotification.value.openNotificationWithIcon(
@@ -279,7 +279,7 @@ onMounted(() => {
   token = localStorage.getItem("OAuthToken");
   if (token != undefined) {
     axios.get(store.state.path + "/oauth/verify/" + token).then((response) => {
-      if (response.data.code == 1) {
+      if (response.data.code == 200) {
         let userinfo = response.data.data;
         user.value = {
           id: userinfo.uuid,

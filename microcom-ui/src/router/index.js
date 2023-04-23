@@ -46,16 +46,6 @@ const routes = [
                     transition_enter: 'animate__fadeInDown',
                     transition_leave: 'animate__fadeOutDown',
                 }
-            },
-            {
-                path: 'flink',
-                name: 'flink',
-                component: () => import('@/components/Flink/FlinkComponent.vue'),
-                meta: {
-                    title: '友链',
-                    transition_enter: 'animate__fadeInDown',
-                    transition_leave: 'animate__fadeOutDown',
-                }
             }
         ]
     }, 
@@ -115,6 +105,17 @@ const routes = [
         }
     },
     {
+        path: '/ChatView',
+        name: 'chatview',
+        component: () => import('@/views/ChatView.vue'),
+        meta: {
+            title: '聊天',
+            // requireAuth: true,
+            transition_enter: 'animate__fadeInLeft',
+            transition_leave: 'animate__fadeOutLeft',
+        }
+    },
+    {
         path: '/setting',
         name: 'setting',
         component: () => import('@/views/SettingFramework.vue'),
@@ -131,16 +132,6 @@ const routes = [
                 component: () => import('@/components/Setting/AddProperties.vue'),
                 meta: {
                     title: '添加',
-                    transition_enter: 'animate__fadeInDown',
-                    transition_leave: 'animate__fadeOutDown',
-                }
-            },
-            {
-                path: 'setflink',
-                name: 'setflink',
-                component: () => import('@/components/Setting/SetFlink.vue'),
-                meta: {
-                    title: '设置友链',
                     transition_enter: 'animate__fadeInDown',
                     transition_leave: 'animate__fadeOutDown',
                 }

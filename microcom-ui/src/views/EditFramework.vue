@@ -98,7 +98,7 @@ export default defineComponent({
                 params.append('articleId', editInfo);
                 axios.post(store.state.path + '/article/getArticleById', params)
                     .then(res => {
-                        if (res.data.code == 1) {
+                        if (res.data.code == 200) {
                             formState.user = res.data.data
                             keywordOptions.value = res.data.data.label.split(',')
                             categoryOptions.value = JSON.parse(sessionStorage.getItem("categorys"))[res.data.data.categoryId]
@@ -152,7 +152,7 @@ export default defineComponent({
                 params.append('createTime', formState.user.createTime)
                 axios.post(store.state.path + '/article/addArticle', params)
                     .then(res => {
-                        if (res.data.code == 1) {
+                        if (res.data.code == 200) {
                             formState.user.author = JSON.parse(sessionStorage.getItem("user")).username
                             formState.user.category = categoryOptions.value
                             formState.user.keywords = keywordOptions.value
@@ -202,7 +202,7 @@ export default defineComponent({
                 params.append('createTime',formState.user.createTime)
                 axios.post(store.state.path+'/article/alterArticle', params)
                     .then(res => {
-                        if (res.data.code == 1) {
+                        if (res.data.code == 200) {
                             message.success('文章修改成功')
                             router.push('/')
                         } else {

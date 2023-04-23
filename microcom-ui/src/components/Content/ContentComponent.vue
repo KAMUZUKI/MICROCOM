@@ -97,7 +97,7 @@ export default defineComponent({
       axios.post(store.state.path + '/article/getAllArticle', params)
         .then(res => {
           console.log(res)
-          if (res.data.code == 1) {
+          if (res.data.code == 200) {
             listDataTmp.value = res.data.data
             for (const [key, item] of Object.entries(listDataTmp.value)) {
               key
@@ -237,7 +237,7 @@ export default defineComponent({
           params.append('userId', JSON.parse(sessionStorage.getItem("user")).id);
           axios.post(store.state.path + '/article/changeData', params)
             .then(res => {
-              if (res.data.code == 1) {
+              if (res.data.code == 200) {
                 //点赞执行成功
                 initDataList.value.forEach((item) => {
                   if (item.id === articleId) {

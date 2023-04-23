@@ -48,7 +48,7 @@ export default defineComponent({
       axios.post(store.state.path + '/article/getAllArticle')
         .then(res => {
           console.log(res)
-          if (res.data.code == 1) {
+          if (res.data.code == 200) {
             listDataTmp.value = res.data.data
             for (const [key, item] of Object.entries(listDataTmp.value)) {
               console.log(key)
@@ -83,7 +83,7 @@ export default defineComponent({
       params.append('articleId', articleId);
       axios.post(store.state.path+'/article/deleteArticle', params)
         .then(res => {
-          if (res.data.code == 1) {
+          if (res.data.code == 200) {
             message.success('删除成功');
             listData.value.pop(articleId)
           } else {

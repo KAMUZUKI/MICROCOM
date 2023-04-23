@@ -158,7 +158,7 @@ const handleFinish = (values) => {
   axios
     .post(store.state.path + "/user/register", params)
     .then((res) => {
-      if (res.data.code == 1) {
+      if (res.data.code == 200) {
         resetForm();
         openNotification.value.openNotificationWithIcon(
           "success",

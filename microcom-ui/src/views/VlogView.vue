@@ -233,12 +233,15 @@ const showDialog = (detail)=>{
 </script>
 
 <style lang="sass" scoped>
+.q-pa-md
+    padding: 0px !important
+
 #layout
     width: 100%
     margin: 0 auto
 
 .vlog-box
-    max-width: 2000px
+    // max-width: 2000px
     margin: 0 auto
 
 .justify-between
@@ -264,7 +267,7 @@ body
   margin: 0
 </style>
 
-<style>
+<style scoped>
 /* Chrome Safari */
 /* ::-webkit-scrollbar {
     display: none;

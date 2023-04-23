@@ -48,7 +48,7 @@ export default defineComponent({
         axios.post(store.state.path+"/article/getArticleById",params)
           .then(res => {
             console.log(res)
-            if (res.data.code == 1) {
+            if (res.data.code == 200) {
               detail.value = res.data.data
               sessionStorage.setItem("articleDetail", JSON.stringify(detail.value));
             } else {

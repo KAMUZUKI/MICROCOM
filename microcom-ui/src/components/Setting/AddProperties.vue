@@ -47,7 +47,7 @@ export default defineComponent({
             //TODO: 从后台获取分类
             axios.post(store.state.path + '/category/getCategory')
                 .then(res => {
-                    if (res.data.code == 1) {
+                    if (res.data.code == 200) {
                         categoryList.value = res.data.data
                     } else {
                         console.log(res.data.msg)
@@ -64,7 +64,7 @@ export default defineComponent({
             //TODO: 删除分类
             axios.post(store.state.path + '/category/deleteCategory', params)
                 .then(res => {
-                    if (res.data.code == 1) {
+                    if (res.data.code == 200) {
                         categoryList.value.pop(id)
                         message.success('删除成功')
                     } else {
@@ -86,7 +86,7 @@ export default defineComponent({
                 params.append('description', values.description);
                 axios.post(store.state.path + '/category/addCategory', params)
                     .then(res => {
-                        if (res.data.code == 1) {
+                        if (res.data.code == 200) {
                             categoryList.value.push({
                                 id: categoryList.value.length + 1,
                                 name: values.title,

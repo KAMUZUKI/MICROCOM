@@ -16,16 +16,17 @@
 
 <script setup>
 import {reactive,onMounted } from 'vue'
-import axios from 'axios'
+// import axios from 'axios'
 const AWord = reactive({
     data:'白茶清欢无别事'
 });
 
 const getAWord = ()=>{
     console.log('getAWord')
-    axios.get('https://api.uixsj.cn/hitokoto/get').then(res=>{
-        AWord.data = res.data
-    })
+    // axios.get('https://api.uixsj.cn/hitokoto/get').then(res=>{
+        // AWord.data = res.data
+    // })
+    AWord.data = '忍者最强的力量不是在学会所有忍术之后得到，而是在保护自己最珍贵的东西时才会显露出来 。'
 }
 
 onMounted(()=>{

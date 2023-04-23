@@ -16,7 +16,7 @@
     <q-drawer class="drawer" v-model="rightDrawerOpen" side="right" overlay>
       <personal-menu></personal-menu>
     </q-drawer>
-    <q-page-container>
+    <q-page-container class="page-container">
       <transition :enter-active-class="`animate__animated animate__fadeInLeft`"
         :leave-active-class="`animate__animated animate__fadeOutLeft`" mode="out-in">
         <router-view />
@@ -31,6 +31,7 @@
 <script setup>
 import { onMounted, ref } from "vue"
 import { useStore } from 'vuex'
+import axios from "axios"
 import PersonalMenu from "@/components/Personal/PersonalMenu.vue"
 import HeadRight from "@/components/Header/HeadRight.vue"
 import LoginView from "@/views/LoginView.vue"
@@ -46,6 +47,15 @@ onMounted(() => {
     store.state.user = JSON.parse(sessionStorage.getItem("user"));
     store.state.isLogin = true;
     store.state.isCertified = true;
+    axios.post("http://localhost:7070/chat/join",{
+      "id": store.state.user.id,
+      'name': store.state.user.name,
+      'head': store.state.user.head
+    }).then(res => {
+      if(res.status == 200) {
+        console.log("加入聊天室成功")
+      }
+    })
   }
 })
 
@@ -59,9 +69,16 @@ onMounted(() => {
   border-radius: 12px !important;
   border: 1px solid rgba(209, 213, 219, 0.3) !important;
 }
+
+.page-container {
+  margin: 0 auto;
+  padding-top: 55px !important; 
+  background-color: #f0f2f5;
+}
 </style>
 
 <style scoped>
+
 .bg-primary {
   z-index: 999 !important;
 }
