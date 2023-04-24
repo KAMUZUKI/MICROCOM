@@ -1,15 +1,15 @@
 package com.mu.controller;
 
 import cn.dev33.satoken.util.SaResult;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.mu.constant.CommonConstant;
 import com.mu.entity.Message;
 import com.mu.entity.User;
 import com.mu.exception.GlobalException;
 import com.mu.service.ChatSessionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class ChatController {
     private ChatSessionService chatSessionService;
 
     @Autowired
-    private StringRedisTemplate redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     /**
      * 加入聊天接口
@@ -38,7 +38,7 @@ public class ChatController {
     @ResponseBody
     @PostMapping("/join")
     public SaResult join(@RequestBody User user) {
-        redisTemplate.boundValueOps(CommonConstant.USER_PREFIX + user.getId()).set(JSONObject.toJSONString(user));
+        redisTemplate.opsForSet().add("online_users", JSONObject.toJSONString(user));
         return SaResult.ok().setMsg("加入聊天成功");
     }
 
@@ -79,7 +79,8 @@ public class ChatController {
      */
     @GetMapping("/online/list")
     public SaResult onlineList() {
-        return SaResult.ok().setData(chatSessionService.onlineList());
+        JSONArray online_users = JSONObject.parseArray(redisTemplate.opsForSet().members("online_users").toString());
+        return SaResult.ok().setData(online_users);
     }
 
     /**
@@ -113,7 +114,7 @@ public class ChatController {
      */
     @DeleteMapping("/{id}")
     public SaResult logout(@PathVariable("id") String id) {
-        chatSessionService.delete(id);
+        redisTemplate.opsForSet().remove("online_users", "{\"id\":\"" + id + "\"}");
         return SaResult.ok();
     }
 }

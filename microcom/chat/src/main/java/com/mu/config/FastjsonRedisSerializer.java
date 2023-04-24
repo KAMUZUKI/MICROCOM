@@ -6,14 +6,13 @@ import org.springframework.data.redis.serializer.SerializationException;
 
 /**
  * @author MUZUKI
- * @Classname sd
+ * @Classname FastjsonRedisSerializer
  * @Description TODO
  * @Date 2023/4/24 11:56
  */
 
 
-
-    public class FastjsonRedisSerializer<T> implements RedisSerializer<T> {
+public class FastjsonRedisSerializer<T> implements RedisSerializer<T> {
 
     private final Class<T> clazz;
 

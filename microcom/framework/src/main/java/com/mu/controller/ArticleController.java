@@ -50,32 +50,27 @@ public class ArticleController {
         return SaResult.ok().setCode(articleService.alterArticle(article));
     }
 
-    @SaCheckLogin
     @RequestMapping(value = "/getAllArticle")
     public SaResult getAllArticle() {
         return SaResult.ok().setData(articleService.getAllArticle());
     }
 
-    @SaCheckLogin
     @RequestMapping(value = "/getArticleById")
     public SaResult getArticleById(HttpServletRequest request) {
         int articleId = Integer.parseInt(request.getParameter("articleId"));
         return SaResult.ok().setData(articleService.getArticleById(articleId));
     }
 
-    @SaCheckLogin
     @RequestMapping(value = "/getArticleTop")
     public SaResult getArticleTop() {
         return SaResult.ok().setData(articleService.getArticleTop());
     }
 
-    @SaCheckLogin
     @RequestMapping(value = "/getAllTags")
     public SaResult getAllTags() {
         return SaResult.ok().setData(articleService.getAllTags());
     }
 
-    @SaCheckLogin
     @RequestMapping(value = "/getByCategory")
     public SaResult getArticleByCategory(HttpServletRequest request) {
         int categoryId = Integer.parseInt(request.getParameter("categoryId"));

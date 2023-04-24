@@ -23,21 +23,18 @@ import java.util.*;
 public class ChatSessionServiceImpl implements ChatSessionService {
 
     @Autowired
-    private StringRedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public User findById(String id) {
         if (id != null) {
-            String value = null;
+            Object value = null;
             if (id.startsWith(CommonConstant.USER_PREFIX)) {
-                value = redisTemplate.boundValueOps(id).get();
+                value = stringRedisTemplate.boundValueOps(CommonConstant.USER_PREFIX + id).get();
             } else {
-                value = redisTemplate.boundValueOps(CommonConstant.USER_PREFIX + id).get();
+                value = stringRedisTemplate.boundValueOps(CommonConstant.USER_PREFIX + id).get();
             }
-            JSONObject object = JSONObject.parseObject(value);
-            if (object != null) {
-                return object.toJavaObject(User.class);
-            }
+            return JSONObject.parseObject(value.toString(), User.class);
         }
         return null;
     }
@@ -70,7 +67,7 @@ public class ChatSessionServiceImpl implements ChatSessionService {
         //这里按照 PREFIX_ID 格式，作为KEY储存消息记录
         //但一个用户可能推送很多消息，VALUE应该是数组
         List<Message> list = new ArrayList<>();
-        String value = redisTemplate.boundValueOps(key).get();
+        String value = stringRedisTemplate.boundValueOps(key).get();
         if (value == null) {
             //第一次推送消息
             list.add(entity);
@@ -79,13 +76,13 @@ public class ChatSessionServiceImpl implements ChatSessionService {
             list = Objects.requireNonNull(JSONObject.parseArray(value)).toJavaList(Message.class);
             list.add(entity);
         }
-        redisTemplate.boundValueOps(key).set(JSONObject.toJSONString(list));
+        stringRedisTemplate.boundValueOps(key).set(JSONObject.toJSONString(list));
     }
 
     @Override
     public List<User> onlineList() {
         List<User> list = new ArrayList<>();
-        Set<String> keys = redisTemplate.keys(CommonConstant.USER_PREFIX + CommonConstant.REDIS_MATCH_PREFIX);
+        Set<String> keys = stringRedisTemplate.keys(CommonConstant.USER_PREFIX + CommonConstant.REDIS_MATCH_PREFIX);
         if (keys != null && keys.size() > 0) {
             keys.forEach(key -> {
                 list.add(this.findById(key));
@@ -97,10 +94,10 @@ public class ChatSessionServiceImpl implements ChatSessionService {
     @Override
     public List<Message> commonList() {
         List<Message> list = new ArrayList<>();
-        Set<String> keys = redisTemplate.keys(CommonConstant.CHAT_COMMON_PREFIX + CommonConstant.REDIS_MATCH_PREFIX);
+        Set<String> keys = stringRedisTemplate.keys(CommonConstant.CHAT_COMMON_PREFIX + CommonConstant.REDIS_MATCH_PREFIX);
         if (keys != null && keys.size() > 0) {
             keys.forEach(key -> {
-                String value = redisTemplate.boundValueOps(key).get();
+                String value = stringRedisTemplate.boundValueOps(key).get();
                 List<Message> messageList = Objects.requireNonNull(JSONObject.parseArray(value)).toJavaList(Message.class);
                 list.addAll(messageList);
             });
@@ -113,9 +110,9 @@ public class ChatSessionServiceImpl implements ChatSessionService {
     public List<Message> selfList(String fromId, String toId) {
         List<Message> list = new ArrayList<>();
         //A -> B
-        String fromTo = redisTemplate.boundValueOps(CommonConstant.CHAT_FROM_PREFIX + fromId + CommonConstant.CHAT_TO_PREFIX + toId).get();
+        String fromTo = stringRedisTemplate.boundValueOps(CommonConstant.CHAT_FROM_PREFIX + fromId + CommonConstant.CHAT_TO_PREFIX + toId).get();
         //B -> A
-        String toFrom = redisTemplate.boundValueOps(CommonConstant.CHAT_FROM_PREFIX + toId + CommonConstant.CHAT_TO_PREFIX + fromId).get();
+        String toFrom = stringRedisTemplate.boundValueOps(CommonConstant.CHAT_FROM_PREFIX + toId + CommonConstant.CHAT_TO_PREFIX + fromId).get();
 
         JSONArray fromToObject = JSONObject.parseArray(fromTo);
         JSONArray toFromObject = JSONObject.parseArray(toFrom);
@@ -138,7 +135,7 @@ public class ChatSessionServiceImpl implements ChatSessionService {
     public void delete(String id) {
         if (id != null) {
             log.info("从Redis中删除此Key: " + id);
-            redisTemplate.delete(CommonConstant.USER_PREFIX + id);
+            stringRedisTemplate.delete(CommonConstant.USER_PREFIX + id);
         }
     }
 }
