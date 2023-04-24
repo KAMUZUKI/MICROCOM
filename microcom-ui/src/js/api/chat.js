@@ -60,13 +60,27 @@ let api = {
      * 注销用户
      */
     logout(id) {
-        return '/chat/' + id
+        axios.post(httpPath + 'logout/' + id).then(res => {
+            return res.data
+        }).catch(err => {
+            return err
+        })
     },
 
     join(user) {
         axios.post(httpPath + "join/", user).then(res => {
             if (res.data.code == 200) {
                 return ("加入聊天室成功")
+            } else {
+                return (res.data.msg)
+            }
+        })
+    },
+
+    record(user) {
+        axios.post(httpPath + "record/", user).then(res => {
+            if (res.data.code == 200) {
+                return ("成功")
             } else {
                 return (res.data.msg)
             }

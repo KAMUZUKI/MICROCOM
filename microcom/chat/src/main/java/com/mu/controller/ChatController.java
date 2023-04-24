@@ -26,9 +26,6 @@ public class ChatController {
     @Autowired
     private ChatSessionService chatSessionService;
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-
     /**
      * 加入聊天接口
      *
@@ -38,8 +35,17 @@ public class ChatController {
     @ResponseBody
     @PostMapping("/join")
     public SaResult join(@RequestBody User user) {
-        redisTemplate.opsForSet().add("online_users", JSONObject.toJSONString(user));
-        return SaResult.ok().setMsg("加入聊天成功");
+        if (chatSessionService.join(user)>0){
+            return SaResult.ok().setMsg("加入聊天成功");
+        }
+        return SaResult.ok().setMsg("网络异常，请刷新重试");
+    }
+
+    @ResponseBody
+    @PostMapping("/record")
+    public SaResult recordUser(@RequestBody User user){
+        chatSessionService.record(user);
+        return SaResult.ok("添加成功");
     }
 
     /**
@@ -79,8 +85,7 @@ public class ChatController {
      */
     @GetMapping("/online/list")
     public SaResult onlineList() {
-        JSONArray online_users = JSONObject.parseArray(redisTemplate.opsForSet().members("online_users").toString());
-        return SaResult.ok().setData(online_users);
+        return SaResult.ok().setData(chatSessionService.getOnlineList());
     }
 
     /**
@@ -112,9 +117,9 @@ public class ChatController {
      * @param id 用户ID
      * @return
      */
-    @DeleteMapping("/{id}")
+    @PostMapping("logout/{id}")
     public SaResult logout(@PathVariable("id") String id) {
-        redisTemplate.opsForSet().remove("online_users", "{\"id\":\"" + id + "\"}");
-        return SaResult.ok();
+        chatSessionService.delete(id);
+        return SaResult.ok("退出成功");
     }
 }

@@ -11,6 +11,19 @@ import java.util.List;
  * @date 2019-06-14
  */
 public interface ChatSessionService {
+    /**
+     * 加入聊天列表
+     *
+     * @param user
+     * @return
+     */
+    Long join(User user);
+
+    /**
+     * 将用户添加至redis中
+     * @param user
+     */
+    void record(User user);
 
     /**
      * 根据ID从Redis中查询数据
@@ -36,6 +49,7 @@ public interface ChatSessionService {
      */
     List<User> onlineList();
 
+    List<User> getOnlineList();
     /**
      * 获取公共消息内容 -- 群组
      *

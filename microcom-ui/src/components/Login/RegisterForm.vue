@@ -169,16 +169,15 @@ const handleFinish = (values) => {
         openNotification.value.openNotificationWithIcon(
           "error",
           "注册失败",
-          "注册失败"
+          res.data.msg
         );
       }
     })
     .catch(function (error) {
-      console.log(error);
       openNotification.value.openNotificationWithIcon(
         "error",
         "注册失败",
-        "注册失败"
+        error
       );
     });
 };

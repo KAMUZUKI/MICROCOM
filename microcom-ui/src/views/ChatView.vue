@@ -198,8 +198,8 @@ const commitMessage = () => {
     chat.pushId(message)
     message.time = utils.parseDateToPast(message.time)
     messages.value.push(message)
-    messageScroll()
     inputMessage.value = ''
+    messageScroll()
   }
 }
 
@@ -255,7 +255,10 @@ const initWebSocket = () => {
 }
 
 const messageScroll = () => {
-  let messageBox = document.getElementById('message-container')
+  let messageBox = document.getElementsByClassName("scroll")[1].scrollTop
+  if (messageBox == "undefined" || messageBox == "null") {
+    return
+  }
   //滚动条滚动到底部
   messageBox.scrollTop = messageBox.scrollHeight
 }

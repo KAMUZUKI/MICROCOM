@@ -8,7 +8,9 @@ import com.mu.entity.User;
 import com.mu.service.ChatSessionService;
 import com.mu.utils.CoreUtil;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,19 @@ public class ChatSessionServiceImpl implements ChatSessionService {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Override
+    public Long join(User user) {
+        return redisTemplate.opsForSet().add("online_users", JSONObject.toJSONString(user));
+    }
+
+    @Override
+    public void record(User user){
+         stringRedisTemplate.boundValueOps("USER_" + user.getId()).set(JSONObject.toJSONString(user));
+    }
 
     @Override
     public User findById(String id) {
@@ -92,6 +107,12 @@ public class ChatSessionServiceImpl implements ChatSessionService {
     }
 
     @Override
+    public List<User> getOnlineList(){
+        JSONArray online_users = JSONObject.parseArray(redisTemplate.opsForSet().members("online_users").toString());
+        return online_users.toJavaList(User.class);
+    }
+
+    @Override
     public List<Message> commonList() {
         List<Message> list = new ArrayList<>();
         Set<String> keys = stringRedisTemplate.keys(CommonConstant.CHAT_COMMON_PREFIX + CommonConstant.REDIS_MATCH_PREFIX);
@@ -134,8 +155,8 @@ public class ChatSessionServiceImpl implements ChatSessionService {
     @Override
     public void delete(String id) {
         if (id != null) {
-            log.info("从Redis中删除此Key: " + id);
-            stringRedisTemplate.delete(CommonConstant.USER_PREFIX + id);
+            log.info("从在线列表中移除用户id : " + id);
+            redisTemplate.opsForSet().remove("online_users", "{\"id\":\"" + id + "\"}");
         }
     }
 }
