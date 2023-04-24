@@ -31,7 +31,6 @@
 <script setup>
 import { onMounted, ref } from "vue"
 import { useStore } from 'vuex'
-import axios from "axios"
 import PersonalMenu from "@/components/Personal/PersonalMenu.vue"
 import HeadRight from "@/components/Header/HeadRight.vue"
 import LoginView from "@/views/LoginView.vue"
@@ -47,15 +46,6 @@ onMounted(() => {
     store.state.user = JSON.parse(sessionStorage.getItem("user"));
     store.state.isLogin = true;
     store.state.isCertified = true;
-    axios.post("http://localhost:7070/chat/join",{
-      "id": store.state.user.id,
-      'name': store.state.user.name,
-      'head': store.state.user.head
-    }).then(res => {
-      if(res.status == 200) {
-        console.log("加入聊天室成功")
-      }
-    })
   }
 })
 

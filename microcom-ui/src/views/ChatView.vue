@@ -7,7 +7,7 @@
 
           <q-btn round flat>
             <q-avatar>
-              <img :src="currentConversation.head">
+              <img :src=currentConversation.head>
             </q-avatar>
           </q-btn>
 
@@ -73,13 +73,13 @@
               <q-item clickable v-ripple @click="setCurrentConversation(index, conversation.id)">
                 <q-item-section avatar>
                   <q-avatar>
-                    <img :src="conversation.avatar">
+                    <img :src="conversation.head">
                   </q-avatar>
                 </q-item-section>
 
                 <q-item-section>
                   <q-item-label lines="1">
-                    {{ conversation.person }}
+                    {{ conversation.name }}
                   </q-item-label>
                   <q-item-label class="conversation__summary" caption>
                     <q-icon name="check" v-if="conversation.sent" />
@@ -101,7 +101,32 @@
       </q-drawer>
 
       <q-page-container class="bg-grey-2">
-        <chat-message :currentChatId="currentChatId" />
+        <div class="container">
+          <div class="q-pa-md row justify-center">
+            <div style="width: 100%" >
+              <q-chat-message label="Sunday, 19th" />
+              <div v-for="message in messages" :key="message.id">
+                <q-chat-message :name="message.from.name" :avatar="message.from.head" :text="[message.message]" :sent="message.from.id==store.state.user.id"
+                  :stamp="message.time" />
+              </div>
+            </div>
+          </div>
+          <q-footer>
+            <q-toolbar class="bg-grey-3 text-black row">
+              <q-btn round flat icon="insert_emoticon" class="q-mr-sm" />
+              <q-input rounded outlined dense class="WAL__field col-grow q-mr-sm" bg-color="white" v-model="inputMessage"
+                placeholder="Type a message" />
+              <q-btn round flat @click="commitMessage()">
+                <svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M42 6L4 20.1383L24 24.0083L29.0052 44L42 6Z" stroke="#414141" stroke-width="4"
+                    stroke-linejoin="round" />
+                  <path d="M24.0083 24.0084L29.6651 18.3516" stroke="#414141" stroke-width="4" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </q-btn>
+            </q-toolbar>
+          </q-footer>
+        </div>
       </q-page-container>
 
     </q-layout>
@@ -109,14 +134,13 @@
 </template>
   
 <script setup>
-import ChatMessage from '@/views/ChatMessage.vue'
 import { useQuasar } from 'quasar'
-import { ref, computed, onBeforeMount, onMounted } from 'vue'
+import { ref, computed, onBeforeMount, onMounted, watch, onUnmounted } from 'vue'
 import { useStore } from 'vuex'
 import { message } from 'ant-design-vue'
 import mockData from '@/js/data/mockData'
-import api from '@/js/api/chat'
-import socket from '@/js/utils/socket'
+import chat from '@/js/api/chat'
+import utils from '@/js/utils/utils'
 
 const $q = useQuasar()
 
@@ -130,7 +154,8 @@ const currentConversationIndex = ref(0)
 //当前聊天窗口
 const currentChatId = ref(0)
 const store = useStore()
-const user = ref()
+const messages = ref()
+const inputMessage = ref('')
 var websocket = null
 
 const currentConversation = computed(() => {
@@ -150,18 +175,48 @@ const setCurrentConversation = (index, chatId) => {
   currentChatId.value = chatId
 }
 
-const initUser = () => {
-  //加载当前用户信息
-  user.value = api.getUser(store.state.user.id)
-
-  //加载在线用户列表
-  conversations.value = api.getOnline()
-  console.log('onBeforeMount')
+const commitMessage = () => {
+  if (inputMessage.value == null || inputMessage.value.trim() == '') {
+    message.warn('请输入消息内容')
+    return;
+  } else {
+    // 发送消息
+    const message = {
+      from: {
+          "id": store.state.user.id,
+          "name": store.state.user.name,
+          "head": store.state.user.head
+      },
+      message: inputMessage.value,
+      to: {
+          "id": currentConversation.value.id,
+          "name": currentConversation.value.name,
+          "head": currentConversation.value.head
+      },
+      time: new Date().getTime()
+    }
+    chat.pushId(message)
+    message.time = utils.parseDateToPast(message.time)
+    messages.value.push(message)
+    messageScroll()
+    inputMessage.value = ''
+  }
 }
 
+const initUser = async () => {
+  //加载在线用户列表
+  conversations.value = await chat.getOnline()
+
+  //加入聊天室
+  chat.join({
+    "id": store.state.user.id,
+    'name': store.state.user.name,
+    'head': store.state.user.head
+  })
+}
 
 const initWebSocket = () => {
-  websocket = socket(user.value.id)
+  websocket = new WebSocket(chat.websocket(store.state.user.id))
   //链接发送错误时调用
   websocket.onerror = function () {
     message.error('WebSocket链接错误')
@@ -185,18 +240,24 @@ const initWebSocket = () => {
     let data = JSON.parse(event.data).data
     if (data.to != undefined) {
       //单个窗口发送，仅推送到指定的窗口
-      if (data.form.id == currentChatId.value) {
-        conversations.value.push(data)
+      if (data.from.id == currentChatId.value) {
+        messages.value.push(data)
       }
     } else {
       //群发，推送到官方群组窗口
-      conversations.value.push(data)
+      messages.value.push(data)
     }
   }
   //链接关闭时调用
   websocket.onclose = function () {
     message.warn('WebSocket链接关闭')
   }
+}
+
+const messageScroll = () => {
+  let messageBox = document.getElementById('message-container')
+  //滚动条滚动到底部
+  messageBox.scrollTop = messageBox.scrollHeight
 }
 
 onBeforeMount(() => {
@@ -206,6 +267,15 @@ onBeforeMount(() => {
 
 onMounted(() => {
   initWebSocket()
+})
+
+onUnmounted(() => {
+  websocket.close()
+})
+
+watch(() => currentChatId.value,async (newVal) => {
+  messages.value = await chat.getSelf(store.state.user.id,newVal)
+  messageScroll()
 })
 </script>
   

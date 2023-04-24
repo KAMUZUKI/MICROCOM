@@ -12,12 +12,12 @@ new Vue({
 
             form: {message: ''},
 
-            //µ±Ç°¼¤»î´°¿ÚID
+            //å½“å‰æ¿€æ´»çª—å£ID
             current_window_id: 0,
 
-            //ÔÚÏßÓÃ»§ÁĞ±í
+            //åœ¨çº¿ç”¨æˆ·åˆ—è¡¨
             userList: [],
-            //ÍÆËÍÏûÏ¢ÁĞ±í
+            //æ¨é€æ¶ˆæ¯åˆ—è¡¨
             messageList  : [],
 
         }
@@ -60,28 +60,28 @@ new Vue({
         init() {
             console.log(this.messageList)
             /**
-             * ¼ÓÔØÓÃ»§ĞÅÏ¢
+             * åŠ è½½ç”¨æˆ·ä¿¡æ¯
              */
             this.initUser();
 
             /**
-             * ¼ÓÔØ¹«¹²ÏûÏ¢ÁĞ±í -- Èº×é
+             * åŠ è½½å…¬å…±æ¶ˆæ¯åˆ—è¡¨ -- ç¾¤ç»„
              */
             this.initCommonMessage();
 
             /**
-             * Ã¿´ÎË¢ĞÂÒ³Ãæ£¬Ö÷¶¯Á´½ÓWebSocket
+             * æ¯æ¬¡åˆ·æ–°é¡µé¢ï¼Œä¸»åŠ¨é“¾æ¥WebSocket
              */
             this.initWebSocket();
         },
 
         initUser() {
-            //¼ÓÔØµ±Ç°ÓÃ»§ĞÅÏ¢
+            //åŠ è½½å½“å‰ç”¨æˆ·ä¿¡æ¯
             this.$http.get(api.getUser(this.form.id)).then(response => {
                 this.user = response.body.data
             })
 
-            //¼ÓÔØÔÚÏßÓÃ»§ÁĞ±í
+            //åŠ è½½åœ¨çº¿ç”¨æˆ·åˆ—è¡¨
             this.$http.get(api.getOnline()).then(response => {
                 let data = response.body.data;
                 if (data.length > 0) {
@@ -94,43 +94,43 @@ new Vue({
         initWebSocket() {
             let $this = this;
             this.websocket = new WebSocket(api.websocket(this.form.id))
-            //Á´½Ó·¢ËÍ´íÎóÊ±µ÷ÓÃ
+            //é“¾æ¥å‘é€é”™è¯¯æ—¶è°ƒç”¨
             this.websocket.onerror = function () {
-                $this._notify('ÌáĞÑ', 'WebSocketÁ´½Ó´íÎó', 'error')
+                $this._notify('æé†’', 'WebSocketé“¾æ¥é”™è¯¯', 'error')
             }
-            //Á´½Ó³É¹¦Ê±µ÷ÓÃ
+            //é“¾æ¥æˆåŠŸæ—¶è°ƒç”¨
             this.websocket.onopen = function () {
-                $this._notify('ÌáĞÑ', 'WebSocketÁ´½Ó³É¹¦', 'success')
+                $this._notify('æé†’', 'WebSocketé“¾æ¥æˆåŠŸ', 'success')
             }
-            //½ÓÊÕµ½ÏûÏ¢Ê±»Øµ÷
+            //æ¥æ”¶åˆ°æ¶ˆæ¯æ—¶å›è°ƒ
             this.websocket.onmessage = function (event) {
                 $this.clean()
                 let entity = JSON.parse(event.data);
 
-                //ÉÏÏßÌáĞÑ
+                //ä¸Šçº¿æé†’
                 if (entity.data == undefined) {
                     $this.initUser()
-                    $this._notify('ÏûÏ¢', entity.msg, 'info')
+                    $this._notify('æ¶ˆæ¯', entity.msg, 'info')
                     $this.scroll()
                     return;
                 }
 
-                //ÏûÏ¢½ÓÊÕ
+                //æ¶ˆæ¯æ¥æ”¶
                 let data = JSON.parse(event.data).data
                 if (data.to != undefined) {
-                    //µ¥¸ö´°¿Ú·¢ËÍ£¬½öÍÆËÍµ½Ö¸¶¨µÄ´°¿Ú
+                    //å•ä¸ªçª—å£å‘é€ï¼Œä»…æ¨é€åˆ°æŒ‡å®šçš„çª—å£
                     if (data.from.id == $this.current_window_id) {
                         $this.messageList.push(data)
                     }
                 } else {
-                    //Èº·¢£¬ÍÆËÍµ½¹Ù·½Èº×é´°¿Ú
+                    //ç¾¤å‘ï¼Œæ¨é€åˆ°å®˜æ–¹ç¾¤ç»„çª—å£
                     $this.messageList.push(data)
                 }
                 $this.scroll()
             }
-            //Á´½Ó¹Ø±ÕÊ±µ÷ÓÃ
+            //é“¾æ¥å…³é—­æ—¶è°ƒç”¨
             this.websocket.onclose = function () {
-                $this._notify('ÌáĞÑ', 'WebSocketÁ´½Ó¹Ø±Õ', 'info')
+                $this._notify('æé†’', 'WebSocketé“¾æ¥å…³é—­', 'info')
             }
         },
 
@@ -150,10 +150,10 @@ new Vue({
             })
         },
 
-        //ÍÆËÍÏûÏ¢
+        //æ¨é€æ¶ˆæ¯
         send() {
             if (this.form.message == null || this.form.message.trim() == '') {
-                this._message('ÇëÊäÈëÏûÏ¢ÄÚÈİ', 'warning')
+                this._message('è¯·è¾“å…¥æ¶ˆæ¯å†…å®¹', 'warning')
                 return;
             }
             if (!this.current_window_id) {
@@ -168,21 +168,21 @@ new Vue({
                     if (response.body.code == 200) {
                         this.initSelfMessage()
                         this.clean()
-                        this._notify('ÌáĞÑ', 'ÏûÏ¢ÍÆËÍ³É¹¦', 'success')
+                        this._notify('æé†’', 'æ¶ˆæ¯æ¨é€æˆåŠŸ', 'success')
                     } else {
-                        this._notify('ÌáĞÑ', response.body.msg, 'error')
+                        this._notify('æé†’', response.body.msg, 'error')
                     }
                 })
             }
             this.scroll()
         },
 
-        //Çå¿ÕÏûÏ¢
+        //æ¸…ç©ºæ¶ˆæ¯
         clean() {
             this.form.message = ''
         },
 
-        //×¢Ïú
+        //æ³¨é”€
         logout() {
             this.$http.delete(api.logout(this.form.id)).then(response => {
                 this.websocket.close()
@@ -190,7 +190,7 @@ new Vue({
             })
         },
 
-        //ÇĞ»»Ñ¡Ôñ´°¿Ú
+        //åˆ‡æ¢é€‰æ‹©çª—å£
         selectWindow(id) {
             this.current_window_id = id;
             if (!this.current_window_id) {
@@ -200,7 +200,7 @@ new Vue({
             }
         },
 
-        //´°¿Ú¹ö¶¯
+        //çª—å£æ»šåŠ¨
         scroll() {
             let box = this.$refs.box
             box.scrollTop = 10000000

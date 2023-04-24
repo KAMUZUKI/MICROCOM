@@ -4,12 +4,12 @@
     <q-item clickable v-ripple v-if="isLogin">
       <q-item-section side>
         <q-avatar round size="48px">
-          <img src="https://cdn.quasar.dev/img/avatar.png" />
+          <img :src=user.head />
           <q-badge floating color="teal">new</q-badge>
         </q-avatar>
       </q-item-section>
       <q-item-section>
-        <q-item-label>Mary</q-item-label>
+        <q-item-label>{{ user.name }}</q-item-label>
         <q-item-label caption>{{ user.value }}</q-item-label>
       </q-item-section>
       <q-menu auto-close>
@@ -76,13 +76,13 @@ const jumpTo = (path) => {
 }
 
 const logout = () => {
-      sessionStorage.removeItem("user");
-      sessionStorage.removeItem("articleDetail");
-      sessionStorage.removeItem("likeList");
-      store.state.isCertified = false;
-      store.state.isLogin = false;
-      message.success("退出成功");
-    };
+  sessionStorage.removeItem("user");
+  sessionStorage.removeItem("articleDetail");
+  sessionStorage.removeItem("likeList");
+  store.state.isCertified = false;
+  store.state.isLogin = false;
+  message.success("退出成功");
+};
 
 watch(
   () => store.state.isLogin,     // 一个函数，返回监听属性

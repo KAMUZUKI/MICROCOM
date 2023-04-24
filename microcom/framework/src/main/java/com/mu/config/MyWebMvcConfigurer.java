@@ -6,18 +6,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * @author MUZUKI
- * @Classname
+ * @Classname sd
  * @Description TODO
  * @Date 2023/4/23 21:26
  */
 
 @Configuration
-public class AppConfig implements WebMvcConfigurer {
+public class MyWebMvcConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:8081")
+                .allowedOrigins("http://example.com")
                 .allowedMethods("GET", "POST")
                 .maxAge(3600);
     }

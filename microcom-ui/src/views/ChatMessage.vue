@@ -12,7 +12,7 @@
     <q-footer>
         <q-toolbar class="bg-grey-3 text-black row">
           <q-btn round flat icon="insert_emoticon" class="q-mr-sm" />
-          <q-input rounded outlined dense class="WAL__field col-grow q-mr-sm" bg-color="white" v-model="message"
+          <q-input rounded outlined dense class="WAL__field col-grow q-mr-sm" bg-color="white" v-model="inputMessage"
             placeholder="Type a message" />
           <q-btn round flat @click="commitMessage()">
             <svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -29,25 +29,25 @@
   
 <script setup>
 import utils from "@/js/utils/utils.js"
-import { ref, defineProps, onMounted, watch } from "vue"
+import { ref, defineProps, toRefs } from "vue"
 import { message } from "ant-design-vue"
-import mockData from "@/js/data/mockData.js"
 import chat from "@/js/api/chat"
 
 const props = defineProps({
-  currentChatId: {
-    type: Number,
+  messages: {
+    type: Object,
     required: true
   }
 })
 
-const messages = ref()
+
 const inputMessage = ref('')
+const messages = toRefs(props.messages)
 const user = JSON.parse(sessionStorage.getItem("user")??"")
 
 const commitMessage = () => {
   if (inputMessage.value == null || inputMessage.value.trim() == '') {
-      message.warn('请输入消息内容', 'warning')
+      message.warn('请输入消息内容')
       return;
   }else{
     // 发送消息
@@ -96,14 +96,6 @@ const commitMessage = () => {
 //       }
 //       this.scroll()
 //   },
-
-onMounted(() => {
-  messages.value = mockData.getChatMessage(1)
-})
-
-watch(() => props.currentChatId, (newVal) => {
-  messages.value = mockData.getChatMessage(newVal)
-})
 
 </script>
   

@@ -1,8 +1,12 @@
 import axios from 'axios'
-
-let path = "http://localhost:7070"
+// let wsPath = "ws://localhost:7070/chat/"
+let httpPath = "http://localhost:7070/chat/"
 let api = {
-    
+
+    websocket(id) {
+        return 'ws://localhost:7070/chat/' + id;
+    },
+
     /**
      * 根据ID获取用户信息
      */
@@ -13,19 +17,13 @@ let api = {
     /**
      * 获取在线用户列表
      */
-    getOnline() {
-        axios.get(path + 'online/list').then(res => {
-            return res.data.data
-        }).catch(err => {
-            return err
-        })
-    },
-
-    /**
-     * WebSocket服务器链接接口
-     */
-    websocket(id) {
-        return 'ws://localhost:8080/chat/' + id
+    async getOnline() {
+        try {
+            const response = await axios.get(httpPath + 'online/list')
+            return response.data.data
+        } catch (err) {
+            throw new Error(err)
+        }
     },
 
     /**
@@ -38,15 +36,20 @@ let api = {
     /**
      * 获取与指定窗口的消息列表
      */
-    getSelf(fromId, toId) {
-        return '/chat/self/' + fromId + '/' + toId
+    async getSelf(fromId, toId) {
+        try {
+            const response = await axios.get(httpPath + 'self/' + fromId + "/" + toId)
+            return response.data.data
+        } catch (err) {
+            throw new Error(err)
+        }
     },
 
     /**
      * 向指定窗口推送消息
      */
     pushId(message) {
-        axios.get(path + 'push/' + message.to,message).then(res => {
+        axios.post(httpPath + 'push/' + message.to.id, message).then(res => {
             return res.data.data
         }).catch(err => {
             return err
@@ -58,6 +61,16 @@ let api = {
      */
     logout(id) {
         return '/chat/' + id
+    },
+
+    join(user) {
+        axios.post(httpPath + "join/", user).then(res => {
+            if (res.data.code == 200) {
+                return ("加入聊天室成功")
+            } else {
+                return (res.data.msg)
+            }
+        })
     }
 }
 
