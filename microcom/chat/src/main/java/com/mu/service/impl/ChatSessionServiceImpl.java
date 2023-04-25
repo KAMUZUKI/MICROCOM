@@ -1,5 +1,6 @@
 package com.mu.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mu.constant.CommonConstant;
@@ -8,7 +9,6 @@ import com.mu.entity.User;
 import com.mu.service.ChatSessionService;
 import com.mu.utils.CoreUtil;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -31,13 +31,13 @@ public class ChatSessionServiceImpl implements ChatSessionService {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Override
-    public Long join(User user) {
-        return redisTemplate.opsForSet().add("online_users", JSONObject.toJSONString(user));
+    public void join(User user) {
+        redisTemplate.opsForHash().put(CommonConstant.CHAT_ONLINE, String.valueOf(user.getId()), JSON.toJSONString(user));
     }
 
     @Override
-    public void record(User user){
-         stringRedisTemplate.boundValueOps("USER_" + user.getId()).set(JSONObject.toJSONString(user));
+    public void recordUser(User user) {
+        stringRedisTemplate.boundValueOps(CommonConstant.USER_PREFIX + user.getId()).set(JSON.toJSONString(user));
     }
 
     @Override
@@ -107,9 +107,10 @@ public class ChatSessionServiceImpl implements ChatSessionService {
     }
 
     @Override
-    public List<User> getOnlineList(){
-        JSONArray online_users = JSONObject.parseArray(redisTemplate.opsForSet().members("online_users").toString());
-        return online_users.toJavaList(User.class);
+    public List<User> getOnlineList() {
+        // 获取在线用户
+        Map<Object, Object> onlineUsers = redisTemplate.opsForHash().entries(CommonConstant.CHAT_ONLINE);
+        return CoreUtil.mapToList(onlineUsers, User.class);
     }
 
     @Override
@@ -153,10 +154,11 @@ public class ChatSessionServiceImpl implements ChatSessionService {
     }
 
     @Override
-    public void delete(String id) {
+    public Long delete(String id) {
         if (id != null) {
             log.info("从在线列表中移除用户id : " + id);
-            redisTemplate.opsForSet().remove("online_users", "{\"id\":\"" + id + "\"}");
+            return redisTemplate.opsForHash().delete(CommonConstant.CHAT_ONLINE, id);
         }
+        return 0L;
     }
 }

@@ -1,10 +1,10 @@
 import axios from 'axios'
 // let wsPath = "ws://localhost:7070/chat/"
-let httpPath = "http://localhost:7070/chat/"
+let httpPath = "http://172.16.124.68:7070/chat/"
 let api = {
 
     websocket(id) {
-        return 'ws://localhost:7070/chat/' + id;
+        return 'ws://172.16.124.68:7070/chat/' + id;
     },
 
     /**
@@ -78,7 +78,7 @@ let api = {
     },
 
     record(user) {
-        axios.post(httpPath + "record/", user).then(res => {
+        axios.post(httpPath + "recordUser/", user).then(res => {
             if (res.data.code == 200) {
                 return ("成功")
             } else {

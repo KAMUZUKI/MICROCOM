@@ -1,5 +1,6 @@
 package com.mu.entity;
 
+import com.alibaba.fastjson.annotation.JSONType;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -12,6 +13,7 @@ import java.io.Serializable;
  * @TableName user
  */
 @TableName(value = "user")
+@JSONType(orders = {"id", "name", "head"})
 @Data
 public class User implements Serializable {
     /**

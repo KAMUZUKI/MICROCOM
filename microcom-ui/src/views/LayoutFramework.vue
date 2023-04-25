@@ -29,11 +29,12 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue"
+import { onMounted, ref, onUnmounted } from "vue"
 import { useStore } from 'vuex'
 import PersonalMenu from "@/components/Personal/PersonalMenu.vue"
 import HeadRight from "@/components/Header/HeadRight.vue"
 import LoginView from "@/views/LoginView.vue"
+import chat from "@/js/api/chat"
 
 const rightDrawerOpen = ref(false)
 const store = useStore()
@@ -42,11 +43,15 @@ const toggleRightDrawer = () => {
 }
 
 onMounted(() => {
-  if (sessionStorage.getItem("user") != null) {
-    store.state.user = JSON.parse(sessionStorage.getItem("user"));
+  if (localStorage.getItem("user") != null) {
+    store.state.user = JSON.parse(localStorage.getItem("user"));
     store.state.isLogin = true;
     store.state.isCertified = true;
   }
+})
+
+onUnmounted(() => {
+  chat.logout(store.state.user.id)
 })
 
 </script>

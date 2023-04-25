@@ -146,7 +146,7 @@ const toRegister = ()=>{
 
 //login start
 const getLikeList = () => {
-  var userId = JSON.parse(sessionStorage.getItem("user")).id;
+  var userId = JSON.parse(localStorage.getItem("user")).id;
   var params = new URLSearchParams();
   params.append("userId", userId);
   //TODO: 获取用户喜欢的列表
@@ -155,7 +155,7 @@ const getLikeList = () => {
     .then((res) => {
       if (res.data.code == 200) {
         likeList.value = res.data.data;
-        sessionStorage.setItem(
+        localStorage.setItem(
           "likeList",
           JSON.stringify(likeList.value ?? "")
         );
@@ -190,9 +190,9 @@ const login = () => {
           type: userinfo.type,
         };
         likeList.value = userinfo.likeList;
-        sessionStorage.setItem("user", JSON.stringify(userinfo));
+        localStorage.setItem("user", JSON.stringify(userinfo));
         store.state.user = user.value;
-        store.state.user = JSON.parse(sessionStorage.getItem("user"));
+        store.state.user = JSON.parse(localStorage.getItem("user"));
         store.state.isLogin = true;
         store.state.isCertified = true;
         props.setModal1Visible(false);

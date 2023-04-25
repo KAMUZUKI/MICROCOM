@@ -61,7 +61,7 @@
                                       <div class="user">
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/4/48/Outdoors-man-portrait_%28cropped%29.jpg" alt="" />
                                         <div class="user-info">
-                                          <h5>{{ item.subtitle }}</h5>
+                                          <h5>{{ item.author }}</h5>
                                           <small>2h ago</small>
                                         </div>
                                       </div>
@@ -123,49 +123,49 @@ onMounted(() => {
 const cards = ref([
     {
         title: "1Strange Things",
-        subtitle: "by Jane Doe",
+        author: "by Jane Doe",
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
         img: "https://cdn.quasar.dev/img/parallax2.jpg",
     },
     {
         title: "2The Big Bang",
-        subtitle: "by John Doe",
+        author: "by John Doe",
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit",
         img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
     },
     {
         title: "3The Big Bang",
-        subtitle: "by John Doe",
+        author: "by John Doe",
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
         img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
     },
     {
         title: "4The Big Bang",
-        subtitle: "by John Doe",
+        author: "by John Doe",
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit",
         img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
     },
     {
         title: "5The Big Bang",
-        subtitle: "by John Doe",
+        author: "by John Doe",
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
         img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
     },
     {
         title: "6The Big Bang",
-        subtitle: "by John Doe",
+        author: "by John Doe",
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit",
         img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
     },
     {
         title: "7Strange Things",
-        subtitle: "by Jane Doe",
+        author: "by Jane Doe",
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
         img: "https://cdn.quasar.dev/img/parallax2.jpg",
     },
     {
         title: "8Strange Things",
-        subtitle: "by Jane Doe",
+        author: "by Jane Doe",
         text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
         img: "https://cdn.quasar.dev/img/parallax2.jpg",
     }
@@ -175,49 +175,49 @@ const onLoad = (index, done) => {
         cards.value.push(
             {
                 title: "1Strange Things",
-                subtitle: "by Jane Doe",
+                author: "by Jane Doe",
                 text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
                 img: "https://cdn.quasar.dev/img/parallax2.jpg",
             },
             {
                 title: "2The Big Bang",
-                subtitle: "by John Doe",
+                author: "by John Doe",
                 text: "Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit",
                 img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
             },
             {
                 title: "3The Big Bang",
-                subtitle: "by John Doe",
+                author: "by John Doe",
                 text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
                 img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
             },
             {
                 title: "4The Big Bang",
-                subtitle: "by John Doe",
+                author: "by John Doe",
                 text: "Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit",
                 img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
             },
             {
                 title: "5The Big Bang",
-                subtitle: "by John Doe",
+                author: "by John Doe",
                 text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
                 img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
             },
             {
                 title: "6The Big Bang",
-                subtitle: "by John Doe",
+                author: "by John Doe",
                 text: "Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit",
                 img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
             },
             {
                 title: "7Strange Things",
-                subtitle: "by Jane Doe",
+                author: "by Jane Doe",
                 text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
                 img: "https://cdn.quasar.dev/img/parallax2.jpg",
             },
             {
                 title: "8Strange Things",
-                subtitle: "by Jane Doe",
+                author: "by Jane Doe",
                 text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
                 img: "https://cdn.quasar.dev/img/parallax2.jpg",
             }
@@ -337,8 +337,6 @@ body
 .user-info small {
   color: #888785;
 }
-
-
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap');
 

@@ -17,13 +17,14 @@ public interface ChatSessionService {
      * @param user
      * @return
      */
-    Long join(User user);
+    void join(User user);
 
     /**
      * 将用户添加至redis中
+     *
      * @param user
      */
-    void record(User user);
+    void recordUser(User user);
 
     /**
      * 根据ID从Redis中查询数据
@@ -50,6 +51,7 @@ public interface ChatSessionService {
     List<User> onlineList();
 
     List<User> getOnlineList();
+
     /**
      * 获取公共消息内容 -- 群组
      *
@@ -71,5 +73,5 @@ public interface ChatSessionService {
      *
      * @param id
      */
-    void delete(String id);
+    Long delete(String id);
 }

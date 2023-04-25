@@ -1,11 +1,11 @@
 package com.mu.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import com.mu.entity.Message;
+import com.mu.entity.User;
 
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author tycoding
@@ -31,5 +31,13 @@ public class CoreUtil {
     public static String format(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return sdf.format(date);
+    }
+
+    public static List<User> mapToList(Map<Object, Object> onlineUsers, Class<User> userClass) {
+        List<User> list = new ArrayList<>();
+        onlineUsers.forEach((k, v) -> {
+            list.add(JSONObject.parseObject(v.toString(), userClass));
+        });
+        return list;
     }
 }

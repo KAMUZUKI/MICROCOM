@@ -55,7 +55,7 @@
 
           <q-btn round flat icon="message" />
 
-          <q-btn round flat icon="close" class="WAL__drawer-close" @click="toggleLeftDrawer" />
+          <q-btn round flat icon="close" class="WAL__drawer-close" @click="freshOnline()" />
         </q-toolbar>
 
         <q-toolbar class="bg-grey-2">
@@ -101,7 +101,7 @@
       </q-drawer>
 
       <q-page-container class="bg-grey-2">
-        <div class="container">
+        <div class="message-container">
           <div class="q-pa-md row justify-center">
             <div style="width: 100%" >
               <q-chat-message label="Sunday, 19th" />
@@ -135,7 +135,7 @@
   
 <script setup>
 import { useQuasar } from 'quasar'
-import { ref, computed, onBeforeMount, onMounted, watch, onUnmounted } from 'vue'
+import { ref, computed, onBeforeMount, onMounted, watch, onUnmounted, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import { message } from 'ant-design-vue'
 import mockData from '@/js/data/mockData'
@@ -143,8 +143,6 @@ import chat from '@/js/api/chat'
 import utils from '@/js/utils/utils'
 
 const $q = useQuasar()
-
-const leftDrawerOpen = ref(false)
 //搜索关键字
 const search = ref('')
 //用户列表
@@ -165,10 +163,6 @@ const currentConversation = computed(() => {
 const style = computed(() => ({
   height: $q.screen.height - 80 + 'px'
 }))
-
-const toggleLeftDrawer = () => {
-  leftDrawerOpen.value = !leftDrawerOpen.value
-}
 
 const setCurrentConversation = (index, chatId) => {
   currentConversationIndex.value = index
@@ -199,20 +193,29 @@ const commitMessage = () => {
     message.time = utils.parseDateToPast(message.time)
     messages.value.push(message)
     inputMessage.value = ''
-    messageScroll()
+    messageScroll(100)
   }
 }
 
 const initUser = async () => {
   //加载在线用户列表
-  conversations.value = await chat.getOnline()
+  nextTick(() => {
+    freshOnline()
+  })
 
   //加入聊天室
-  chat.join({
-    "id": store.state.user.id,
-    'name': store.state.user.name,
-    'head': store.state.user.head
-  })
+  if(store.state.user!=null&&typeof store.state.user!=undefined) {
+    chat.join({
+      "id": store.state.user.id,
+      'name': store.state.user.name,
+      'head': store.state.user.head
+    })
+  }
+}
+
+const freshOnline = async () => {
+  //加载聊天记录
+  conversations.value = await chat.getOnline()
 }
 
 const initWebSocket = () => {
@@ -231,7 +234,9 @@ const initWebSocket = () => {
 
     //上线提醒
     if (entity.data == undefined) {
-      initUser()
+      nextTick(()=>{
+        freshOnline()
+      })
       message.info(entity.msg)
       return;
     }
@@ -242,6 +247,7 @@ const initWebSocket = () => {
       //单个窗口发送，仅推送到指定的窗口
       if (data.from.id == currentChatId.value) {
         messages.value.push(data)
+        messageScroll(100)
       }
     } else {
       //群发，推送到官方群组窗口
@@ -254,13 +260,21 @@ const initWebSocket = () => {
   }
 }
 
-const messageScroll = () => {
-  let messageBox = document.getElementsByClassName("scroll")[1].scrollTop
-  if (messageBox == "undefined" || messageBox == "null") {
-    return
-  }
-  //滚动条滚动到底部
-  messageBox.scrollTop = messageBox.scrollHeight
+const messageScroll = (height) => {
+  //定时器
+  nextTick(() => {
+    let messageBox = document.getElementsByClassName("scroll")[1]
+      if(height==undefined||height==null){
+        let messageContainer = document.getElementsByClassName("message-container")[0].scrollHeight
+        if (messageBox == undefined || messageBox == "null") {
+          return
+        }
+        //滚动条滚动到底部
+        messageBox.scrollTop = messageContainer
+      }else{
+        messageBox.scrollTop += height
+      }
+  }, 100)
 }
 
 onBeforeMount(() => {
@@ -274,11 +288,14 @@ onMounted(() => {
 
 onUnmounted(() => {
   websocket.close()
+  chat.logout(store.state.user.id)
 })
 
 watch(() => currentChatId.value,async (newVal) => {
   messages.value = await chat.getSelf(store.state.user.id,newVal)
-  messageScroll()
+  nextTick(() => {
+    messageScroll()
+  });
 })
 </script>
   

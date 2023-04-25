@@ -1,15 +1,12 @@
 package com.mu.controller;
 
 import cn.dev33.satoken.util.SaResult;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.mu.entity.Message;
 import com.mu.entity.User;
 import com.mu.exception.GlobalException;
 import com.mu.service.ChatSessionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,16 +32,14 @@ public class ChatController {
     @ResponseBody
     @PostMapping("/join")
     public SaResult join(@RequestBody User user) {
-        if (chatSessionService.join(user)>0){
-            return SaResult.ok().setMsg("加入聊天成功");
-        }
-        return SaResult.ok().setMsg("网络异常，请刷新重试");
+        chatSessionService.join(user);
+        return SaResult.ok().setMsg("加入聊天成功");
     }
 
     @ResponseBody
     @PostMapping("/record")
-    public SaResult recordUser(@RequestBody User user){
-        chatSessionService.record(user);
+    public SaResult recordUser(@RequestBody User user) {
+        chatSessionService.recordUser(user);
         return SaResult.ok("添加成功");
     }
 
@@ -119,7 +114,9 @@ public class ChatController {
      */
     @PostMapping("logout/{id}")
     public SaResult logout(@PathVariable("id") String id) {
-        chatSessionService.delete(id);
-        return SaResult.ok("退出成功");
+        if (chatSessionService.delete(id) > 0) {
+            return SaResult.ok("退出成功");
+        }
+        return SaResult.ok("退出失败");
     }
 }
