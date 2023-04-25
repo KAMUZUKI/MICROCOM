@@ -33,10 +33,16 @@ public class CoreUtil {
         return sdf.format(date);
     }
 
-    public static List<User> mapToList(Map<Object, Object> onlineUsers, Class<User> userClass) {
-        List<User> list = new ArrayList<>();
-        onlineUsers.forEach((k, v) -> {
-            list.add(JSONObject.parseObject(v.toString(), userClass));
+    /**
+     * map转list
+     * @param map
+     * @param clazz
+     * @return
+     */
+    public static <T> List<T> mapToList(Map<Object, Object> map, Class<T> clazz) {
+        List<T> list = new ArrayList<>();
+        map.forEach((k, v) -> {
+            list.add(JSONObject.parseObject(v.toString(), clazz));
         });
         return list;
     }

@@ -1,59 +1,66 @@
 package com.mu.service.impl;
 
 import com.mu.constant.VlogConstant;
-import com.mu.domain.Reply;
 import com.mu.domain.VlogComment;
-import com.mu.service.VlogCommentService;
-import com.mu.utils.BeanMapUtils;
+import com.mu.utils.CoreUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author MUZUKI
  * @Classname VlogCommentServiceImpl
- * @Description TODO
+ * @Description vlog评论的service实现类
  * @Date 2023/4/24 21:47
  */
 
 @Service
-public class VlogCommentServiceImpl implements VlogCommentService {
+public class VlogCommentServiceImpl{
+
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    @Override
-    public void saveComment(VlogComment comment) {
-        redisTemplate.opsForHash().putAll(VlogConstant.COMMENT_PREFIX + comment.getId(), BeanMapUtils.beanToMap(comment));
-        redisTemplate.opsForZSet().add("comments", VlogConstant.COMMENT_PREFIX + comment.getId(), System.currentTimeMillis());
-    }
-
-    @Override
-    public VlogComment findCommentById(String id) {
-        Map<Object, Object> commentMap = redisTemplate.opsForHash().entries(VlogConstant.COMMENT_PREFIX + id);
-        if (commentMap.isEmpty()) {
-            return null;
+    public boolean saveComment(VlogComment comment) {
+        if (comment.getParentId() == null) {
+            String hashKey = VlogConstant.COMMENT_PREFIX + comment.getVlogId();
+            redisTemplate.opsForHash().put(hashKey,comment.getId().toString(), comment);
+            return redisTemplate.opsForHash().get(hashKey, comment.getId().toString()) != null;
+        }else{
+            String zsetKey = CoreUtils.replyKey(comment.getVlogId(),comment.getParentId());
+            return Boolean.TRUE.equals(redisTemplate.opsForZSet().add(zsetKey, comment, comment.getId()));
         }
-        return BeanMapUtils.mapToBean(commentMap, VlogComment.class);
     }
 
-    @Override
-    public void saveReply(String commentId, Reply reply) {
-        redisTemplate.opsForHash().putAll(VlogConstant.REPLY_PREFIX + reply.getId(), BeanMapUtils.beanToMap(reply));
-        redisTemplate.opsForList().rightPush(VlogConstant.COMMENT_PREFIX + commentId + ":replies", reply.getId());
+    public List<VlogComment> findByVlogId(Long vlogId) {
+        String hashKey = VlogConstant.COMMENT_PREFIX + vlogId;
+        Map<Object, Object> commentMap = redisTemplate.opsForHash().entries(hashKey);
+        return CoreUtils.mapToList(commentMap, VlogComment.class);
     }
 
-    @Override
-    public List<Reply> findRepliesByCommentId(String commentId) {
-        List<Object> replyIds = redisTemplate.opsForList().range(VlogConstant.COMMENT_PREFIX + commentId + ":replies", 0, -1);
-        List<Reply> replies = new ArrayList<>();
-        for (Object replyId : replyIds) {
-            Map<Object, Object> replyMap = redisTemplate.opsForHash().entries(VlogConstant.REPLY_PREFIX + replyId);
-            replies.add(BeanMapUtils.mapToBean(replyMap, Reply.class));
+    public List<VlogComment> findChildren(Long vlogId,Long parentId) {
+        String zsetKey = CoreUtils.replyKey(vlogId, parentId);
+        Set<Object> childrenObjects = redisTemplate.opsForZSet().range(zsetKey, 0, -1);
+        assert childrenObjects != null;
+        return CoreUtils.setToList(childrenObjects, VlogComment.class);
+    }
+
+    public boolean deleteComment(VlogComment comment) {
+        if (comment.getParentId() == null) {
+            String hashKey = VlogConstant.COMMENT_PREFIX + comment.getId();
+            //如果父评论有子评论，不允许删除，修改内容为已删除
+            if (redisTemplate.opsForZSet().size(CoreUtils.replyKey(comment.getVlogId(),comment.getId())) > 0) {
+                comment.setContent("该评论已被删除");
+                redisTemplate.opsForHash().put(hashKey,comment.getId().toString(), comment);
+                return redisTemplate.opsForHash().get(hashKey, comment.getId().toString()) != null;
+            }
+            //如果父评论没有子评论，直接删除
+            return redisTemplate.opsForHash().delete(hashKey,comment.getId()) == 1L;
+        }else{
+            String zsetKey = CoreUtils.replyKey(comment.getId(),comment.getParentId());
+            double minScore = comment.getId() + Double.MIN_VALUE;
+            double maxScore = comment.getId();
+            return redisTemplate.opsForZSet().removeRangeByScore(zsetKey, minScore,maxScore) == 1L;
         }
-        return replies;
     }
 }

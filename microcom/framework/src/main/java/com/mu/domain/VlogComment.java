@@ -1,7 +1,11 @@
 package com.mu.domain;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -12,10 +16,15 @@ import java.util.List;
  */
 
 @Data
-public class VlogComment {
-    private String id;
-    private String author;
+@Accessors(chain = true)
+public class VlogComment implements Serializable {
+    private Long id;
+    private Long vlogId;
     private String content;
-    private int likes;
-    private List<Reply> replies;
+    private String author;
+    private String time;
+    /**
+     * 父评论的ID，用于存储分层评论
+     */
+    private Long parentId;
 }

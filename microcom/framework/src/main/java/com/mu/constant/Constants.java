@@ -1,4 +1,4 @@
-package com.mu.utils;
+package com.mu.constant;
 
 /**
  * @author : MUZUKI
@@ -24,6 +24,4 @@ public class Constants {
      * redis中保存文章的浏览量
      */
     public final static String REDIS_ARTICLE_READCNT="_article_readcnt";
-
-
 }

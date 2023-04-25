@@ -8,9 +8,8 @@ package com.mu.constant;
  */
 
 public interface VlogConstant {
-    String VLOG_PREFIX = "VLOG:";
 
-    String COMMENT_PREFIX = "COMMENT:";
+    String COMMENT_PREFIX = "vlog:comment:vlog_id";
 
-    String REPLY_PREFIX = "REPLY:";
+    String REPLY_PREFIX = "vlog:reply:vlog_id";
 }

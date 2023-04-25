@@ -2,14 +2,13 @@ package com.mu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.mu.constant.Constants;
 import com.mu.domain.User;
 import com.mu.mapper.UserMapper;
 import com.mu.service.UserService;
-import com.mu.utils.JedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.Jedis;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +22,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired(required = false)
     private UserMapper userMapper;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     /**
      * 用户登录
@@ -69,19 +71,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     public List<Integer> getLikeList(int id) {
         //获取从前台传过来的用户id
-        Jedis jedis = JedisUtils.getInstance();
+        redisTemplate.opsForValue().get(id + Constants.REDIS_USER_PRAISE);
         List<Integer> likeList = new ArrayList<Integer>();
-        likeList.add(10);
-//        if (!jedis.exists(id + Constants.REDIS_USER_PRAISE)) {
-//            likeList = null;
-//        } else {
-//            Set<String> set = jedis.smembers(id + Constants.REDIS_USER_PRAISE);
-//            if (set.size() > 0) {
-//                for (String str : set) {
-//                    likeList.add(Integer.parseInt(str));
-//                }
-//            }
-//        }
+        //TODO: 从redis中获取用户喜欢的文章列表
         return likeList;
     }
 }

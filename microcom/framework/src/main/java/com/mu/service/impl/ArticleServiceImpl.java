@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mu.domain.Article;
 import com.mu.mapper.ArticleMapper;
 import com.mu.service.ArticleService;
-import com.mu.utils.Constants;
-import com.mu.utils.JedisUtils;
+import com.mu.constant.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.Jedis;
+
 import java.util.List;
 
 /**
@@ -23,6 +23,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired(required = false)
     private ArticleMapper articleMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 添加文章
@@ -83,20 +86,19 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public boolean changeData(String articleId, String userId) {
         //TODO:
         try {
-            Jedis jedis = JedisUtils.getInstance();
-            if (jedis.sismember(articleId + Constants.REDIS_ARTICLE_PRAISE, userId + "")) {
-                //此用户已经对这篇文章点赞,再点就是取消
-                //删除对文章点过赞的用户
-                jedis.srem(articleId + Constants.REDIS_ARTICLE_PRAISE, userId + "");
-                //删除用户点过赞的文章
-                jedis.srem(userId + Constants.REDIS_USER_PRAISE, articleId + "");
-            } else {
-                //此用户没有对这篇文章点过赞
-                //添加用户点过赞的文章
-                jedis.sadd(userId + Constants.REDIS_USER_PRAISE, articleId + "");
-                //添加文章被哪些用户点过赞
-                jedis.sadd(articleId + Constants.REDIS_ARTICLE_PRAISE, userId + "");
-            }
+//            if (Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(articleId+Constants.REDIS_ARTICLE_PRAISE, userId))) {
+//                //此用户已经对这篇文章点赞,再点就是取消
+//                //删除对文章点过赞的用户
+//                jedis.srem(articleId + Constants.REDIS_ARTICLE_PRAISE, userId + "");
+//                //删除用户点过赞的文章
+//                jedis.srem(userId + Constants.REDIS_USER_PRAISE, articleId + "");
+//            } else {
+//                //此用户没有对这篇文章点过赞
+//                //添加用户点过赞的文章
+//                jedis.sadd(userId + Constants.REDIS_USER_PRAISE, articleId + "");
+//                //添加文章被哪些用户点过赞
+//                jedis.sadd(articleId + Constants.REDIS_ARTICLE_PRAISE, userId + "");
+//            }
         } catch (Exception e) {
             return false;
         }
