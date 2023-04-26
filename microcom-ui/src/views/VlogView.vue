@@ -122,7 +122,6 @@ onMounted(() => {
 })
 
 const cards = ref([]);
-
 const onLoad = (index, done) => {
     nextTick(() => {
         api.getVlogList(index).then(res => {
