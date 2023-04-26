@@ -83,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref,onMounted, onBeforeMount } from 'vue'
+import { ref,onMounted } from 'vue'
 import { gsap, ScrollTrigger, ScrollToPlugin } from "gsap/all"
 import LoadingComp from '@/components/tools/LoadingComp.vue';
 import DetailCard from '@/components/Detail/DetailCard.vue';
