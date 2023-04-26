@@ -1,5 +1,6 @@
 package com.mu.controller;
 
+import cn.dev33.satoken.util.SaResult;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -26,24 +27,24 @@ public class VlogController {
     private VlogServiceImpl vlogService;
 
     @GetMapping("findAll")
-    public List<Vlog> findAll() {
-        return vlogService.list();
+    public SaResult findAll() {
+        return SaResult.ok().setData(vlogService.list());
     }
 
     @GetMapping("findWithPage/{page}")
-    public List<Vlog> findWithPage(@PathVariable("page") Integer page) {
+    public SaResult findWithPage(@PathVariable("page") Integer page) {
         QueryWrapper<Vlog> queryWrapper = new QueryWrapper<>();
         IPage<Vlog> userEntityIPage = vlogService.findWithPage(new Page<>(page, 8), queryWrapper);
-        return userEntityIPage.getRecords();
+        return SaResult.ok().setData(userEntityIPage.getRecords());
     }
 
     @PostMapping("add")
-    public boolean add(@RequestBody Vlog vlog) {
-        return vlogService.save(vlog);
+    public SaResult add(@RequestBody Vlog vlog) {
+        return SaResult.ok().setMsg(vlogService.save(vlog)? "添加成功":"添加失败");
     }
     
     @DeleteMapping("delete/{id}")
-    public boolean delete(@PathVariable("id") Integer id) {
-        return vlogService.removeById(id);
+    public SaResult delete(@PathVariable("id") Integer id) {
+        return SaResult.ok().setMsg(vlogService.removeById(id)? "删除成功":"删除失败");
     }
 }

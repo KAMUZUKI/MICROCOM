@@ -1,5 +1,6 @@
 package com.mu.controller;
 
+import cn.dev33.satoken.util.SaResult;
 import com.mu.domain.VlogComment;
 import com.mu.service.impl.VlogCommentServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,22 +22,22 @@ public class VlogCommentController {
     private VlogCommentServiceImpl vlogCommentService;
 
     @PostMapping("save")
-    public boolean saveComment(@RequestBody VlogComment comment) {
-        return vlogCommentService.saveComment(comment);
+    public SaResult saveComment(@RequestBody VlogComment comment) {
+        return SaResult.ok(vlogCommentService.saveComment(comment) ?"评论成功":"评论失败");
     }
 
     @GetMapping("findByVlogId/{vlogId}")
-    public List<VlogComment> findByVlogId(@PathVariable("vlogId") Long vlogId) {
-        return vlogCommentService.findByVlogId(vlogId);
+    public SaResult findByVlogId(@PathVariable("vlogId") Long vlogId) {
+        return SaResult.ok().setData(vlogCommentService.findByVlogId(vlogId));
     }
 
     @GetMapping("findChildren/{vlogId}/{parentId}")
-    public List<VlogComment> findChildren(@PathVariable("vlogId") Long vlogId, @PathVariable("parentId") Long parentId) {
-        return vlogCommentService.findChildren(vlogId, parentId);
+    public SaResult findChildren(@PathVariable("vlogId") Long vlogId, @PathVariable("parentId") Long parentId) {
+        return SaResult.ok().setData(vlogCommentService.findChildren(vlogId, parentId));
     }
 
     @DeleteMapping("delete")
-    public boolean delete(@RequestBody VlogComment comment) {
-        return vlogCommentService.deleteComment(comment);
+    public SaResult delete(@RequestBody VlogComment comment) {
+        return SaResult.ok(vlogCommentService.deleteComment(comment)? "删除成功":"删除失败");
     }
 }

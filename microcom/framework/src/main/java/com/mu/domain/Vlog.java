@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @TableName vlog
@@ -16,4 +17,5 @@ public class Vlog implements Serializable {
     private String title;
     private String text;
     private String img;
+    private Date time;
 }

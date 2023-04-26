@@ -54,7 +54,7 @@
                                     </div>
                                     <div class="card-body">
                                       <span class="tag tag-teal">Technology</span>
-                                      <h4>{{ item.title }}</h4>
+                                      <h4>{{ item.id + item.title }}</h4>
                                       <p>
                                         {{ item.text }}
                                       </p>
@@ -83,13 +83,18 @@
 </template>
 
 <script setup>
-import { ref,onMounted, nextTick } from 'vue'
+import { ref,onMounted, onBeforeMount } from 'vue'
 import { gsap, ScrollTrigger, ScrollToPlugin } from "gsap/all"
 import LoadingComp from '@/components/tools/LoadingComp.vue';
 import DetailCard from '@/components/Detail/DetailCard.vue';
 import api from '@/js/api/vlog'
 
 const basic = ref(false)
+
+// const findWithPage = async (page) => {
+//   var res = await api.findWithPage(page)
+//   cards.value.push(...res)
+// }
 
 const moveToDown = () => {
     const targetElement = document.getElementById('layout');
@@ -123,14 +128,14 @@ onMounted(() => {
 
 const cards = ref([]);
 
-const onLoad = (index, done) => {
-    nextTick(() => {
-        api.getVlogList(index).then(res => {
-            cards.value = cards.value.concat(res.data)
-            done()
-        })
-    })
-    done()
+const onLoad = async (index, done) => {
+  try {
+    var res = await api.findWithPage(index)
+    await done();
+    cards.value.push(...res)
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 const showDialog = (detail)=>{
