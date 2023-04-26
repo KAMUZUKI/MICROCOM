@@ -20,22 +20,22 @@ public class VlogCommentController {
     @Autowired
     private VlogCommentServiceImpl vlogCommentService;
 
-    @RequestMapping("save")
+    @PostMapping("save")
     public boolean saveComment(@RequestBody VlogComment comment) {
         return vlogCommentService.saveComment(comment);
     }
 
-    @GetMapping("findByVlogId")
-    public List<VlogComment> findByVlogId(@RequestParam("vlogId") Long vlogId) {
+    @GetMapping("findByVlogId/{vlogId}")
+    public List<VlogComment> findByVlogId(@PathVariable("vlogId") Long vlogId) {
         return vlogCommentService.findByVlogId(vlogId);
     }
 
-    @GetMapping("findChildren")
-    public List<VlogComment> findChildren(@RequestParam("vlogId") Long vlogId, @RequestParam("parentId") Long parentId) {
+    @GetMapping("findChildren/{vlogId}/{parentId}")
+    public List<VlogComment> findChildren(@PathVariable("vlogId") Long vlogId, @PathVariable("parentId") Long parentId) {
         return vlogCommentService.findChildren(vlogId, parentId);
     }
 
-    @RequestMapping("delete")
+    @DeleteMapping("delete")
     public boolean delete(@RequestBody VlogComment comment) {
         return vlogCommentService.deleteComment(comment);
     }

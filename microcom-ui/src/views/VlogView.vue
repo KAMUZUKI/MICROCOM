@@ -83,10 +83,11 @@
 </template>
 
 <script setup>
-import { ref,onMounted } from 'vue'
+import { ref,onMounted, nextTick } from 'vue'
 import { gsap, ScrollTrigger, ScrollToPlugin } from "gsap/all"
 import LoadingComp from '@/components/tools/LoadingComp.vue';
 import DetailCard from '@/components/Detail/DetailCard.vue';
+import api from '@/js/api/vlog'
 
 const basic = ref(false)
 
@@ -120,110 +121,16 @@ onMounted(() => {
         .fromTo('.text', { y: 0 }, { y: 600 }, 0)
 })
 
-const cards = ref([
-    {
-        title: "1Strange Things",
-        author: "by Jane Doe",
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-        img: "https://cdn.quasar.dev/img/parallax2.jpg",
-    },
-    {
-        title: "2The Big Bang",
-        author: "by John Doe",
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit",
-        img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
-    },
-    {
-        title: "3The Big Bang",
-        author: "by John Doe",
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-        img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
-    },
-    {
-        title: "4The Big Bang",
-        author: "by John Doe",
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit",
-        img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
-    },
-    {
-        title: "5The Big Bang",
-        author: "by John Doe",
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-        img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
-    },
-    {
-        title: "6The Big Bang",
-        author: "by John Doe",
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit",
-        img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
-    },
-    {
-        title: "7Strange Things",
-        author: "by Jane Doe",
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-        img: "https://cdn.quasar.dev/img/parallax2.jpg",
-    },
-    {
-        title: "8Strange Things",
-        author: "by Jane Doe",
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-        img: "https://cdn.quasar.dev/img/parallax2.jpg",
-    }
-]);
+const cards = ref([]);
+
 const onLoad = (index, done) => {
-    setTimeout(() => {
-        cards.value.push(
-            {
-                title: "1Strange Things",
-                author: "by Jane Doe",
-                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                img: "https://cdn.quasar.dev/img/parallax2.jpg",
-            },
-            {
-                title: "2The Big Bang",
-                author: "by John Doe",
-                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit",
-                img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
-            },
-            {
-                title: "3The Big Bang",
-                author: "by John Doe",
-                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
-            },
-            {
-                title: "4The Big Bang",
-                author: "by John Doe",
-                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit",
-                img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
-            },
-            {
-                title: "5The Big Bang",
-                author: "by John Doe",
-                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
-            },
-            {
-                title: "6The Big Bang",
-                author: "by John Doe",
-                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit",
-                img: "https://dynaimage.cdn.cnn.com/cnn/q_auto,w_412,c_fill,g_auto,h_232,ar_16:9/http%3A%2F%2Fcdn.cnn.com%2Fcnnnext%2Fdam%2Fassets%2F200305114843-01-edge-hudson-yards-observation-deck.jpg",
-            },
-            {
-                title: "7Strange Things",
-                author: "by Jane Doe",
-                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                img: "https://cdn.quasar.dev/img/parallax2.jpg",
-            },
-            {
-                title: "8Strange Things",
-                author: "by Jane Doe",
-                text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-                img: "https://cdn.quasar.dev/img/parallax2.jpg",
-            }
-        )
-        done()
-    }, 2000)
+    nextTick(() => {
+        api.getVlogList(index).then(res => {
+            cards.value = cards.value.concat(res.data)
+            done()
+        })
+    })
+    done()
 }
 
 const showDialog = (detail)=>{

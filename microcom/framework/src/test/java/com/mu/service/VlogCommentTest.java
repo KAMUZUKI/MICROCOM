@@ -23,10 +23,10 @@ class VlogCommentTest {
 
     @Test
     public void testSaveComment() {
-        for (long i = 4; i < 8; i++) {
+        for (long i = 1; i < 4; i++) {
             VlogComment comment = new VlogComment();
-            comment.setId(i).setContent("Comment Loss it knife" + i).setVlogId(2L)
-                    .setAuthor("lisi" + i).setTime(CoreUtils.format(new Date()));
+            comment.setId(i).setContent("Replay Loss it knife" + i).setVlogId(1L)
+                    .setAuthor("lisi" + i).setTime(CoreUtils.format(new Date())).setParentId(1L);
             vlogCommentService.saveComment(comment);
         }
     }
