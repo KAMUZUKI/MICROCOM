@@ -1,3 +1,5 @@
+import api from "@/js/api/chat"
+
 let utils = {
     parseDateToPast: function (pastTime) {
         const currentTime = Date.now(); // 当前时间的时间戳
@@ -37,6 +39,13 @@ let utils = {
         }
         return timeAgo;
     },
+    parseDate: function (time) {
+        const date = new Date(time);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        return `${year}-${month}-${day}`;
+    },
     getURLParams: function () {
         console.log('$route.query:', this.$route.query)
         const query = this.$route.query
@@ -45,6 +54,17 @@ let utils = {
         console.log('search:', location.search, location.search && data)
         const name = (query && query.name) || (data && data.name)
         console.log('params.name:', name)
+    },
+    getImg: function (url) {
+        return url.split(',')
+    },
+    formatVlog:function (vlogs){
+        vlogs.forEach(async vlog => {
+            var user = await api.getUser(vlog.author)
+            vlog.name = user.name
+            vlog.head = user.head
+        })
+        return vlogs
     }
 }
 

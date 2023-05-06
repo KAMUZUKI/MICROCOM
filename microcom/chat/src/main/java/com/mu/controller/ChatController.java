@@ -17,7 +17,8 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/chat")
+@ResponseBody
+@RequestMapping("/chat/")
 public class ChatController {
 
     @Autowired
@@ -29,15 +30,13 @@ public class ChatController {
      * @param user
      * @return
      */
-    @ResponseBody
-    @PostMapping("/join")
+    @PostMapping("join")
     public SaResult join(@RequestBody User user) {
         chatSessionService.join(user);
         return SaResult.ok().setMsg("加入聊天成功");
     }
 
-    @ResponseBody
-    @PostMapping("/record")
+    @PostMapping("record")
     public SaResult recordUser(@RequestBody User user) {
         chatSessionService.recordUser(user);
         return SaResult.ok("添加成功");
@@ -49,7 +48,7 @@ public class ChatController {
      * @param id
      * @return
      */
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public SaResult info(@PathVariable("id") String id) {
         return SaResult.ok().setData(chatSessionService.findById(id));
     }
@@ -61,7 +60,7 @@ public class ChatController {
      * @param message 消息
      * @return
      */
-    @PostMapping("/push/{toId}")
+    @PostMapping("push/{toId}")
     public SaResult push(@PathVariable("toId") String toId, @RequestBody Message message) {
         try {
             WebsocketServerEndpoint endpoint = new WebsocketServerEndpoint();
@@ -74,11 +73,22 @@ public class ChatController {
     }
 
     /**
+     * 查询用户信息
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("user/{id}")
+    public SaResult findById(@PathVariable("id") String id) {
+        return SaResult.ok().setData(chatSessionService.findById(id));
+    }
+
+    /**
      * 获取在线用户列表
      *
      * @return
      */
-    @GetMapping("/online/list")
+    @GetMapping("online/list")
     public SaResult onlineList() {
         return SaResult.ok().setData(chatSessionService.getOnlineList());
     }
@@ -88,7 +98,7 @@ public class ChatController {
      *
      * @return
      */
-    @GetMapping("/common")
+    @GetMapping("common")
     public SaResult commonList() {
         return SaResult.ok().setData(chatSessionService.commonList());
     }
@@ -100,7 +110,7 @@ public class ChatController {
      * @param toId   哪个窗口
      * @return
      */
-    @GetMapping("/self/{fromId}/{toId}")
+    @GetMapping("self/{fromId}/{toId}")
     public SaResult selfList(@PathVariable("fromId") String fromId, @PathVariable("toId") String toId) {
         List<Message> list = chatSessionService.selfList(fromId, toId);
         return SaResult.ok().setData(list);

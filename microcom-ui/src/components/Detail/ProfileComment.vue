@@ -3,12 +3,12 @@
         <q-item v-ripple>
             <q-item-section side>
                 <q-avatar size="48px">
-                    <img src="https://cdn.quasar.dev/img/avatar.png" />
+                    <img :src=user.head />
                 </q-avatar>
             </q-item-section>
             <q-item-section>
-                <q-item-label>Mary</q-item-label>
-                <q-item-label caption>2 new messages</q-item-label>
+                <q-item-label>{{ user.author }}</q-item-label>
+                <q-item-label caption>{{ user.time }}</q-item-label>
             </q-item-section>
             <q-item-section side>
                 <q-btn outline rounded color="primary" label="关注" />
@@ -19,9 +19,7 @@
             <div class="note-content">
                 <div class="title"></div>
                 <div class="desc">
-                    <text>You can call me Dali. I'm a brazilian
-                        <strong>frontend web developer, illustrator, and designer</strong>. Making some cool things
-                        with coffee and code.</text>
+                    <text>{{ props.detail.text }}</text>
                 </div>
             </div>
             <div style="margin: 10px 0 0 10px;">评论</div>
@@ -35,15 +33,15 @@
                             </q-item-section>
                             <q-item-section>
                                 <q-item-label>
-                                    <span>{{ comment.name }}</span>
-                                    <span class="comment-header">{{ comment.date }}</span>
+                                    <span>{{ comment.author }}</span>
+                                    <span class="comment-header">{{ comment.time }}</span>
                                     <span class="comment-header" @click="prepareAdd(index, comment.id)">回复</span>
                                 </q-item-label>
                                 <q-item-label>
-                                    <p style="word-break: break-word;">{{ comment.text }}</p>
+                                    <p style="word-break: break-word;">{{ comment.content }}</p>
                                 </q-item-label>
                                 <q-item-label>
-                                    <span v-if="comment.replies.length" @click="toggleReplies(index)">{{
+                                    <span v-if="comment.replies" @click="toggleReplies(index)">{{
                                         comment.showReplies ? "收起" : "查看更多评论" }}</span>
                                 </q-item-label>
                                 <q-list v-if="comment.showReplies">
@@ -97,78 +95,75 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch } from "vue";
+import { reactive, ref, watch, defineProps, onMounted, onBeforeMount } from "vue";
 import V3Emoji from 'vue3-emoji'
 import 'vue3-emoji/dist/style.css'
 import { message } from 'ant-design-vue';
+import vlogComment from '@/js/api/vlogComment'
+
+const props = defineProps({
+    detail: {
+        type: Object,
+        default: null,
+    },
+})
+
+const user = ref({
+    author: "test",
+    time: "test",
+    content: "test",
+    head: "https://cdn.quasar.dev/img/avatar3.jpg",
+})
+
 const newCommentText = ref("")
 
 // 评论数据 start
 const comments = reactive([
     {
         id: 1,
-        name: "John Doe",
-        date: "2023-04-15",
-        text: "This is a great article!",
+        author: "John Doe",
+        time: "2023-04-15",
+        content: "This is a great article!",
         showReplies: false,
         replies: [
             {
                 id: 11,
-                name: "Daryl Doe",
-                date: "2023-04-15",
-                text: "This is a good reply"
+                author: "Daryl Doe",
+                time: "2023-04-15",
+                content: "This is a good reply"
             },
             {
                 id: 12,
-                name: "Dike Pen",
-                date: "2023-04-15",
-                text: "This is a good reply"
+                author: "Dike Pen",
+                time: "2023-04-15",
+                content: "This is a good reply"
             },
             {
                 id: 13,
-                name: "Youge Gem",
-                date: "2023-04-15",
-                text: "This is a good reply"
+                author: "Youge Gem",
+                time: "2023-04-15",
+                content: "This is a good reply"
             }
         ],
     },
     {
         id: 2,
-        name: "Jane Smith",
-        date: "2023-04-14",
-        text: "I really enjoyed reading this. Thanks for sharing!",
+        author: "Jane Smith",
+        time: "2023-04-14",
+        content: "I really enjoyed reading this. Thanks for sharing!",
         showReplies: false,
         replies: [],
     }
 ]);
 
 const onLoad = (index, done) => {
-    setTimeout(() => {
-        comments.push(
-            {
-                id: comments.length + 1,
-                name: "Youge Gem" + `${comments.length + 1}`,
-                date: "2023-04-15",
-                text: "This is a good comment",
-                showReplies: false,
-                replies: [],
-            },
-            {
-                id: comments.length + 2,
-                name: "Youge Gem" + `${comments.length + 2}`,
-                date: "2023-04-15",
-                text: "This is a good comment",
-                showReplies: false,
-                replies: [],
-            },
-            {
-                id: comments.length + 3,
-                name: "Youge Gem" + `${comments.length + 3}`,
-                date: "2023-04-15",
-                text: "This is a good comment",
-                showReplies: false,
-                replies: [],
-            });
+    setTimeout(async () => {
+        var res = await vlogComment.findByVlogId(props.detail.id,index+1)
+        if(res.data.length == 0) return
+        res.data.forEach(vlog => {
+            vlog.replies = false
+            comments.push(vlog)
+        });
         done();
     }, 1000);
 }
@@ -176,6 +171,11 @@ const onLoad = (index, done) => {
 
 const appendText = (value) => {
     newCommentText.value += value;
+}
+
+const toggleReplies = (index) => {
+    comments[index].push(...vlogComment.findChild(props.detail.id,index,1))
+    comments[index].showReplies = !comments[index].showReplies;
 }
 
 const addComment = () => {
@@ -187,10 +187,6 @@ const addComment = () => {
         replies: [],
     });
     newCommentText.value = "";
-}
-
-const toggleReplies = (index) => {
-    comments[index].showReplies = !comments[index].showReplies;
 }
 
 const addReply = (commentIndex, parentId) => {
@@ -270,6 +266,20 @@ const updateTextareaRows = (input) => {
     textarea.style.height = 'auto'; // 先将 textarea 的高度设置为 auto，以便自动调整高度
     textarea.style.height = `${textarea.scrollHeight>72?72:textarea.scrollHeight}px`; // 设置 textarea 的高度为内容的实际高度
 };
+
+const fetchData = async ()=>{
+    const response = await vlogComment.findByVlogId(props.detail.id,1)
+    comments.push(...response.data)
+    console.log(comments)
+}
+
+onBeforeMount(() => {
+    console.log(comments)
+});
+
+onMounted(() => {
+    fetchData()
+});
 
 </script>
   

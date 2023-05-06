@@ -12,5 +12,5 @@ import org.springframework.data.repository.query.Param;
  */
 
 public interface VlogMapper extends BaseMapper<Vlog> {
-    IPage<Vlog> selectUserByGender(Page<Vlog> page, @Param("id") Integer id);
+    IPage<Vlog> selectVlog(Page<Vlog> page, @Param("id") Integer id);
 }

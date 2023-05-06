@@ -1,36 +1,52 @@
 <template>
-
-        <q-card class="profile-card">
-            <div class="scroll-img">
-                <q-carousel class="carousel" swipeable animated arrows v-model="slide" v-model:fullscreen="fullscreen"
-                    infinite>
-                    <q-carousel-slide :name="1" img-src="https://cdn.quasar.dev/img/mountains.jpg" />
-                    <q-carousel-slide :name="2" img-src="https://cdn.quasar.dev/img/parallax1.jpg" />
-                    <q-carousel-slide :name="3" img-src="https://cdn.quasar.dev/img/parallax2.jpg" />
-                    <q-carousel-slide :name="4" img-src="https://cdn.quasar.dev/img/quasar.jpg" />
-
-                    <template v-slot:control>
-                        <q-carousel-control position="bottom-right" :offset="[18, 18]">
-                            <q-btn push round dense color="white" text-color="primary"
-                                :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'" @click="fullscreen = !fullscreen" />
-                        </q-carousel-control>
-                    </template>
-                </q-carousel>
+    <q-card class="profile-card" >
+        <div class="scroll-img">
+            <q-carousel class="carousel" swipeable animated arrows v-model="slide" v-model:fullscreen="fullscreen"
+                infinite>
+                <template v-for="(img,index) in imgs" :key="index">
+                    <q-carousel-slide :name="index+1" :img-src=img />
+                </template>
+                <template v-slot:control>
+                    <q-carousel-control position="bottom-right" :offset="[18, 18]">
+                        <q-btn push round dense color="white" text-color="primary"
+                            :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'" @click="fullscreen = !fullscreen" />
+                    </q-carousel-control>
+                </template>
+            </q-carousel>
+        </div>
+        <div class="profile-bio">
+            <div class="note-scroller">
+                <profile-comment :detail="detail"></profile-comment>
             </div>
-            <div class="profile-bio">
-                <div class="note-scroller">
-                    <profile-comment></profile-comment>
-                </div>
-            </div>
-        </q-card>
+        </div>
+    </q-card>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref, defineProps } from "vue";
 import ProfileComment from "./ProfileComment.vue";
 
 const slide = ref(1)
 const fullscreen = ref(false)
+const detail = ref(null)
+const imgs = ref([
+    "https://cdn.quasar.dev/img/mountains.jpg",
+    "https://cdn.quasar.dev/img/parallax1.jpg",
+    "https://cdn.quasar.dev/img/parallax2.jpg",
+    "https://cdn.quasar.dev/img/quasar.jpg"])
+
+const props = defineProps({
+    item: {
+        type: Object,
+        default: null,
+    },
+})
+
+onMounted(() => {
+    detail.value = props.item
+    imgs.value = [] // 清空图片数组
+    imgs.value.push(...detail.value.img.split(',')) // 将图片串换为图片数组
+})
 </script>
 
 <style scoped>

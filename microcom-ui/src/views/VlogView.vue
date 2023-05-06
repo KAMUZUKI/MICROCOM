@@ -1,10 +1,7 @@
 <template>
     <div class="q-pa-md q-gutter-md container">
-        <q-infinite-scroll @load="onLoad" :offset="250">
+        <q-infinite-scroll :debounce="2000" @load="onLoad" :offset="800">
             <div class="row justify-between">
-                <!-- <q-parallax src="../static/image/vlog.jpg">
-                    <h1 class="text-white">Vlog</h1>
-                </q-parallax> -->
                 <div class="scrollDist">
                 </div>
                 <div class="header-scroll">
@@ -50,51 +47,86 @@
                             <div v-masonry-tile class="item" v-for="(item, index) in cards" :key="index">
                                 <div class="card" @click="showDialog(item)">
                                     <div class="card-header">
-                                      <img :src=item.img alt="" />
+                                        <img :src=utils.getImg(item.img)[0] :alt=utils.getImg(item.img)[0] />
                                     </div>
                                     <div class="card-body">
-                                      <span class="tag tag-teal">Technology</span>
-                                      <h4>{{ item.id + item.title }}</h4>
-                                      <p>
-                                        {{ item.text }}
-                                      </p>
-                                      <div class="user">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/48/Outdoors-man-portrait_%28cropped%29.jpg" alt="" />
-                                        <div class="user-info">
-                                          <h5>{{ item.author }}</h5>
-                                          <small>2h ago</small>
+                                        <span class="tag tag-teal">Technology</span>
+                                        <h4>{{ item.id + item.title }}</h4>
+                                        <p>
+                                            {{ item.text.substring(0, 200) }}.....
+                                        </p>
+                                        <div class="user">
+                                            <img :src=item.head alt="" />
+                                            <div class="user-info">
+                                                <h5>{{ item.name }}</h5>{{ utils.parseDateToPast(item.time) }}
+                                                <small>{{ utils.parseDate(item.time) }}</small>
+                                            </div>
                                         </div>
-                                      </div>
                                     </div>
-                                  </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    </div>  
                 </div>
-                <template v-slot:loading>
-                    <loading-comp/>
-                </template>
+            </div>
+            <template #loading>
+                <loading-comp />
+            </template>
         </q-infinite-scroll>
         <q-dialog class="dialog" v-model="basic">
-            <detail-card></detail-card>
+            <q-card class="profile-card">
+                <div class="scroll-img">
+                    <q-carousel class="carousel" swipeable animated arrows v-model="slide" v-model:fullscreen="fullscreen"
+                        infinite>
+                        <template v-for="(img, index) in imgs" :key="index">
+                            <q-carousel-slide :name="index + 1" :img-src=img />
+                        </template>
+                        <template v-slot:control>
+                            <q-carousel-control position="bottom-right" :offset="[18, 18]">
+                                <q-btn push round dense color="white" text-color="primary"
+                                    :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'"
+                                    @click="fullscreen = !fullscreen" />
+                            </q-carousel-control>
+                        </template>
+                    </q-carousel>
+                </div>
+                <div class="profile-bio">
+                    <div class="note-scroller">
+                        <profile-comment :detail="detail"></profile-comment>
+                    </div>
+                </div>
+            </q-card>
         </q-dialog>
+        <div v-if="showDataFlag" style="text-align: center;">
+            <p>没有更多数据了...</p>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { ref,onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { gsap, ScrollTrigger, ScrollToPlugin } from "gsap/all"
 import LoadingComp from '@/components/tools/LoadingComp.vue';
-import DetailCard from '@/components/Detail/DetailCard.vue';
+import ProfileComment from "@/components/Detail/ProfileComment.vue";
 import api from '@/js/api/vlog'
+import utils from '@/js/utils/utils'
 
 const basic = ref(false)
+const showDataFlag = ref(false)
+const cards = ref([]);
+const slide = ref(1)
+const fullscreen = ref(false)
+const detail = ref(null)
 
-// const findWithPage = async (page) => {
-//   var res = await api.findWithPage(page)
-//   cards.value.push(...res)
-// }
+const imgs = ref([
+    "https://cdn.quasar.dev/img/mountains.jpg",
+    "https://cdn.quasar.dev/img/parallax1.jpg",
+    "https://cdn.quasar.dev/img/parallax2.jpg",
+    "https://cdn.quasar.dev/img/quasar.jpg"])
+
+const findWithPage = async (page) => {
+    return await api.findWithPage(page)
+}
 
 const moveToDown = () => {
     const targetElement = document.getElementById('layout');
@@ -126,24 +158,70 @@ onMounted(() => {
         .fromTo('.text', { y: 0 }, { y: 600 }, 0)
 })
 
-const cards = ref([]);
+const onLoad = (index, done) => {
+    Promise.resolve().then(async () => {
+        try {
+            var res = await findWithPage(index); // Your asynchronous data retrieval method
+            if (res == null || res == undefined) {
+                done();
+                showDataFlag.value = true;
+                return;
+            }
+            cards.value.push(...res);
+            done();
+        } catch (error) {
+            console.error(error);
+        }
+    });
+};
 
-const onLoad = async (index, done) => {
-  try {
-    var res = await api.findWithPage(index)
-    await done();
-    cards.value.push(...res)
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-const showDialog = (detail)=>{
+const showDialog = (vlog) => {
     basic.value = true
-    console.log(detail)
+    detail.value = vlog
+    imgs.value = [] // 清空图片数组
+    imgs.value.push(...detail.value.img.split(',')) // 将图片串换为图片数组
 }
 </script>
+<style scoped>
+.carousel {
+    height: 100%;
+}
 
+.note-scroller {
+    height: 100%;
+    overflow: hidden;
+    clear: both;
+}
+
+.profile-card {
+    max-width: 80vw;
+    width: 900px;
+    height: 580px;
+    position: absolute;
+    overflow: hidden;
+    display: flex;
+    text-align: left;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16), 0px 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.scroll-img {
+    border-right: 2px dashed #eeeeee;
+    flex: 1;
+    background: #ffffff;
+}
+
+.scroll-img>img {
+    max-width: 100%;
+}
+
+.profile-bio {
+    background: #ffffff;
+    flex: 1;
+}
+
+</style>
 <style lang="sass" scoped>
 .q-pa-md
     padding: 0px !important
@@ -187,83 +265,96 @@ body
 } */
 
 .card {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  width: 300px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 300px;
 }
+
 .card-header img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
 }
+
 .card-body {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 20px;
-  min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    min-height: 250px;
 }
+
 .tag {
-  background-color: #ccc;
-  color: #fff;
-  border-radius: 50px;
-  font-size: 12px;
-  margin: 0;
-  padding: 2px 10px;
-  text-transform: uppercase;
+    background-color: #ccc;
+    color: #fff;
+    border-radius: 50px;
+    font-size: 12px;
+    margin: 0;
+    padding: 2px 10px;
+    text-transform: uppercase;
 }
+
 .tag-teal {
-  background-color: #92d4e4;
+    background-color: #92d4e4;
 }
+
 .tag-purple {
-  background-color: #3d1d94;
+    background-color: #3d1d94;
 }
+
 .tag-pink {
-  background-color: #c62bcd;
+    background-color: #c62bcd;
 }
+
 .card-body h4 {
-  margin: 10px 0;
+    margin: 10px 0;
 }
+
 .card-body p {
-  font-size: 14px;
-  margin: 0 0 40px 0;
-  font-weight: 500;
-  color: rgb(70, 68, 68);
+    font-size: 14px;
+    margin: 0 0 40px 0;
+    font-weight: 500;
+    color: rgb(70, 68, 68);
 }
+
 .user {
-  display: flex;
-  margin-top: auto;
+    display: flex;
+    margin-top: auto;
 }
+
 .user img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 10px;
-  object-fit: cover;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
 }
+
 .user-info h5 {
-  margin: 0;
+    margin: 0;
 }
+
 .user-info small {
-  color: #888785;
+    color: #888785;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap');
 
 .text {
-  animation: showup 1.5s forwards;
+    animation: showup 1.5s forwards;
 }
 
 @keyframes showup {
-  from{
-    letter-spacing: -50px;
-    filter: blur(10px);
-  }
-  to{
-    letter-spacing: 10px;
-    filter: blur(0px);
-  }
+    from {
+        letter-spacing: -50px;
+        filter: blur(10px);
+    }
+
+    to {
+        letter-spacing: 10px;
+        filter: blur(0px);
+    }
 }
 </style>

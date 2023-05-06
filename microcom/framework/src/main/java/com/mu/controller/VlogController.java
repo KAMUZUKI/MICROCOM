@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * @author MUZUKI
  * @Classname VlogController
@@ -35,16 +33,19 @@ public class VlogController {
     public SaResult findWithPage(@PathVariable("page") Integer page) {
         QueryWrapper<Vlog> queryWrapper = new QueryWrapper<>();
         IPage<Vlog> userEntityIPage = vlogService.findWithPage(new Page<>(page, 8), queryWrapper);
+        if (page > userEntityIPage.getPages()) {
+            return SaResult.ok().setMsg("没有更多数据了");
+        }
         return SaResult.ok().setData(userEntityIPage.getRecords());
     }
 
     @PostMapping("add")
     public SaResult add(@RequestBody Vlog vlog) {
-        return SaResult.ok().setMsg(vlogService.save(vlog)? "添加成功":"添加失败");
+        return SaResult.ok().setMsg(vlogService.save(vlog) ? "添加成功" : "添加失败");
     }
-    
+
     @DeleteMapping("delete/{id}")
     public SaResult delete(@PathVariable("id") Integer id) {
-        return SaResult.ok().setMsg(vlogService.removeById(id)? "删除成功":"删除失败");
+        return SaResult.ok().setMsg(vlogService.removeById(id) ? "删除成功" : "删除失败");
     }
 }

@@ -58,7 +58,8 @@ const routes = [
             // requireAuth: true,
             transition_enter: 'animate__fadeInLeft',
             transition_leave: 'animate__fadeOutLeft',
-        }
+        },
+        props: true
     },
     {
         path: '/profileview',

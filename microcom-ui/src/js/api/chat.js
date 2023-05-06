@@ -10,8 +10,13 @@ let api = {
     /**
      * 根据ID获取用户信息
      */
-    getUser(id) {
-        return '/chat/' + id
+    async getUser(id) {
+        try {
+            const response = await axios.get(httpPath + 'user/' + id)
+            return response.data.data
+        } catch (err) {
+            throw new Error(err)
+        }
     },
 
     /**

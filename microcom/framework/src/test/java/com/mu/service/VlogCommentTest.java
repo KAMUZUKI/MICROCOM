@@ -33,13 +33,13 @@ class VlogCommentTest {
 
     @Test
     public void testGetComment() {
-        List<VlogComment> comments = vlogCommentService.findByVlogId(3L);
+        List<VlogComment> comments = vlogCommentService.findByVlogId(3L, 1);
         System.out.println(comments);
     }
 
     @Test
     public void testGetChildrenComments() {
-        List<VlogComment> childrenComments = vlogCommentService.findChildren(1L, 1L);
+        List<VlogComment> childrenComments = vlogCommentService.findChildren(1L, 1L, 1);
         System.out.println(childrenComments);
     }
 

@@ -18,7 +18,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class VlogServiceImpl extends ServiceImpl<VlogMapper, Vlog> implements VlogService {
+
     public IPage<Vlog> findWithPage(Page<Vlog> page, QueryWrapper<Vlog> queryWrapper) {
+        queryWrapper.select("vlog.id", "vlog.create_id", "vlog.title", "vlog.text", "vlog.img", "user.name", "user.head", "vlog.time")
+                .last("LEFT JOIN user ON vlog.create_id = user.id");
         return baseMapper.selectPage(page, queryWrapper);
     }
 }

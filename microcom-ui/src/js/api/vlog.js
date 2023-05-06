@@ -5,10 +5,10 @@ const httpPath = 'http://localhost:8080/microcom/vlog/'
 let api = {
     async findWithPage(page) {
         try {
-            const response = await axios.get(httpPath + "findWithPage/" + page);
-            return response.data.data;
+            const response = await axios.get(httpPath + "findWithPage/" + page)
+            return response.data.data
         }catch (err) {
-            throw new Error(err);
+            throw new Error(err)
         }
     },
     add(vlog) {

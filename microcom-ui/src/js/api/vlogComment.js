@@ -4,16 +4,34 @@ const httpPath = 'http://localhost:8080/microcom/vlogcomment/'
 
 let api = {
     save (comment) {
-        axios.post(httpPath + "save", comment)
+        axios.post(httpPath + "save", comment).then((res) => {
+            console.log(res);
+        }).catch((err) => {
+            console.log(err);
+        })
     },
-    findByVlogId(vlogId) {
-        axios.get(httpPath + "findByVlogId/" + vlogId)
+    async findByVlogId(vlogId,page) {
+        try {
+            let res = await axios.get(httpPath + "findByVlogId/" + vlogId + "/" + page)
+            return res.data
+        }catch (err) {
+            console.log(err);
+        }
     },
-    findChild(vlogId,parentId) {
-        axios.get(httpPath + "findChildren/" + vlogId + "/" + parentId)
+    async findChild(vlogId,parentId,page) {
+        try {
+            let res = await axios.get(httpPath + "findChild/" + vlogId + "/" + parentId + "/" + page)
+            return res.data
+        }catch (err) {
+            console.log(err);
+        }
     },
     delete(comment) {
-        axios.delete(httpPath + "delete",comment)
+        axios.delete(httpPath + "delete",comment).then((res) => {
+            console.log(res);
+        }).catch((err) => {
+            console.log(err);
+        })
     }
 }
 
