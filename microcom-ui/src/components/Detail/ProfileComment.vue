@@ -24,7 +24,7 @@
             </div>
             <div style="margin: 10px 0 0 10px;">评论</div>
             <q-separator spaced inset />
-            <q-infinite-scroll @load="onLoad" :offset="10" scroll-target=".comment-section">
+            <q-infinite-scroll @load="onLoad" :offset="1" scroll-target=".comment-section">
                 <q-list>
                     <template v-for="(comment, index) in comments" :key="index">
                         <q-item>
@@ -74,6 +74,9 @@
                         <q-spinner-dots color="primary" size="40px" />
                     </div>
                 </template>
+                <div v-if="showDataFlag" style="text-align: center;">
+                    <p>没有更多数据了...</p>
+                </div>
             </q-infinite-scroll>
         </q-card-section>
         <q-separator />
@@ -101,6 +104,7 @@ import 'vue3-emoji/dist/style.css'
 import { message } from 'ant-design-vue';
 import vlogComment from '@/js/api/vlogComment'
 
+const showDataFlag = ref(false)
 const props = defineProps({
     detail: {
         type: Object,
@@ -159,9 +163,14 @@ const comments = reactive([
 const onLoad = (index, done) => {
     setTimeout(async () => {
         var res = await vlogComment.findByVlogId(props.detail.id,index+1)
-        if(res.data.length == 0) return
+        if(res.data.length == 0){
+            done();
+            showDataFlag.value = true
+            return
+        }
         res.data.forEach(vlog => {
-            vlog.replies = false
+            vlog.replies = []
+            vlog.showReplies = false
             comments.push(vlog)
         });
         done();
@@ -174,7 +183,7 @@ const appendText = (value) => {
 }
 
 const toggleReplies = (index) => {
-    comments[index].push(...vlogComment.findChild(props.detail.id,index,1))
+    comments[index].push(...vlogComment.findChild(props.detail.id,index+1,1))
     comments[index].showReplies = !comments[index].showReplies;
 }
 
@@ -269,7 +278,11 @@ const updateTextareaRows = (input) => {
 
 const fetchData = async ()=>{
     const response = await vlogComment.findByVlogId(props.detail.id,1)
-    comments.push(...response.data)
+    response.data.forEach(vlog => {
+        vlog.replies = []
+        vlog.showReplies = false
+        comments.push(vlog)
+    });
     console.log(comments)
 }
 

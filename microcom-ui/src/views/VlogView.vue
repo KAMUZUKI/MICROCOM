@@ -220,7 +220,6 @@ const showDialog = (vlog) => {
     background: #ffffff;
     flex: 1;
 }
-
 </style>
 <style lang="sass" scoped>
 .q-pa-md

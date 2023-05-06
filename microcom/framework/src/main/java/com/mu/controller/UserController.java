@@ -8,10 +8,9 @@ import cn.hutool.extra.servlet.ServletUtil;
 import com.mu.domain.User;
 import com.mu.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -39,19 +38,25 @@ public class UserController {
         return SaResult.ok("登录成功").setData(user);
     }
 
-    // 查询登录状态  ---- http://localhost:8081/user/isLogin
+    /**
+     * 查询登录状态  ---- http://localhost:8081/user/isLogin
+     */
     @RequestMapping("isLogin")
     public SaResult isLogin() {
         return SaResult.ok("是否登录：" + StpUtil.isLogin());
     }
 
-    // 查询 Token 信息  ---- http://localhost:8081/user/tokenInfo
+    /**
+     * 查询 Token 信息  ---- http://localhost:8081/user/tokenInfo
+     */
     @RequestMapping("tokenInfo")
     public SaResult tokenInfo() {
         return SaResult.data(StpUtil.getTokenInfo());
     }
 
-    // 测试注销  ---- http://localhost:8081/user/logout
+    /**
+     * 注销  ---- http://localhost:8081/user/logout
+     */
     @RequestMapping("logout")
     public SaResult logout() {
         StpUtil.logout();
@@ -59,7 +64,7 @@ public class UserController {
     }
 
     @SaCheckLogin
-    @RequestMapping(value = "updateUserById")
+    @RequestMapping("updateUserById")
     public SaResult updateUserById(HttpServletRequest request) {
         User user = ServletUtil.toBean(request, User.class, true);
         if (userService.updateUserById(user) == 1) {
@@ -68,7 +73,7 @@ public class UserController {
         return SaResult.ok("修改失败");
     }
 
-    @RequestMapping(value = "register")
+    @RequestMapping("register")
     public SaResult register(HttpServletRequest request) {
         User user = ServletUtil.toBean(request, User.class, true);
         user.setPwd(SecureUtil.md5((user.getPwd())));
@@ -79,16 +84,45 @@ public class UserController {
     }
 
     @SaCheckLogin
-    @RequestMapping(value = "getAllUser")
+    @RequestMapping("getAllUser")
     public SaResult getAllUser() {
         return SaResult.ok("获取成功").setData(userService.getAllUser());
     }
 
     @SaCheckLogin
-    @RequestMapping(value = "getLikeList")
+    @RequestMapping("getLikeList")
     public SaResult getLikeList(HttpServletRequest request) {
         int id = Integer.parseInt(request.getParameter("userId"));
         return SaResult.ok("获取喜欢列表成功").setData(userService.getLikeList(id));
     }
 
+//    @SaCheckLogin
+    @RequestMapping("follow/{userId}/{followUserId}")
+    public SaResult follow(@PathVariable("userId") String userId,@PathVariable("followUserId") String followUserId){
+        if (userService.follow(userId, followUserId)){
+            return SaResult.ok("关注成功");
+        }
+        return SaResult.error("关注失败");
+    }
+
+//    @SaCheckLogin
+    @RequestMapping("unfollow/{userId}/{followUserId}")
+    public SaResult unfollow(@PathVariable("userId") String userId,@PathVariable("followUserId") String followUserId) {
+        if (userService.unfollow(userId, followUserId)){
+            return SaResult.ok("取消关注成功");
+        }
+        return SaResult.error("取消关注失败");
+    }
+
+//    @SaCheckLogin
+    @RequestMapping("getFollowers/{userId}")
+    public SaResult getFollowers(@PathVariable("userId") String userId){
+        return SaResult.ok("获取粉丝列表").setData(userService.getFollowers(userId));
+    }
+
+//    @SaCheckLogin
+    @RequestMapping("getFollowing/{userId}")
+    public SaResult getFollowing(@PathVariable("userId") String userId){
+        return SaResult.ok("获取关注列表").setData(userService.getFollowing(userId));
+    }
 }
