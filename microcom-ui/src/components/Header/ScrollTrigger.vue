@@ -1,4 +1,3 @@
-
 <template>
     <div class="scrollDist" ref="scrollDist">
     </div>

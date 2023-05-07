@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -31,7 +32,7 @@ public class UserController {
         String password = request.getParameter("password");
         User user = userService.login(username, SecureUtil.md5(password));
         if (user == null || user.equals("")) {
-            return SaResult.error("登录失败");
+            return SaResult.error("登录失败").setData(false);
         }
         StpUtil.login(user.getId());
         user.setPwd(null);
@@ -68,9 +69,9 @@ public class UserController {
     public SaResult updateUserById(HttpServletRequest request) {
         User user = ServletUtil.toBean(request, User.class, true);
         if (userService.updateUserById(user) == 1) {
-            return SaResult.ok("修改成功");
+            return SaResult.ok("修改成功").setData(true);
         }
-        return SaResult.ok("修改失败");
+        return SaResult.ok("修改失败").setData(false);
     }
 
     @RequestMapping("register")
@@ -78,9 +79,9 @@ public class UserController {
         User user = ServletUtil.toBean(request, User.class, true);
         user.setPwd(SecureUtil.md5((user.getPwd())));
         if (userService.register(user) == 1) {
-            return SaResult.ok("注册成功");
+            return SaResult.ok("注册成功").setData(true);
         }
-        return SaResult.ok("注册失败");
+        return SaResult.ok("注册失败").setData(false);
     }
 
     @SaCheckLogin
@@ -96,33 +97,41 @@ public class UserController {
         return SaResult.ok("获取喜欢列表成功").setData(userService.getLikeList(id));
     }
 
-//    @SaCheckLogin
+    //    @SaCheckLogin
     @RequestMapping("follow/{userId}/{followUserId}")
-    public SaResult follow(@PathVariable("userId") String userId,@PathVariable("followUserId") String followUserId){
-        if (userService.follow(userId, followUserId)){
-            return SaResult.ok("关注成功");
+    public SaResult follow(@PathVariable("userId") String userId, @PathVariable("followUserId") String followUserId) {
+        if (userService.follow(userId, followUserId)) {
+            return SaResult.ok("关注成功").setData(true);
         }
-        return SaResult.error("关注失败");
+        return SaResult.ok("关注失败").setData(false);
     }
 
-//    @SaCheckLogin
+    @RequestMapping("isFollow/{userId}/{followUserId}")
+    public SaResult isFollow(@PathVariable("userId") String userId, @PathVariable("followUserId") String followUserId) {
+        if (userService.isFollow(userId, followUserId)) {
+            return SaResult.ok("已关注").setData(true);
+        }
+        return SaResult.ok("未关注").setData(false);
+    }
+
+    //    @SaCheckLogin
     @RequestMapping("unfollow/{userId}/{followUserId}")
-    public SaResult unfollow(@PathVariable("userId") String userId,@PathVariable("followUserId") String followUserId) {
-        if (userService.unfollow(userId, followUserId)){
-            return SaResult.ok("取消关注成功");
+    public SaResult unfollow(@PathVariable("userId") String userId, @PathVariable("followUserId") String followUserId) {
+        if (userService.unfollow(userId, followUserId)) {
+            return SaResult.ok("取消关注成功").setData(true);
         }
-        return SaResult.error("取消关注失败");
+        return SaResult.error("取消关注失败").setData(false);
     }
 
-//    @SaCheckLogin
+    //    @SaCheckLogin
     @RequestMapping("getFollowers/{userId}")
-    public SaResult getFollowers(@PathVariable("userId") String userId){
+    public SaResult getFollowers(@PathVariable("userId") String userId) {
         return SaResult.ok("获取粉丝列表").setData(userService.getFollowers(userId));
     }
 
-//    @SaCheckLogin
+    //    @SaCheckLogin
     @RequestMapping("getFollowing/{userId}")
-    public SaResult getFollowing(@PathVariable("userId") String userId){
+    public SaResult getFollowing(@PathVariable("userId") String userId) {
         return SaResult.ok("获取关注列表").setData(userService.getFollowing(userId));
     }
 }

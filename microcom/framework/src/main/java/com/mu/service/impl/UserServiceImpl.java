@@ -34,6 +34,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 用户登录
+     *
      * @param account 用户信息 password 用户密码
      * @return 用户信息
      */
@@ -46,6 +47,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 用户注册
+     *
      * @param user 用户信息
      * @return 用户信息
      */
@@ -57,6 +59,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 获取全部用户
+     *
      * @return 用户集合
      */
     public List<User> getAllUser() {
@@ -72,6 +75,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 获取用户喜欢的文章列表
+     *
      * @param id 用户id
      * @return 文章id集合
      */
@@ -91,10 +95,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public boolean isFollow(String userId, String targetUserId) {
+        Double score = redisTemplate.opsForZSet().score(UserConstant.FOLLOWING + userId, targetUserId);
+        return score != null;
+    }
+
+    @Override
     public boolean unfollow(String userId, String targetUserId) {
         Long res1 = redisTemplate.opsForZSet().remove(UserConstant.FOLLOWING + userId, targetUserId);
         Long res2 = redisTemplate.opsForZSet().remove(UserConstant.FOLLOWERS + targetUserId, userId);
-        return (res1 + res2)==2;
+        return (res1 + res2) == 2;
     }
 
     @Override
@@ -104,8 +114,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Set<Object> followerIds = redisTemplate.opsForZSet().range(key, 0, -1);
         for (Object followerId : followerIds) {
             Double score = Double.valueOf(followerId.toString());
-            Set<Object> objs = redisTemplate.opsForZSet().rangeByScore(UserConstant.USER_PREFIX,score,score);
-            if (objs == null) {
+            Set<Object> objs = redisTemplate.opsForZSet().rangeByScore(UserConstant.USER_PREFIX, score, score);
+            if (objs == null || objs.size() == 0) {
                 continue;
             }
             followers.add((JSON.parseObject(objs.iterator().next().toString(), SimpleUser.class)));
@@ -120,7 +130,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Set<Object> followingIds = redisTemplate.opsForZSet().range(key, 0, -1);
         for (Object followingId : followingIds) {
             double score = Double.parseDouble(followingId.toString());
-            Set<Object> objs = redisTemplate.opsForZSet().rangeByScore(UserConstant.USER_PREFIX,score,score);
+            Set<Object> objs = redisTemplate.opsForZSet().rangeByScore(UserConstant.USER_PREFIX, score, score);
             if (objs == null) {
                 continue;
             }

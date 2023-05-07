@@ -42,8 +42,11 @@ public class VlogCommentServiceImpl {
     public List<VlogComment> findByVlogId(Long vlogId, int pageNum) {
         String hashKey = VlogConstant.COMMENT_PREFIX + vlogId;
         List<VlogComment> commentList = new ArrayList<>();
-        getHashEntriesByPage(hashKey, 10, pageNum).forEach(
-                entry -> commentList.add(JSON.parseObject(entry.getValue().toString(), VlogComment.class)));
+        getHashEntriesByPage(hashKey, 10, pageNum).forEach(entry -> {
+            VlogComment vlogComment = JSON.parseObject(entry.getValue().toString(), VlogComment.class);
+            vlogComment.setHasReply(hasChildren(vlogId, vlogComment.getId()));
+            commentList.add(vlogComment);
+        });
         return commentList;
     }
 
@@ -70,6 +73,11 @@ public class VlogCommentServiceImpl {
         Set<ZSetOperations.TypedTuple<Object>> result = getMembersByPage(zsetKey, 2, pageNum);
         result.forEach(item -> childrenObjects.add(JSON.parseObject(item.getValue().toString(), VlogComment.class)));
         return childrenObjects;
+    }
+
+    public boolean hasChildren(Long vlogId, Long parentId) {
+        String zsetKey = CoreUtils.replyKey(vlogId, parentId);
+        return !getMembersByPage(zsetKey, 2, 1).isEmpty();
     }
 
     public Set<ZSetOperations.TypedTuple<Object>> getMembersByPage(String key, int pageSize, int pageNum) {

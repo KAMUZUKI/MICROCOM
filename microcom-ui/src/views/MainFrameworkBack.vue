@@ -41,7 +41,7 @@
 
 <script setup>
 import { onMounted, ref, watch } from "vue";
-import AvatarComponent from "../components/Avatar/AvatarComponent.vue";
+import AvatarComponent from "../components/Avatar/AvatarComponentBack.vue";
 import MenuComponent from "../components/Menu/MenuComponent.vue";
 import SiderTag from "../components/SiderTag/SiderTag.vue";
 import AwordComp from "../components/AWord/AwordComp.vue";

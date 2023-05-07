@@ -33,8 +33,8 @@ class VlogCommentTest {
 
     @Test
     public void testGetComment() {
-        List<VlogComment> comments = vlogCommentService.findByVlogId(3L, 1);
-        System.out.println(comments);
+        List<VlogComment> comments = vlogCommentService.findByVlogId(1L, 1);
+        comments.forEach(System.out::println);
     }
 
     @Test

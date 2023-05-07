@@ -35,7 +35,7 @@
   
   <script>
   import { defineComponent, ref } from "vue";
-  import AvatarComponent from "../components/Avatar/AvatarComponent.vue";
+  import AvatarComponent from "../components/Avatar/AvatarComponentBack.vue";
   import SiderTag from "../components/SiderTag/SiderTag.vue";
   import AwordComp from "../components/AWord/AwordComp.vue";
   import CarouselComp from "../components/Carousel/CarouselComp.vue";
