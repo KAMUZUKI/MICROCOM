@@ -62,7 +62,6 @@ import { useRoute } from 'vue-router'
 import { onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
-import upload from "@/js/api/upload"
 
 // const props = defineProps({
 //     openNotificationWithIcon: {
@@ -119,16 +118,25 @@ const judgeMode = () => {
     }
 }
 
-const handleUploadImage = async (event, insertImage, files) => {
+const handleUploadImage = (event, insertImage, file) => {
     // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
-    var res = await upload.uploadImage(files)
-    console.log(res)
-    // 此处只做示例
-    insertImage({
-        url:
-            'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1269952892,3525182336&fm=26&gp=0.jpg',
-        desc: '七龙珠',
-    });
+    console.log(file);
+    const formData = new FormData()
+    formData.append('file', file) // file 是一个 File 对象
+    axios.post('http://localhost:8080/microcom/upload/image', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }).then(res => {
+        if (res.code == 200) {
+            insertImage({
+                url: res.data,
+                desc: '图片描述',
+            });
+        } else {
+            message.error(res.data.msg)
+        }
+    })
 }
 
 var ws
