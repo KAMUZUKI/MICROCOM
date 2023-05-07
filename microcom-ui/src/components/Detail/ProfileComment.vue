@@ -51,7 +51,7 @@
                                     <p style="word-break: break-word;">{{ comment.content }}</p>
                                 </q-item-label>
                                 <q-item-label>
-                                    <span v-if="comment.replies" @click="toggleReplies(index, comment.id)">{{
+                                    <span v-if="comment.hasReply" @click="toggleReplies(index, comment.id)">{{
                                         comment.showReplies ? "收起" : "查看更多评论" }}</span>
                                 </q-item-label>
                                 <!-- 评论回复 -->

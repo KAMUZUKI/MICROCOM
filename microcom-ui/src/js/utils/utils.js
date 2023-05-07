@@ -90,6 +90,9 @@ let utils = {
                 timerId = null;
             }, delay);
         };
+    },
+    isEmpty: function (str) {
+        return str.split(',').size == 0;
     }
 }
 

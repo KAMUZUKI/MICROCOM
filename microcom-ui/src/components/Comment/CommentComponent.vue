@@ -47,11 +47,11 @@ export default defineComponent({
         const comments = ref([])
         const submitting = ref(false)
         const value = ref('')
-        const articleId = JSON.parse(sessionStorage.getItem("articleDetail")).id
+        const articleId = JSON.parse(localStorage.getItem("articleDetail")).id
 
         //判断是否登录，未登录从本地获取用户信息，若无则使用默认信息
         if (typeof (store.state.user) == "undefined") {
-            user.value = JSON.parse(sessionStorage.getItem("user"))
+            user.value = JSON.parse(localStorage.getItem("user"))
             if (user.value == null) {
                 user.value = {
                     username: 'zhangsan',
@@ -115,7 +115,7 @@ export default defineComponent({
         }
 
         const handleSubmit = () => {
-            if (!sessionStorage.getItem("user")) {
+            if (!localStorage.getItem("user")) {
                 showPromiseConfirm("无权限", "您还未登录，是否前往登录？")
                 return
             }

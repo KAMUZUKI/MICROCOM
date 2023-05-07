@@ -8,6 +8,7 @@
         <module>system</module>
         <module>framework</module>
         <module>meilisearch</module>
+        <module>cos</module>
     </modules>
 
     <parent>

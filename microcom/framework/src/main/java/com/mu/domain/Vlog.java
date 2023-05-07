@@ -21,6 +21,7 @@ public class Vlog implements Serializable {
     private Integer id;
     private Integer createId;
     private String title;
+    private String label;
     private String text;
     private String img;
     private String name;

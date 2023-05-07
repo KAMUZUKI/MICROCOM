@@ -6,6 +6,7 @@
         SELECT vlog.id,
                vlog.create_id,
                vlog.title,
+               vlog.label,
                vlog.text,
                vlog.img,
                user.name,

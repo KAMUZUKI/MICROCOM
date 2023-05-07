@@ -50,7 +50,11 @@
                                         <img :src=utils.getImg(item.img)[0] :alt=utils.getImg(item.img)[0] />
                                     </div>
                                     <div class="card-body">
-                                        <span class="tag tag-teal">Technology</span>
+                                        <div style="display: flex" v-if="item.label!==null">
+                                            <template v-for="(tag, index) in item.label.split(',')" :key="index">
+                                                <span class="tag tag-teal">{{ tag }}</span>
+                                            </template>
+                                        </div>
                                         <h4>{{ item.id + item.title }}</h4>
                                         <p>
                                             {{ item.text.substring(0, 200) }}.....
@@ -290,21 +294,14 @@ body
     color: #fff;
     border-radius: 50px;
     font-size: 12px;
-    margin: 0;
+    margin: 0 5px;
     padding: 2px 10px;
     text-transform: uppercase;
+    
 }
 
 .tag-teal {
     background-color: #92d4e4;
-}
-
-.tag-purple {
-    background-color: #3d1d94;
-}
-
-.tag-pink {
-    background-color: #c62bcd;
 }
 
 .card-body h4 {

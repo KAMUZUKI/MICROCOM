@@ -7,7 +7,7 @@
         <!-- <a-descriptions-item label="社交">
           <a>{{ details.createTime }}</a>
         </a-descriptions-item> -->
-        <a-descriptions-item label="发布时间">{{ details.createTime }}</a-descriptions-item>
+        <a-descriptions-item label="发布时间">{{ utils.parseDate(details.createTime) }}</a-descriptions-item>
         <a-descriptions-item label="关键词">
           <a-tag v-for="item of tags" :key="item.color" class="item-tag" :color="item.color">
             <router-link @click.prevent="showContentBykeyword(item.tag)" to="/">
@@ -26,56 +26,50 @@
 }
 </style>
 
-<script>
-import { defineComponent, reactive, onMounted, onUnmounted } from 'vue'
+<script setup>
+import { reactive, onMounted, onUnmounted, defineProps } from 'vue'
 import { useRouter } from 'vue-router'
-export default defineComponent({
-  name: 'PageHeader',
-  setup(props) {
-    const router = useRouter()
-    const colors = ['pink', 'red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple'];
-    const tags = reactive([
-    ])
+import utils from '@/js/utils/utils'
+const props = defineProps({
+  details: {
+    type: Object,
+    default: () => {
+      return {}
+    }
+  }
+})
 
-    const initTags = () => {
-      if(props.details.label!==null&&props.details.label!==''&&props.details.label!==undefined){
-        var keywords = props.details.label.split(',') ?? false
-        if (keywords.length > 0) {
-          for (let i = 0; i < keywords.length; i++) {
-            let j = Math.floor(Math.random() * 7);
-            tags.push({ color: colors[j], tag: keywords[i] })
-          }
-        }
+const router = useRouter()
+const colors = ['pink', 'red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple'];
+const tags = reactive([
+])
+
+const initTags = () => {
+  if (props.details.label !== null && props.details.label !== '' && props.details.label !== undefined) {
+    var keywords = props.details.label.split(',') ?? false
+    if (keywords.length > 0) {
+      for (let i = 0; i < keywords.length; i++) {
+        let j = Math.floor(Math.random() * 7);
+        tags.push({ color: colors[j], tag: keywords[i] })
       }
     }
+  }
+}
 
-    const destroyTags = () => {
-      tags.splice(0, tags.length)
-    }
+const destroyTags = () => {
+  tags.splice(0, tags.length)
+}
 
-    const back = () => {
-      router.go(-1)
-    }
+const back = () => {
+  router.go(-1)
+}
 
-    onMounted(() => {
-      initTags()
-    })
-
-    onUnmounted(() => {
-      destroyTags()
-    })
-    return {
-      tags,
-      back,
-      initTags,
-      destroyTags
-    };
-  },
-  props: {
-    details: {
-      type: Object,
-      default: () => { },
-    },
-  },
+onMounted(() => {
+  initTags()
 })
+
+onUnmounted(() => {
+  destroyTags()
+})
+
 </script>

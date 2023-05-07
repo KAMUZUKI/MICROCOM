@@ -29,7 +29,7 @@ public class VlogTest {
     @Test
     public void testPage() {
         QueryWrapper<Vlog> queryWrapper = new QueryWrapper<>();
-        IPage<Vlog> userEntityIPage = userService.findWithPage(new Page<>(2, 2), queryWrapper);
+        IPage<Vlog> userEntityIPage = userService.findWithPage(new Page<>(1, 2), queryWrapper);
         System.out.println("总页数： " + userEntityIPage.getPages());
         System.out.println("总记录数： " + userEntityIPage.getTotal());
         userEntityIPage.getRecords().forEach(System.out::println);
