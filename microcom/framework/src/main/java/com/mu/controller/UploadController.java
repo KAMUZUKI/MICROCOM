@@ -1,6 +1,6 @@
 package com.mu.controller;
 
-import com.mu.service.UploadService;
+import com.mu.service.impl.UploadServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +22,17 @@ import org.springframework.web.multipart.MultipartFile;
 public class UploadController {
 
     @Autowired
-    private UploadService uploadService;
+    private UploadServiceImpl uploadService;
 
     /**
      * 上传图片
+     *
      * @param file 文件
      */
     @PostMapping("image")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file){
-        String url=uploadService.uploadImage(file);
-        log.info("返回地址：【{}】",url);
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+        String url = uploadService.uploadImage(file);
+        log.info("返回地址：【{}】", url);
         return ResponseEntity.ok(url);
     }
 }
