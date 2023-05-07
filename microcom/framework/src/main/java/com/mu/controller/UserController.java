@@ -33,8 +33,8 @@ public class UserController {
         if (user == null || user.equals("")) {
             return SaResult.error("登录失败");
         }
-        StpUtil.login(user.getId());
         user.setPwd(null);
+        StpUtil.login(user.getId());
         return SaResult.ok("登录成功").setData(user);
     }
 
