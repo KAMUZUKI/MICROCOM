@@ -4,9 +4,6 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author MUZUKI
@@ -27,4 +24,6 @@ public class VlogComment implements Serializable {
      * 父评论的ID，用于存储分层评论
      */
     private Long parentId;
+
+    private Boolean hasReply;
 }

@@ -44,7 +44,20 @@ let utils = {
         const year = date.getFullYear();
         const month = date.getMonth() + 1;
         const day = date.getDate();
-        return `${year}-${month}-${day}`;
+        const hour = date.getHours(); // 小时
+        const minute = date.getMinutes(); // 分钟
+        const second = date.getSeconds(); // 秒
+        return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    },
+    getTime: function () {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const hour = date.getHours(); // 小时
+        const minute = date.getMinutes(); // 分钟
+        const second = date.getSeconds(); // 秒
+        return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
     },
     getURLParams: function () {
         console.log('$route.query:', this.$route.query)
@@ -58,13 +71,25 @@ let utils = {
     getImg: function (url) {
         return url.split(',')
     },
-    formatVlog:function (vlogs){
+    formatVlog: function (vlogs) {
         vlogs.forEach(async vlog => {
             var user = await api.getUser(vlog.author)
             vlog.name = user.name
             vlog.head = user.head
         })
         return vlogs
+    },
+    debounce: function (func, delay) {
+        let timerId;
+        return (...args) => {
+            if (timerId) {
+                clearTimeout(timerId);
+            }
+            timerId = setTimeout(() => {
+                func(...args);
+                timerId = null;
+            }, delay);
+        };
     }
 }
 
