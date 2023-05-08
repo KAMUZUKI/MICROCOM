@@ -1,5 +1,6 @@
-package com.mu.service;
+package com.mu.service.impl;
 
+import com.mu.service.RedisService;
 import com.mu.utils.RedisKeyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.*;

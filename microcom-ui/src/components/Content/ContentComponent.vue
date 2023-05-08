@@ -1,11 +1,6 @@
 <template>
   <a-list style="max-width:1000px;min-width: 700px" item-layout="vertical" size="large" :pagination="pagination"
     :data-source="initDataList">
-    <template #footer>
-      <div>
-        <b></b>
-      </div>
-    </template>
     <template #renderItem="{ item }">
       <a-list-item key="item.title" class="article">
         <template #actions>
@@ -27,7 +22,7 @@
         <template #extra>
           <img width="272" alt="logo" :src="(item.titleImgs==''?'https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png':item.titleImgs==' '?'https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png':item.titleImgs)" />
         </template>
-        <a-list-item-meta :description="(item.createTime)">
+        <a-list-item-meta :description=utils.parseDateToPast(item.createTime)>
           <template #title>
             <router-link class="nav-link" :to="'/article/' + item.id" @click="pushToDetail(item)">
               {{ item.title }}
@@ -69,6 +64,7 @@ import { defineComponent, onMounted, ref, toRaw, onBeforeUnmount, watch } from '
 import { message } from 'ant-design-vue';
 import { useStore } from 'vuex' // 引入useStore 方法
 import { useRouter } from 'vue-router'
+import utils from '@/js/utils/utils'
 import axios from 'axios'
 export default defineComponent({
   setup() {
@@ -292,6 +288,7 @@ export default defineComponent({
     }
 
     return {
+      utils,
       actions,
       likeList,
       listData,

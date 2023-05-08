@@ -3,15 +3,25 @@
         <q-item v-ripple>
             <q-item-section side>
                 <q-avatar size="48px">
-                    <img src="https://cdn.quasar.dev/img/avatar.png" />
+                    <img :src=user.head />
                 </q-avatar>
             </q-item-section>
             <q-item-section>
-                <q-item-label>Mary</q-item-label>
-                <q-item-label caption>2 new messages</q-item-label>
+                <q-item-label>{{ user.author }}</q-item-label>
+                <q-item-label caption>{{ user.time }}</q-item-label>
             </q-item-section>
             <q-item-section side>
-                <q-btn outline rounded color="primary" label="关注" />
+                <div @click="subscribe()">
+                    <a class="subscribe-button">
+                        <svg xmlns="http://www.w3.org/2000/svg">
+                          <g>
+                            <rect class="plus__line1" width="2" height="12" x="5" y="0"></rect>
+                            <rect class="plus__line2" width="12" height="2" x="0" y="5"></rect>
+                          </g>
+                        </svg>
+                        <span class="subscribe-text">关注</span>
+                    </a>
+                </div>
             </q-item-section>
         </q-item>
         <q-separator />
@@ -19,14 +29,12 @@
             <div class="note-content">
                 <div class="title"></div>
                 <div class="desc">
-                    <text>You can call me Dali. I'm a brazilian
-                        <strong>frontend web developer, illustrator, and designer</strong>. Making some cool things
-                        with coffee and code.</text>
+                    <text>{{ props.detail.text }}</text>
                 </div>
             </div>
             <div style="margin: 10px 0 0 10px;">评论</div>
             <q-separator spaced inset />
-            <q-infinite-scroll @load="onLoad" :offset="10" scroll-target=".comment-section">
+            <q-infinite-scroll @load="onLoad" :offset="1" scroll-target=".comment-section">
                 <q-list>
                     <template v-for="(comment, index) in comments" :key="index">
                         <q-item>
@@ -35,17 +43,18 @@
                             </q-item-section>
                             <q-item-section>
                                 <q-item-label>
-                                    <span>{{ comment.name }}</span>
-                                    <span class="comment-header">{{ comment.date }}</span>
+                                    <span>{{ comment.author }}</span>
+                                    <span class="comment-header">{{ comment.time }}</span>
                                     <span class="comment-header" @click="prepareAdd(index, comment.id)">回复</span>
                                 </q-item-label>
                                 <q-item-label>
-                                    <p style="word-break: break-word;">{{ comment.text }}</p>
+                                    <p style="word-break: break-word;">{{ comment.content }}</p>
                                 </q-item-label>
                                 <q-item-label>
-                                    <span v-if="comment.replies.length" @click="toggleReplies(index)">{{
+                                    <span v-if="comment.hasReply" @click="toggleReplies(index, comment.id)">{{
                                         comment.showReplies ? "收起" : "查看更多评论" }}</span>
                                 </q-item-label>
+                                <!-- 评论回复 -->
                                 <q-list v-if="comment.showReplies">
                                     <template v-for="(reply, replyIndex) in comment.replies" :key="replyIndex">
                                         <q-item>
@@ -54,13 +63,15 @@
                                             </q-item-section>
                                             <q-item-section>
                                                 <q-item-label>
-                                                    <span>{{ reply.name }}</span>
-                                                    <span class="comment-header">{{ reply.date }}</span>
+                                                    <span>
+                                                        {{ reply.author.replace("-",">")}}
+                                                    </span>
+                                                    <span class="comment-header">{{ reply.time }}</span>
                                                     <span class="comment-header"
-                                                        @click="prepareAdd(index, comment.id, reply.name)">回复</span>
+                                                        @click="prepareAdd(index, comment.id, reply.author)">回复</span>
                                                 </q-item-label>
                                                 <q-item-label>
-                                                    <p style="word-break: break-word;">{{ reply.text }}</p>
+                                                    <p style="word-break: break-word;">{{ reply.content }}</p>
                                                 </q-item-label>
                                             </q-item-section>
                                         </q-item>
@@ -76,14 +87,17 @@
                         <q-spinner-dots color="primary" size="40px" />
                     </div>
                 </template>
+                <div v-if="showDataFlag" style="text-align: center;">
+                    <p>没有更多数据了...</p>
+                </div>
             </q-infinite-scroll>
         </q-card-section>
         <q-separator />
         <q-card-actions align="right" class="input-content">
             <textarea id="comment-area" ref="textareaRef" v-model="newCommentText" @input="handleInput"
                 placeholder="善语结善缘，恶语伤人心" maxlength="200" rows="1"></textarea>
-            <V3Emoji class="emoji" v-model="newCommentText" size="small"
-                @click-emoji="appendText" :recent="true" fixPos="upright" />
+            <V3Emoji class="emoji" v-model="newCommentText" size="small" @click-emoji="appendText" :recent="true"
+                fixPos="upright" />
             <div class="submit-comment" @click="addAction()">
                 <svg width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M42 6L4 20.1383L24 24.0083L29.0052 44L42 6Z" stroke="#333" stroke-width="4"
@@ -97,78 +111,49 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch } from "vue";
+import { reactive, ref, watch, defineProps, onMounted } from "vue";
 import V3Emoji from 'vue3-emoji'
 import 'vue3-emoji/dist/style.css'
 import { message } from 'ant-design-vue';
+import vlogComment from '@/js/api/vlogComment'
+import followApi from '@/js/api/user'
+import utils from "@/js/utils/utils";
+
+const showDataFlag = ref(false)
+const username = JSON.parse(localStorage.getItem("user")).name
+const userId = JSON.parse(localStorage.getItem("user")).id
+const props = defineProps({
+    detail: {
+        type: Object,
+        default: null,
+    },
+})
+
+const user = ref({
+    author: props.detail.name,
+    time: utils.parseDate(props.detail.time),
+    content: props.detail.content,
+    head: props.detail.head,
+})
+
 const newCommentText = ref("")
 
 // 评论数据 start
-const comments = reactive([
-    {
-        id: 1,
-        name: "John Doe",
-        date: "2023-04-15",
-        text: "This is a great article!",
-        showReplies: false,
-        replies: [
-            {
-                id: 11,
-                name: "Daryl Doe",
-                date: "2023-04-15",
-                text: "This is a good reply"
-            },
-            {
-                id: 12,
-                name: "Dike Pen",
-                date: "2023-04-15",
-                text: "This is a good reply"
-            },
-            {
-                id: 13,
-                name: "Youge Gem",
-                date: "2023-04-15",
-                text: "This is a good reply"
-            }
-        ],
-    },
-    {
-        id: 2,
-        name: "Jane Smith",
-        date: "2023-04-14",
-        text: "I really enjoyed reading this. Thanks for sharing!",
-        showReplies: false,
-        replies: [],
-    }
-]);
+const comments = reactive([]);
 
 const onLoad = (index, done) => {
-    setTimeout(() => {
-        comments.push(
-            {
-                id: comments.length + 1,
-                name: "Youge Gem" + `${comments.length + 1}`,
-                date: "2023-04-15",
-                text: "This is a good comment",
-                showReplies: false,
-                replies: [],
-            },
-            {
-                id: comments.length + 2,
-                name: "Youge Gem" + `${comments.length + 2}`,
-                date: "2023-04-15",
-                text: "This is a good comment",
-                showReplies: false,
-                replies: [],
-            },
-            {
-                id: comments.length + 3,
-                name: "Youge Gem" + `${comments.length + 3}`,
-                date: "2023-04-15",
-                text: "This is a good comment",
-                showReplies: false,
-                replies: [],
-            });
+    setTimeout(async () => {
+        var res = await vlogComment.findByVlogId(props.detail.id, index + 1)
+        if (res.data.length == 0) {
+            done();
+            showDataFlag.value = true
+            return
+        }
+        res.data.forEach(vlog => {
+            vlog.replies = []
+            vlog.showReplies = false
+            comments.push(vlog)
+        });
         done();
     }, 1000);
 }
@@ -178,42 +163,84 @@ const appendText = (value) => {
     newCommentText.value += value;
 }
 
-const addComment = () => {
-    comments.push({
-        name: "Anonymous",
-        date: new Date().toLocaleDateString(),
-        text: newCommentText.value,
-        showReplies: false,
-        replies: [],
+const toggleReplies = async (index, id) => {
+    var replies = await vlogComment.findChild(props.detail.id, id, 1)
+    replies.data.forEach(reply => {
+        reply.showReplies = false
+        comments[index].replies.push(reply)
     });
-    newCommentText.value = "";
-}
-
-const toggleReplies = (index) => {
     comments[index].showReplies = !comments[index].showReplies;
 }
 
-const addReply = (commentIndex, parentId) => {
-    comments[commentIndex].replies.push({
-        parentId: parentId,
-        name: "Anonymous",
-        date: new Date().toLocaleDateString(),
-        text: newCommentText.value,
-    });
-    comments[commentIndex].showReplies = true;
-    newCommentText.value = "";
+const addComment = async () => {
+    var res = await vlogComment.save({
+        vlogId: props.detail.id,
+        author: username,
+        time: utils.getTime(),
+        content: newCommentText.value,
+    })
+    if (res.code == 200) {
+        message.success("评论成功")
+        comments.push({
+            author: username,
+            time: utils.getTime(),
+            content: newCommentText.value,
+            showReplies: false,
+            replies: [],
+        });
+        newCommentText.value = ""
+    } else {
+        message.error("评论失败,请稍后重试！")
+    }
 }
 
-const addReplyWith = (commentIndex, parentId, replyName) => {
-    replyName = replyName.split(">")[0]
-    comments[commentIndex].replies.push({
+const addReply = async (commentIndex, parentId) => {
+    var res = await vlogComment.save({
+        vlogId: props.detail.id,
         parentId: parentId,
-        name: "Anonymous" + ">" + replyName,
-        date: new Date().toLocaleDateString(),
-        text: newCommentText.value,
-    });
-    comments[commentIndex].showReplies = true;
-    newCommentText.value = "";
+        author: username,
+        time: utils.getTime(),
+        content: newCommentText.value,
+    })
+    if (res.code == 200) {
+        message.success("回复成功")
+        comments[commentIndex].replies.push({
+            parentId: parentId,
+            author: username,
+            time: utils.getTime(),
+            content: newCommentText.value,
+        });
+        comments[commentIndex].showReplies = true;
+        newCommentText.value = "";
+    } else {
+        message.error("回复失败,请稍后重试！")
+    }
+}
+
+const addReplyWith = async (commentIndex, parentId, replyName) => {
+    var res = await vlogComment.save({
+        vlogId: props.detail.id,
+        parentId: parentId,
+        author: username + "-" + replyName,
+        time: utils.getTime(),
+        content: newCommentText.value,
+    })
+    if (res.code == 200) {
+        replyName = replyName.split(">")[0]
+        comments[commentIndex].replies.push({
+            parentId: parentId,
+            author: username + "-" + replyName,
+            time: utils.getTime(),
+            content: newCommentText.value,
+        });
+        comments[commentIndex].showReplies = true;
+        newCommentText.value = "";
+        message.success("回复成功")
+    } else {
+        message.error("回复失败,请稍后重试！")
+    }
+
+
 }
 
 // 评论模式
@@ -226,10 +253,10 @@ const prepareAdd = (index, parentId, replyName) => {
     document.getElementById("comment-area").focus();
     if (typeof (replyName) == "undefined") {
         mode.value = "Reply";
-        document.getElementById("comment-area").placeholder = "@" + comments[index].name;
+        document.getElementById("comment-area").placeholder = "@" + comments[index].author;
     } else {
         mode.value = "ReplyWith";
-        document.getElementById("comment-area").placeholder = "@" + replyName.split(">")[0];
+        document.getElementById("comment-area").placeholder = "@" + replyName.split("-")[0];
     }
 }
 
@@ -251,6 +278,40 @@ const addAction = () => {
     args.value = ["null", "null", "null"]
 }
 
+const subscribe = utils.debounce(async ()=>{
+    var subButton = document.querySelector('.subscribe-button');
+    var subbedClass = 'subbed';
+    var text;
+    var res = await followApi.isFollow(userId,props.detail.createId)
+    if (res.data) {
+        text = '关注';
+        await followApi.unfollow(userId,props.detail.createId)
+        subButton.classList.remove(subbedClass);
+        message.success("取消关注")
+    } else {
+        text = '已关注';
+        await followApi.follow(userId,props.detail.createId)
+        subButton.classList.add(subbedClass);
+        message.success("关注成功")
+    }
+    subButton.querySelector('.subscribe-text').innerHTML = text;
+},1000)
+
+const initSubscribe = async ()=>{
+    var subButton = document.querySelector('.subscribe-button');
+    var subbedClass = 'subbed';
+    var text;
+    var res = await followApi.isFollow(userId,props.detail.id)
+    if (res.data) {
+        subButton.classList.add(subbedClass);
+        text = '已关注';
+    } else {
+        subButton.classList.remove(subbedClass);
+        text = '关注';
+    }
+    subButton.querySelector('.subscribe-text').innerHTML = text;
+}
+
 // 监听用户输入的变化
 watch(newCommentText, (newValue) => {
     updateTextareaRows(newValue);
@@ -259,20 +320,115 @@ watch(newCommentText, (newValue) => {
 // 更新 textarea 的 rows 属性
 const updateTextareaRows = (input) => {
     const textarea = document.getElementById('comment-area'); // 获取 textarea 元素的引用
-    if(input==""){
+    if (input == "") {
         textarea.style.height = "24px";
         return;
     }
-    if(input.length>199){
+    if (input.length > 199) {
         message.warning('评论限定在200字以内')
     }
     // 计算 textarea 的行数
     textarea.style.height = 'auto'; // 先将 textarea 的高度设置为 auto，以便自动调整高度
-    textarea.style.height = `${textarea.scrollHeight>72?72:textarea.scrollHeight}px`; // 设置 textarea 的高度为内容的实际高度
+    textarea.style.height = `${textarea.scrollHeight > 72 ? 72 : textarea.scrollHeight}px`; // 设置 textarea 的高度为内容的实际高度
 };
+
+const fetchData = async () => {
+    const response = await vlogComment.findByVlogId(props.detail.id, 1)
+    response.data.forEach(vlog => {
+        vlog.replies = []
+        vlog.showReplies = false
+        comments.push(vlog)
+    });
+    console.log(comments)
+}
+
+onMounted(() => {
+    fetchData()
+    initSubscribe()
+});
 
 </script>
   
+<style lang="scss" scoped>
+.container {
+	margin: 140px auto;
+	width: 100px;
+}
+
+.subscribe-button {
+	$padding: 10px;
+	$radius: 3px;
+	$gap: 10px;
+	$col-info: #e1e1e1;
+	$col-bg: #2486b9;
+	$col-bg-subbed: #777;
+	$duration: 0.25s;
+	
+	position: relative;
+	padding: $padding 18px;
+	font-family: inherit;
+	font-size: inherit;
+	font-weight: 500;
+	text-transform: uppercase;
+	color: white;
+	background: $col-bg;
+	border: none;
+	border-radius: $radius;
+	cursor: pointer;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.16), 0 1px 2px rgba(0, 0, 0, 0.1);
+	
+	transition: background, box-shadow;
+	transition-duration: 0.2s;
+	
+	&:active {
+		background: darken($col-bg, 2%);
+		box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2), 0 1px 4px rgba(0, 0, 0, 0.14);
+	}
+	
+	&.subbed {
+		background: $col-bg-subbed;
+
+		svg {
+			width: 16px;
+			.plus__line1 {
+				transform: translate(14px, 0) rotate(45deg) translate(-5px,0) scaleY((14/12));
+			}
+
+			.plus__line2 {
+				transform: translate(2px, 5px) rotate(45deg) scaleX(0.5) translate(0px, -5px);
+			}
+		}
+	}
+	
+	svg {
+		display: inline-block;
+		width: 12px;
+		height: 12px;
+		fill: white;
+		margin-right: $padding;
+		
+		transition: width $duration;
+		
+		.plus__line1,
+		.plus__line2 {
+			transition: transform $duration;	
+		}
+		
+		.plus__line1 {
+			transform-origin: 0 0; // should be this by default in in FF <= 42 (which doesn't support this on svg)
+		}
+
+		.plus__line2 {
+			transform-origin: 0 0;
+		}
+	}
+	
+	* {
+		vertical-align: middle;
+	}
+}
+</style>
+
 <style scoped>
 .comment-header {
     margin-left: 20px;
@@ -320,5 +476,4 @@ const updateTextareaRows = (input) => {
 
 /* ::-webkit-scrollbar {
     display: none;
-} */
-</style>
+} */</style>

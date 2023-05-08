@@ -1,3 +1,5 @@
+import api from "@/js/api/chat"
+
 let utils = {
     parseDateToPast: function (pastTime) {
         const currentTime = Date.now(); // 当前时间的时间戳
@@ -37,6 +39,26 @@ let utils = {
         }
         return timeAgo;
     },
+    parseDate: function (time) {
+        const date = new Date(time);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const hour = date.getHours(); // 小时
+        const minute = date.getMinutes(); // 分钟
+        const second = date.getSeconds(); // 秒
+        return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    },
+    getTime: function () {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const hour = date.getHours(); // 小时
+        const minute = date.getMinutes(); // 分钟
+        const second = date.getSeconds(); // 秒
+        return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    },
     getURLParams: function () {
         console.log('$route.query:', this.$route.query)
         const query = this.$route.query
@@ -45,6 +67,32 @@ let utils = {
         console.log('search:', location.search, location.search && data)
         const name = (query && query.name) || (data && data.name)
         console.log('params.name:', name)
+    },
+    getImg: function (url) {
+        return url.split(',')
+    },
+    formatVlog: function (vlogs) {
+        vlogs.forEach(async vlog => {
+            var user = await api.getUser(vlog.author)
+            vlog.name = user.name
+            vlog.head = user.head
+        })
+        return vlogs
+    },
+    debounce: function (func, delay) {
+        let timerId;
+        return (...args) => {
+            if (timerId) {
+                clearTimeout(timerId);
+            }
+            timerId = setTimeout(() => {
+                func(...args);
+                timerId = null;
+            }, delay);
+        };
+    },
+    isEmpty: function (str) {
+        return str.split(',').size == 0;
     }
 }
 

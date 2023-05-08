@@ -8,16 +8,29 @@ server:
   servlet:
     context-path: /microcom
 
+qcloud:
+  #初始化用户身份信息 前往控制台密钥管理查看
+  secretId: "AKIDKSM1SggWCftwnOkrmV0GLCpDMJF0Zu44"
+  secretKey: "qTvBCzZw62kDUYdfXBcoqgJk294lIdnl"
+  # 指定要上传到的存储桶
+  bucketName: "mu-1310320682"
+  # 地区选择
+  regionName: "ap-guangzhou"
+
 meilisearch:
   host-url: http://localhost:7700
   api-key: k0AiJ9urNCLA7DoKKZLw1MZXxkDiDkyzwsJoNjMKtkc
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB        # 设置单个文件最大大小为10MB
+      max-request-size: 100MB    # 设置多个文件大小为100MB
   application:
-    name: mybatis-plus-demo
+    name: microcom
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/blog?serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/microcom?serverTimezone=Asia/Shanghai
     username: root
     password: muzuki
   redis:
@@ -38,6 +51,22 @@ spring:
         # 连接池中的最小空闲连接 默认 0
         min-idle: 0
 
+############## Sa-Token 配置 (文档: https://sa-token.cc) ##############
+sa-token:
+  # token名称 (同时也是cookie名称)
+  token-name: satoken
+  # token有效期，单位s 默认30天, -1代表永不过期
+  timeout: 2592000
+  # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  activity-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: true
+  # token风格
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: false
 
 #mybatis-plus:
 #  configuration:
@@ -55,9 +84,9 @@ justauth:
     GITHUB:
       client-id: f5ac19dd3d2c51884dde
       client-secret: e71624531c93720a08f69acbbf8c924081a2ce4d
-      redirect-uri: http://localhost:8080/blog/oauth/github/callback
+      redirect-uri: http://localhost:8080/microcom/oauth/github/callback
     DINGTALK:
       client-id: dingexis9lxwy68c18qv
       client-secret: bGTWH6LqhNNNp3wSw1Jk55Pt8LmD5DHiexeU4Yl01Da0c6PvV5wfUphLf3-IvHqx
-      redirect-uri: http://localhost:8080/blog/oauth/dingtalk/callback
+      redirect-uri: http://localhost:8080/microcom/oauth/dingtalk/callback
 

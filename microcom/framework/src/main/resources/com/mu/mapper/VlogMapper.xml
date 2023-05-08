@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mu.mapper.VlogMapper">
-    <sql id="entity">
-        id
-        ,author,title,text,img
-    </sql>
-    <select id="selectUserByGender" resultType="com.mu.domain.Vlog">
-        SELECT
-        <include refid="entity"/>
+
+    <select id="selectVlog" resultType="com.mu.domain.Vlog">
+        SELECT vlog.id,
+               vlog.create_id,
+               vlog.title,
+               vlog.label,
+               vlog.text,
+               vlog.img,
+               user.name,
+               user.head,
+               vlog.time
         FROM vlog
+                 LEFT JOIN user ON vlog.create_id = user.id;
     </select>
 </mapper>

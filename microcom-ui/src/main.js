@@ -38,7 +38,6 @@ VMdEditor.use(githubTheme, {
 });
 //MARKED END
 
-
 const app = createApp(App).use(Quasar, quasarUserOptions);
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
