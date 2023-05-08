@@ -16,7 +16,7 @@ import java.util.Arrays;
  **/
 
 @Configuration
-@PropertySource("classpath:cros.properties")
+@PropertySource("classpath:cors.properties")
 public class CorsConfig {
 
     @Value("${cors.allowed.origin.patterns}")

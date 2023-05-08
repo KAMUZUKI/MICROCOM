@@ -84,9 +84,9 @@ justauth:
     GITHUB:
       client-id: f5ac19dd3d2c51884dde
       client-secret: e71624531c93720a08f69acbbf8c924081a2ce4d
-      redirect-uri: http://localhost:8080/blog/oauth/github/callback
+      redirect-uri: http://localhost:8080/microcom/oauth/github/callback
     DINGTALK:
       client-id: dingexis9lxwy68c18qv
       client-secret: bGTWH6LqhNNNp3wSw1Jk55Pt8LmD5DHiexeU4Yl01Da0c6PvV5wfUphLf3-IvHqx
-      redirect-uri: http://localhost:8080/blog/oauth/dingtalk/callback
+      redirect-uri: http://localhost:8080/microcom/oauth/dingtalk/callback
 

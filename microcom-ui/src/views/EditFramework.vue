@@ -122,8 +122,8 @@ const handleUploadImage = (event, insertImage, file) => {
     // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
     console.log(file);
     const formData = new FormData()
-    formData.append('file', file) // file 是一个 File 对象
-    axios.post('http://localhost:8080/microcom/upload/image', formData, {
+    formData.append('image', file) // file 是一个 File 对象
+    axios.post('http://localhost:8080/microcom/upload/test', formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
@@ -133,6 +133,13 @@ const handleUploadImage = (event, insertImage, file) => {
                 url: res.data,
                 desc: '图片描述',
             });
+        } else {
+            message.error(res.data.msg)
+        }
+    })
+    axios.post('http://localhost:8080/microcom/upload/datatest','zhangsan').then(res => {
+        if (res.code == 200) {
+            message.error(res.data.msg)
         } else {
             message.error(res.data.msg)
         }
