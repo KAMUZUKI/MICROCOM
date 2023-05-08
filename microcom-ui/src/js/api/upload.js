@@ -22,7 +22,7 @@ let api = {
             formData.append('image', file) // file 是一个 File 对象
             return axios.post(httpPath + "test", formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': '`multipart/form-data`'
                 }
             })
         } catch (err) {

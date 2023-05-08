@@ -44,6 +44,13 @@
                                     <a-button shape="round" type="primary" html-type="submit">提交</a-button>
                                 </a-form-item>
                             </a-form>
+                            <q-uploader
+                                url="http://localhost:8080/upload/test"
+                                label="Individual upload"
+                                field-name="file"
+                                multiple
+                                style="max-width: 300px"
+                              />
                         </a-card>
                     </a-col>
                 </a-space>
@@ -122,8 +129,8 @@ const handleUploadImage = (event, insertImage, file) => {
     // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
     console.log(file);
     const formData = new FormData()
-    formData.append('file', file) // file 是一个 File 对象
-    axios.post('http://localhost:8080/microcom/upload/image', formData, {
+    formData.append('image', file) // file 是一个 File 对象
+    axios.post('http://localhost:8080/microcom/upload/test', formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
