@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @ResponseBody
 @Controller
+//@CrossOrigin(origins = "http://localhost:8081")
 @RequestMapping("/vlogcomment/")
 public class VlogCommentController {
     @Autowired

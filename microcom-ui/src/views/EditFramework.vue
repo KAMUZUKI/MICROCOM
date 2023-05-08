@@ -45,10 +45,9 @@
                                 </a-form-item>
                             </a-form>
                             <q-uploader
-                                url="http://localhost:8080/upload/test"
+                                url="http://localhost:8080/microcom/upload/test"
                                 label="Individual upload"
-                                field-name="file"
-                                multiple
+                                field-name="image"
                                 style="max-width: 300px"
                               />
                         </a-card>
@@ -69,6 +68,7 @@ import { useRoute } from 'vue-router'
 import { onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
+import upload from '@/js/api/upload'
 
 // const props = defineProps({
 //     openNotificationWithIcon: {
@@ -125,32 +125,18 @@ const judgeMode = () => {
     }
 }
 
-const handleUploadImage = (event, insertImage, file) => {
+const handleUploadImage = async (event, insertImage, file) => {
     // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
-    console.log(file);
-    const formData = new FormData()
-    formData.append('image', file) // file 是一个 File 对象
-    axios.post('http://localhost:8080/microcom/upload/test', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    }).then(res => {
-        if (res.code == 200) {
-            insertImage({
-                url: res.data,
-                desc: '图片描述',
-            });
-        } else {
-            message.error(res.data.msg)
-        }
-    })
-    axios.post('http://localhost:8080/microcom/upload/datatest','zhangsan').then(res => {
-        if (res.code == 200) {
-            message.error(res.data.msg)
-        } else {
-            message.error(res.data.msg)
-        }
-    })
+    let res = await upload.uploadImage(file[0])
+    if (res.code == 200) {
+        insertImage({
+            url: res.data,
+            desc: '图片描述',
+        });
+        message.success(res.msg)
+    } else {
+        message.error(res.msg)
+    }
 }
 
 var ws

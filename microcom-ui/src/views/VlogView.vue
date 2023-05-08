@@ -104,6 +104,16 @@
         <div v-if="showDataFlag" style="text-align: center;">
             <p>没有更多数据了...</p>
         </div>
+        <q-page-sticky class="add-button" position="bottom-right" :offset="fabPos">
+            <q-fab
+              icon="add"
+              direction="up"
+              color="accent"
+              :disable="draggingFab"
+              v-touch-pan.prevent.mouse="moveFab"
+            >
+            </q-fab>
+      </q-page-sticky>
     </div>
 </template>
 
@@ -185,8 +195,14 @@ const showDialog = (vlog) => {
     imgs.value = [] // 清空图片数组
     imgs.value.push(...detail.value.img.split(',')) // 将图片串换为图片数组
 }
+
 </script>
 <style scoped>
+.add-button{
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+
 .carousel {
     height: 100%;
 }

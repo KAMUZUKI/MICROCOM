@@ -5,7 +5,7 @@ const httpPath = 'http://localhost:8080/microcom/vlogcomment/'
 let api = {
     async save (comment) {
         try {
-            let res = await axios.post(httpPath + "save",comment)
+            let res = await axios.post(httpPath + "save",comment,)
             return res.data
         }catch (err) {
             console.log(err);

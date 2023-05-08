@@ -82,7 +82,7 @@ export default defineComponent({
     const likeSet = new Set(likeList.value)
 
     const initData = () => {
-      likeList.value = JSON.parse(sessionStorage.getItem('likeList'))??''
+      likeList.value = JSON.parse(localStorage.getItem('likeList'))??''
       if (likeList.value.length > 0) {
         likeList.value.forEach(item => {
           likeSet.add(item)
@@ -104,7 +104,7 @@ export default defineComponent({
                   keywordSet.add(element)
                 });
             }
-            sessionStorage.setItem('keywords', JSON.stringify(Array.from(keywordSet)))
+            localStorage.setItem('keywords', JSON.stringify(Array.from(keywordSet)))
             initDataByCategory('all')
           } else {
             message.error(res.data.msg);
@@ -117,7 +117,7 @@ export default defineComponent({
 
     const pushToDetail = (item) => {
       store.state.detail = JSON.stringify(item)
-      sessionStorage.setItem("articleDetail", JSON.stringify(item));
+      localStorage.setItem("articleDetail", JSON.stringify(item));
     }
 
     const initDataByCategory = (type) => {
@@ -221,7 +221,7 @@ export default defineComponent({
     }]);
 
     const clickModel = (articleId, mode) => {
-      if (sessionStorage.getItem("user")) {
+      if (localStorage.getItem("user")) {
         //登录执行点击事件
         clickLimitCount.value++
         if (clickLimitCount.value > 4) {
@@ -230,7 +230,7 @@ export default defineComponent({
         if (mode == 1) {
           var params = new URLSearchParams();
           params.append('articleId', articleId);
-          params.append('userId', JSON.parse(sessionStorage.getItem("user")).id);
+          params.append('userId', JSON.parse(localStorage.getItem("user")).id);
           axios.post(store.state.path + '/article/changeData', params)
             .then(res => {
               if (res.data.code == 200) {

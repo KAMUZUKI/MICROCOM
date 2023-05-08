@@ -1,6 +1,7 @@
 package com.mu.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
 import cn.hutool.crypto.SecureUtil;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -36,7 +36,8 @@ public class UserController {
         }
         user.setPwd(null);
         StpUtil.login(user.getId());
-        return SaResult.ok("登录成功").setData(user);
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+        return SaResult.ok(tokenInfo.tokenValue).setData(user);
     }
 
     /**
