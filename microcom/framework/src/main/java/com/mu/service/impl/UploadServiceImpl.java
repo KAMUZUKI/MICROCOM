@@ -1,4 +1,4 @@
-package com.mu.service;
+package com.mu.service.impl;
 
 import cn.hutool.core.lang.UUID;
 import com.mu.config.COSProperties;
@@ -23,7 +23,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class UploadService {
+public class UploadServiceImpl {
     String key;
 
     @Autowired
@@ -56,15 +56,15 @@ public class UploadService {
             objectMetadata.setContentType(type);
             UUID uuid = UUID.randomUUID();
             // 指定要上传到 COS 上对象键 此key是文件唯一标识
-            key = uuid.toString().replace("-","")+".jpg";
-            PutObjectRequest putObjectRequest = new PutObjectRequest(cosProperties.getBucketName(), key, file.getInputStream(),objectMetadata);
+            key = uuid.toString().replace("-", "") + ".jpg";
+            PutObjectRequest putObjectRequest = new PutObjectRequest(cosProperties.getBucketName(), key, file.getInputStream(), objectMetadata);
 
             //使用cosClient调用第三方接口
             PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
-            log.info(putObjectRequest+"");
+            log.info(putObjectRequest + "");
             //返回路径
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         //拼接返回路径

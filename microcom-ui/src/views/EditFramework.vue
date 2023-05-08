@@ -144,6 +144,13 @@ const handleUploadImage = (event, insertImage, file) => {
             message.error(res.data.msg)
         }
     })
+    axios.post('http://localhost:8080/microcom/upload/datatest','zhangsan').then(res => {
+        if (res.code == 200) {
+            message.error(res.data.msg)
+        } else {
+            message.error(res.data.msg)
+        }
+    })
 }
 
 var ws

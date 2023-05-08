@@ -14,7 +14,7 @@ public class COSProperties {
     /**
      * 初始化用户身份信息 前往密钥管理查看
      */
-    private   String secretId;
+    private String secretId;
     /**
      * 初始化用户身份信息 前往密钥管理查看
      */
