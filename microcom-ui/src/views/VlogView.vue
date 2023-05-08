@@ -37,39 +37,43 @@
                             <text class="text" font-size="99px" font-family="'Montserrat', sans-serif" x="350" y="200"
                                 fill="#162a43">FURTHER</text>
                         </g>
-
                         <rect id="arrowBtn" @click="moveToDown" @mouseenter="mouseenter" @mouseleave="mouseleave"
                             width="100" height="100" opacity="0" x="550" y="220" style="cursor:pointer" />
                     </svg>
-                    <div class="vlog-box justify-between">
-                        <div id="layout" v-masonry="containerId" item-selector=".item" transition-duration="0.3s"
-                            gutter="50" fit-width="true" stagger="0.03s">
-                            <div v-masonry-tile class="item" v-for="(item, index) in cards" :key="index">
-                                <div class="card" @click="showDialog(item)">
-                                    <div class="card-header">
-                                        <img :src=utils.getImg(item.img)[0] :alt=utils.getImg(item.img)[0] />
+                    <div id="position-hook"></div>
+                    <div class="row justify-center q-gutter-sm">
+                        <q-intersection
+                            v-for="(item, index) in cards"
+                            :key="index"
+                            once
+                            transition="scale"
+                            margin="80px"
+                            class="example-item"
+                          >
+                            <div class="card" @click="showDialog(item)">
+                                <div class="card-header">
+                                    <img :src=utils.getImg(item.img)[0] :alt=utils.getImg(item.img)[0] />
+                                </div>
+                                <div class="card-body">
+                                    <div style="display: flex" v-if="item.label!==null">
+                                        <template v-for="(tag, index) in item.label.split(',')" :key="index">
+                                            <span class="tag tag-teal">{{ tag }}</span>
+                                        </template>
                                     </div>
-                                    <div class="card-body">
-                                        <div style="display: flex" v-if="item.label!==null">
-                                            <template v-for="(tag, index) in item.label.split(',')" :key="index">
-                                                <span class="tag tag-teal">{{ tag }}</span>
-                                            </template>
-                                        </div>
-                                        <h4>{{ item.id + item.title }}</h4>
-                                        <p>
-                                            {{ item.text.substring(0, 200) }}.....
-                                        </p>
-                                        <div class="user">
-                                            <img :src=item.head alt="" />
-                                            <div class="user-info">
-                                                <h5>{{ item.name }}</h5>{{ utils.parseDateToPast(item.time) }}
-                                                <small>{{ utils.parseDate(item.time) }}</small>
-                                            </div>
+                                    <h6>{{ item.id + item.title}}</h6>
+                                    <p>
+                                        {{ item.text.substring(0, 200) }}.....
+                                    </p>
+                                    <div class="user">
+                                        <img :src=item.head alt="" />
+                                        <div class="user-info">
+                                            <h5>{{ item.name }}</h5>{{ utils.parseDateToPast(item.time) }}
+                                            <small>{{ utils.parseDate(item.time) }}</small>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </q-intersection>
                     </div>
                 </div>
             </div>
@@ -104,6 +108,7 @@
         <div v-if="showDataFlag" style="text-align: center;">
             <p>没有更多数据了...</p>
         </div>
+        <!--vlog添加-->
         <q-page-sticky class="add-button" position="bottom-right" :offset="fabPos">
             <q-fab
               icon="add"
@@ -143,7 +148,7 @@ const findWithPage = async (page) => {
 }
 
 const moveToDown = () => {
-    const targetElement = document.getElementById('layout');
+    const targetElement = document.getElementById('position-hook');
     const targetPosition = targetElement.offsetTop;
     gsap.to(window, { scrollTo: { y: targetPosition }, duration: 1.5, ease: 'power1.inOut' });
     // scrollTo requires the ScrollTo plugin (not to be confused w/ ScrollTrigger)
@@ -242,6 +247,9 @@ const showDialog = (vlog) => {
 }
 </style>
 <style lang="sass" scoped>
+.example-item
+    width: 300px
+
 .q-pa-md
     padding: 0px !important
 
@@ -288,7 +296,6 @@ body
     border-radius: 10px;
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    width: 300px;
 }
 
 .card-header img {

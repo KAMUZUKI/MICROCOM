@@ -3,6 +3,8 @@ package com.mu.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.yulichang.base.MPJBaseMapper;
+import com.github.yulichang.query.MPJQueryWrapper;
 import com.mu.domain.Vlog;
 import org.springframework.data.repository.query.Param;
 
@@ -12,5 +14,5 @@ import org.springframework.data.repository.query.Param;
  */
 
 public interface VlogMapper extends BaseMapper<Vlog> {
-    IPage<Vlog> selectVlog(Page<Vlog> page, @Param("id") Integer id);
+
 }

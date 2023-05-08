@@ -68,9 +68,9 @@ sa-token:
   # 是否输出操作日志
   is-log: false
 
-#mybatis-plus:
-#  configuration:
-#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启SQL语句打印
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启SQL语句打印
 
 justauth:
   cache:

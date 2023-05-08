@@ -106,6 +106,7 @@
 import { ref,onMounted } from "vue";
 import LoadingComp from "@/components/tools/LoadingComp.vue";
 import PersonalDialog from "./PersonalDialog.vue";
+import vlogApi from "@/js/api/vlog"
 
 const showDialog = ref()
 
@@ -240,93 +241,10 @@ const list = ref([
   },
 ]);
 
-const onLoad = (index, done) => {
-  setTimeout(() => {
-    list.value.push(
-      {
-        id: 1,
-        imgUrl:
-          "https://images.unsplash.com/photo-1497445462247-4330a224fdb1?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 2,
-        imgUrl:
-          "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 3,
-        imgUrl:
-          "https://images.unsplash.com/photo-1502630859934-b3b41d18206c?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 4,
-        imgUrl:
-          "https://images.unsplash.com/photo-1498471731312-b6d2b8280c61?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 5,
-        imgUrl:
-          "https://images.unsplash.com/photo-1515023115689-589c33041d3c?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 6,
-        imgUrl:
-          "https://images.unsplash.com/photo-1504214208698-ea1916a2195a?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 7,
-        imgUrl:
-          "https://images.unsplash.com/photo-1515814472071-4d632dbc5d4a?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 8,
-        imgUrl:
-          "https://images.unsplash.com/photo-1511407397940-d57f68e81203?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 9,
-        imgUrl:
-          "https://images.unsplash.com/photo-1497445462247-4330a224fdb1?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      }
-    );
+const onLoad = async (index, done) => {
+    let res = await vlogApi.findWithPageById(index,10)
+    list.value.push();
     done();
-  }, 2000);
 };
 
 onMounted(() => {
