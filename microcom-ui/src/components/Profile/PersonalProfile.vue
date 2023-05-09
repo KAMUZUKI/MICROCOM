@@ -48,10 +48,10 @@
 
   <main>
     <div class="container">
-      <q-infinite-scroll @load="onLoad">
+      <q-infinite-scroll :debounce="2000" @load="onLoad" :offset="100">
         <div class="gallery">
-          <div v-for="item in list" :key="item.id">
-            <div class="gallery-item" tabindex="0">
+          <q-intersection v-for="item,index in list" :key="index" once transition="scale" class="example-item">
+            <div class="gallery-item" tabindex="0" @click="showDetail(item)">
               <img :src=utils.getImg(item.img)[0] class="gallery-image" alt="" />
               <div class="gallery-item-info">
                 <div class="views">
@@ -63,11 +63,10 @@
                         d="M24 29C26.7614 29 29 26.7614 29 24C29 21.2386 26.7614 19 24 19C21.2386 19 19 21.2386 19 24C19 26.7614 21.2386 29 24 29Z"
                         fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" />
                     </svg></span>
-                  <span>{{  }}</span>
+                  <span>{{ }}</span>
                 </div>
-                <div class="love" @click="agreePost(item)">
-                  <svg width="30" height="30" viewBox="0 0 48 48" fill="#ffffff"
-                    xmlns="http://www.w3.org/2000/svg">
+                <div class="love">
+                  <svg width="30" height="30" viewBox="0 0 48 48" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M4.18898 22.1733C4.08737 21.0047 5.00852 20 6.18146 20H10C11.1046 20 12 20.8954 12 22V41C12 42.1046 11.1046 43 10 43H7.83363C6.79622 43 5.93102 42.2068 5.84115 41.1733L4.18898 22.1733Z"
                       stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
@@ -75,7 +74,7 @@
                       d="M18 21.3745C18 20.5388 18.5194 19.7908 19.2753 19.4345C20.9238 18.6574 23.7329 17.0938 25 14.9805C26.6331 12.2569 26.9411 7.33595 26.9912 6.20878C26.9982 6.05099 26.9937 5.89301 27.0154 5.73656C27.2861 3.78446 31.0543 6.06492 32.5 8.47612C33.2846 9.78471 33.3852 11.504 33.3027 12.8463C33.2144 14.2825 32.7933 15.6699 32.3802 17.0483L31.5 19.9845H42.3569C43.6832 19.9845 44.6421 21.2518 44.2816 22.5281L38.9113 41.5436C38.668 42.4051 37.8818 43 36.9866 43H20C18.8954 43 18 42.1046 18 41V21.3745Z"
                       stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
-                  <span>{{  }}</span>
+                  <span>{{ }}</span>
                 </div>
                 <div class="comments">
                   <svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -86,42 +85,44 @@
                     <path d="M12 22H18" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
                     <path d="M12 14H24" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
                   </svg>
-                  <span>{{  }}</span>
+                  <span>{{ }}</span>
                 </div>
               </div>
             </div>
-          </div>
+          </q-intersection>
+          <!-- End of gallery -->
         </div>
         <template v-slot:loading>
-          <loading-comp />
-        </template>
+        <loading-comp />
+      </template>
       </q-infinite-scroll>
-      <!-- End of gallery -->
     </div>
+    
+    <personal-dialog ref="dialogRef" />
     <div v-if="showDataFlag" style="text-align: center;">
-            <p>没有更多数据了...</p>
-        </div>
+      <p>没有更多数据了...</p>
+    </div>
     <!-- End of container -->
   </main>
 </template>
   
 <script setup>
-import { ref,onMounted } from "vue";
-import LoadingComp from "@/components/tools/LoadingComp.vue";
-import PersonalDialog from "./PersonalDialog.vue";
+import { ref, onMounted } from "vue";
+import LoadingComp from "@/components/tools/LoadingComp.vue"
+import PersonalDialog from '@/components/Profile/PersonalDialog'
 import vlogApi from "@/js/api/vlog"
 import utils from "@/js/utils/utils";
 
-const showDialog = ref()
-
+const dialogRef = ref(null)
 const showDataFlag = ref(false)
 
-const show = (id,mode)=>{
-  showDialog.value.showDialog(id,mode)
-}
+const showDetail = (item) => {
+  console.log(dialogRef)
+  dialogRef.value.show(item)
+};
 
 const userInfo = {
-  id:1,
+  id: 1,
   username: "KAMUZUKI",
   avatarUrl:
     "https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces",
@@ -131,26 +132,30 @@ const userInfo = {
   signs: "I'm a photographer and a web developer.",
 };
 
-const agreePost = (item) => {
-  item.isLiked = !item.isLiked;
-  item.likes += ((item.isLiked) ? 1 : -1);
-};
+// const agreePost = (item) => {
+//   item.isLiked = !item.isLiked;
+//   item.likes += ((item.isLiked) ? 1 : -1);
+// };
 
 const list = ref([]);
 
 const onLoad = async (index, done) => {
-    let res = await vlogApi.findWithPageById(1,index)
-    if (res == null || res == undefined) {
-        done();
-        showDataFlag.value = true;
-        return;
-    }
-    list.value.push(...res);
-    await done();
+  if (showDataFlag.value) {
+    done()
+    return
+  }
+  let res = await vlogApi.findWithPageById(1, index)
+  if (res == null || res == undefined) {
+    done();
+    showDataFlag.value = true;
+    return;
+  }
+  list.value.push(...res);
+  await done();
 };
 
 onMounted(() => {
-  
+
 });
 </script>
   

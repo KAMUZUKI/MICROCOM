@@ -11,7 +11,7 @@
                 <q-item-label caption>{{ user.time }}</q-item-label>
             </q-item-section>
             <q-item-section side>
-                <div @click="subscribe()">
+                <div v-if="userId!==user.createId" @click="subscribe()">
                     <a class="subscribe-button">
                         <svg xmlns="http://www.w3.org/2000/svg">
                           <g>
@@ -130,6 +130,8 @@ const props = defineProps({
 })
 
 const user = ref({
+    id: props.detail.id,
+    createId: props.detail.createId,
     author: props.detail.name,
     time: utils.parseDate(props.detail.time),
     content: props.detail.content,

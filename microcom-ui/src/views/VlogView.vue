@@ -1,6 +1,6 @@
 <template>
     <div class="q-pa-md q-gutter-md container">
-        <q-infinite-scroll :debounce="2000" @load="onLoad" :offset="800">
+        <q-infinite-scroll :debounce="2000" @load="onLoad" :offset="100">
             <div class="row justify-between">
                 <div class="scrollDist">
                 </div>
@@ -47,7 +47,6 @@
                             :key="index"
                             once
                             transition="scale"
-                            margin="80px"
                             class="example-item"
                           >
                             <div class="card" @click="showDialog(item)">
@@ -81,30 +80,7 @@
                 <loading-comp />
             </template>
         </q-infinite-scroll>
-        <q-dialog class="dialog" v-model="basic">
-            <q-card class="profile-card">
-                <div class="scroll-img">
-                    <q-carousel class="carousel" swipeable animated arrows v-model="slide" v-model:fullscreen="fullscreen"
-                        infinite>
-                        <template v-for="(img, index) in imgs" :key="index">
-                            <q-carousel-slide :name="index + 1" :img-src=img />
-                        </template>
-                        <template v-slot:control>
-                            <q-carousel-control position="bottom-right" :offset="[18, 18]">
-                                <q-btn push round dense color="white" text-color="primary"
-                                    :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'"
-                                    @click="fullscreen = !fullscreen" />
-                            </q-carousel-control>
-                        </template>
-                    </q-carousel>
-                </div>
-                <div class="profile-bio">
-                    <div class="note-scroller">
-                        <profile-comment :detail="detail"></profile-comment>
-                    </div>
-                </div>
-            </q-card>
-        </q-dialog>
+        <personal-dialog ref="dialogRef" />
         <div v-if="showDataFlag" style="text-align: center;">
             <p>没有更多数据了...</p>
         </div>
@@ -126,25 +102,20 @@
 import { ref, onMounted } from 'vue'
 import { gsap, ScrollTrigger, ScrollToPlugin } from "gsap/all"
 import LoadingComp from '@/components/tools/LoadingComp.vue';
-import ProfileComment from "@/components/Detail/ProfileComment.vue";
+import PersonalDialog from '@/components/Profile/PersonalDialog'
 import api from '@/js/api/vlog'
 import utils from '@/js/utils/utils'
 
-const basic = ref(false)
 const showDataFlag = ref(false)
-const cards = ref([]);
-const slide = ref(1)
-const fullscreen = ref(false)
-const detail = ref(null)
-
-const imgs = ref([
-    "https://cdn.quasar.dev/img/mountains.jpg",
-    "https://cdn.quasar.dev/img/parallax1.jpg",
-    "https://cdn.quasar.dev/img/parallax2.jpg",
-    "https://cdn.quasar.dev/img/quasar.jpg"])
+const cards = ref([])
+const dialogRef = ref(null)
 
 const findWithPage = async (page) => {
     return await api.findWithPage(page)
+}
+
+const showDialog = (item) => {
+    dialogRef.value.show(item)
 }
 
 const moveToDown = () => {
@@ -178,74 +149,27 @@ onMounted(() => {
 })
 
 const onLoad = (index, done) => {
+    if (showDataFlag.value) {
+        done()
+        return
+    }
     Promise.resolve().then(async () => {
         try {
             var res = await findWithPage(index); // Your asynchronous data retrieval method
             if (res == null || res == undefined) {
-                done();
-                showDataFlag.value = true;
-                return;
+                done()
+                showDataFlag.value = true
+                return
             }
-            cards.value.push(...res);
-            done();
+            cards.value.push(...res)
+            done()
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
     });
 };
-
-const showDialog = (vlog) => {
-    basic.value = true
-    detail.value = vlog
-    imgs.value = [] // 清空图片数组
-    imgs.value.push(...detail.value.img.split(',')) // 将图片串换为图片数组
-}
-
 </script>
-<style scoped>
-.add-button{
-    margin-bottom: 20px;
-    margin-right: 20px;
-}
 
-.carousel {
-    height: 100%;
-}
-
-.note-scroller {
-    height: 100%;
-    overflow: hidden;
-    clear: both;
-}
-
-.profile-card {
-    max-width: 80vw;
-    width: 900px;
-    height: 580px;
-    position: absolute;
-    overflow: hidden;
-    display: flex;
-    text-align: left;
-    border: 1px solid #e0e0e0;
-    border-radius: 20px;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16), 0px 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.scroll-img {
-    border-right: 2px dashed #eeeeee;
-    flex: 1;
-    background: #ffffff;
-}
-
-.scroll-img>img {
-    max-width: 100%;
-}
-
-.profile-bio {
-    background: #ffffff;
-    flex: 1;
-}
-</style>
 <style lang="sass" scoped>
 .example-item
     width: 300px
@@ -298,6 +222,11 @@ body
     overflow: hidden;
 }
 
+.card:hover{
+  background-color: rgba(0, 0, 0, 0.3);
+  transition: 2s;
+}
+
 .card-header img {
     width: 100%;
     height: 200px;
@@ -320,7 +249,6 @@ body
     margin: 0 5px;
     padding: 2px 10px;
     text-transform: uppercase;
-    
 }
 
 .tag-teal {

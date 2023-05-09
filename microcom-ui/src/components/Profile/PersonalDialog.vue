@@ -1,94 +1,98 @@
 <template>
-  <q-dialog v-model="fixed">
-    <q-card>
-      <q-card-section>
-        <q-btn-group push>
-          <q-btn @click="showDialog(userId,1)" push label="粉丝" icon="timeline" />
-          <q-btn @click="showDialog(userId,0)" push label="关注" icon="visibility" />
-        </q-btn-group>
-      </q-card-section>
-
-      <q-separator />
-
-      <q-card-section style="max-height: 50vh;min-width: 500px" class="scroll">
-        <q-list bordered class="rounded-borders">
-          <template v-for="(item,index) in items" :key="index">
-            <q-item clickable v-ripple>
-              <q-item-section avatar>
-                <q-avatar>
-                  <img :src=item.head>
-                </q-avatar>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label lines="1">{{item.name}}</q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <div v-if="title=='粉丝'">
-                    <q-btn @click="follow(item.id)" push color="white" text-color="dark" label="关注" />
-                </div>
-                <div v-else>
-                    <q-btn @click="unfollow(item.id)" push color="white" text-color="dark" label="取消关注" />
-                </div>
-              </q-item-section>
-            </q-item>
-          </template>
-        </q-list>
-      </q-card-section>
-      <q-separator />
+  <q-dialog class="dialog" v-model="basic">
+    <q-card class="profile-card">
+        <div class="scroll-img">
+            <q-carousel class="carousel" swipeable animated arrows v-model="slide" v-model:fullscreen="fullscreen"
+                infinite>
+                <template v-for="(img, index) in imgs" :key="index">
+                    <q-carousel-slide :name="index + 1" :img-src=img />
+                </template>
+                <template v-slot:control>
+                    <q-carousel-control position="bottom-right" :offset="[18, 18]">
+                        <q-btn push round dense color="white" text-color="primary"
+                            :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'"
+                            @click="fullscreen = !fullscreen" />
+                    </q-carousel-control>
+                </template>
+            </q-carousel>
+        </div>
+        <div class="profile-bio">
+            <div class="note-scroller">
+                <profile-comment :detail="detail"></profile-comment>
+            </div>
+        </div>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup>
-import followApi from "@/js/api/user"
-import { ref, onMounted, defineExpose} from "vue"
-import { message } from "ant-design-vue"
-import utils from "@/js/utils/utils"
-const fixed = ref(false)
-const items = ref([])
-const title = ref("")
-const userId = JSON.parse(localStorage.getItem("user")).id
+import { ref, defineExpose } from 'vue'
+import ProfileComment from "@/components/Detail/ProfileComment.vue";
 
-const initData = async (id,mode)=>{
-    let res
-    if(mode == 1){
-        res = await followApi.getFollowers(id)
-        title.value = "粉丝"
-    }else{
-        res = await followApi.getFollowing(id)
-        title.value = "关注"
-    }
-    items.value = res.data
+const slide = ref(1)
+const fullscreen = ref(false)
+const basic = ref(false)
+const detail = ref()
+
+const imgs = ref([
+    "https://cdn.quasar.dev/img/mountains.jpg",
+    "https://cdn.quasar.dev/img/parallax1.jpg",
+    "https://cdn.quasar.dev/img/parallax2.jpg",
+    "https://cdn.quasar.dev/img/quasar.jpg"])
+
+const show = (vlog) => {
+  basic.value = true
+  detail.value = vlog
+  imgs.value = [] // 清空图片数组
+  imgs.value.push(...detail.value.img.split(',')) // 将图片串换为图片数组
 }
-
-const showDialog = (id,mode)=>{
-    initData(id,mode)
-    fixed.value = true
-}
-
-const follow = utils.debounce(async (targetId)=>{
-    let res = await followApi.follow(userId,targetId)
-    if(res.data){
-        message.success("关注成功")
-    }
-},1000)
-
-const unfollow = utils.debounce(async (targetId) => {
-  let res = await followApi.unfollow(userId, targetId);
-  if (res.data) {
-    message.success('取消关注成功');
-  }
-}, 1000);
 
 defineExpose({
-    showDialog
-})
-
-onMounted(() => {
-    initData(userId,1)
-})
+  show
+});
 </script>
 
-<style>
+<style scoped>
+.add-button{
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
 
+.carousel {
+    height: 100%;
+}
+
+.note-scroller {
+    height: 100%;
+    overflow: hidden;
+    clear: both;
+}
+
+.profile-card {
+    max-width: 80vw;
+    width: 900px;
+    height: 580px;
+    position: absolute;
+    overflow: hidden;
+    display: flex;
+    text-align: left;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16), 0px 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.scroll-img {
+    border-right: 2px dashed #eeeeee;
+    flex: 1;
+    background: #ffffff;
+}
+
+.scroll-img>img {
+    max-width: 100%;
+}
+
+.profile-bio {
+    background: #ffffff;
+    flex: 1;
+}
 </style>

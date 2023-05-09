@@ -22,7 +22,7 @@ public class VlogServiceImpl extends ServiceImpl<VlogMapper, Vlog> implements Vl
     public IPage<Vlog> findWithPage(Page<Vlog> page) {
         QueryWrapper<Vlog> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("vlog.id", "vlog.create_id", "vlog.title","vlog.label", "vlog.text", "vlog.img", "user.name", "user.head", "vlog.time")
-                .last("LEFT JOIN user ON vlog.create_id = user.id where create_id = 1 ");
+                .last("LEFT JOIN user ON vlog.create_id = user.id");
         return baseMapper.selectPage(page, queryWrapper);
     }
 
