@@ -17,9 +17,9 @@ let api = {
     delete(vlogId) {
         axios.delete(httpPath + "delete/" + vlogId)
     },
-    async findWithPageById(vlogId,page) {
+    async findWithPageById(userId,page) {
         try {
-            const response = await axios.get(httpPath + "findWithPageById/" + vlogId + "/" + page)
+            const response = await axios.get(httpPath + "findWithPageById/" + userId + "/" + page)
             return response.data.data
         }catch (err) {
             return err
