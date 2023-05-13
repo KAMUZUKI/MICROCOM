@@ -66,6 +66,7 @@ public class UploadServiceImpl {
 
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
         //拼接返回路径
         String imagePath = "https://" + cosProperties.getBucketName() + ".cos." + cosProperties.getRegionName() + ".myqcloud.com/" + key;

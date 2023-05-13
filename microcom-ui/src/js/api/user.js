@@ -1,44 +1,42 @@
-import axios from 'axios';
-
-const httpPath = 'http://localhost:8080/microcom/user/'
+import request from "@/js/api/request";
 
 let api = {
     async getFollowers (userId) {
         try {
-            let res = await axios.post(httpPath + "getFollowers/" + userId)
-            return res.data
+            let res = await request.post("user/getFollowers/" + userId)
+            return res
         }catch (err) {
             console.log(err);
         }
     },
     async getFollowing(userId){
         try {
-            let res = await axios.post(httpPath + "getFollowing/" + userId)
-            return res.data
+            let res = await request.post("user/getFollowing/" + userId)
+            return res
         }catch (err) {
             console.log(err);
         }
     },
     async isFollow (userId,targetId){
         try {
-            let res = await axios.post(httpPath + "isFollow/" + userId + "/" + targetId)
-            return res.data
+            let res = await request.post("user/isFollow/" + userId + "/" + targetId)
+            return res
         }catch (err) {
             console.log(err);
         }
     },
     async follow (userId,targetId){
         try {
-            let res = await axios.post(httpPath + "follow/" + userId + "/" + targetId)
-            return res.data
+            let res = await request.post("user/follow/" + userId + "/" + targetId)
+            return res
         }catch (err) {
             console.log(err);
         }
     },
     async unfollow (userId,targetId){
         try {
-            let res = await axios.post(httpPath + "unfollow/" + userId + "/" + targetId)
-            return res.data
+            let res = await request.post("user/unfollow/" + userId + "/" + targetId)
+            return res
         }catch (err) {
             console.log(err);
         }

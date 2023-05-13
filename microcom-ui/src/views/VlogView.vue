@@ -41,38 +41,40 @@
                             width="100" height="100" opacity="0" x="550" y="220" style="cursor:pointer" />
                     </svg>
                     <div id="position-hook"></div>
-                    <div class="row justify-center q-gutter-sm">
-                        <q-intersection
-                            v-for="(item, index) in cards"
-                            :key="index"
-                            once
-                            transition="scale"
-                            class="example-item"
-                          >
-                            <div class="card" @click="showDialog(item)">
-                                <div class="card-header">
-                                    <img :src=utils.getImg(item.img)[0] :alt=utils.getImg(item.img)[0] />
-                                </div>
-                                <div class="card-body">
-                                    <div style="display: flex" v-if="item.label!==null">
-                                        <template v-for="(tag, index) in item.label.split(',')" :key="index">
-                                            <span class="tag tag-teal">{{ tag }}</span>
-                                        </template>
+                    <!--mian start-->
+                    <div class="row justify-center q-gutter-sm vlog-container">
+                        <Waterfall :list="cards" :width="300" :gutter="20"
+                        :animationEffect="fadeInUp" 
+                        :animation-delay="2000" :animation-duration="2000">
+                            <!-- <q-intersection v-for="(item, index) in cards" :key="index" once transition="scale"
+                                class="example-item"> -->
+                            <template #item="{ item}">
+                                <div class="card" @click="showDialog(item)">
+                                    <div class="card-header">
+                                        <LazyImg :url=utils.getImg(item.img)[0] :alt=utils.getImg(item.img)[0] />
                                     </div>
-                                    <h6>{{ item.id + item.title}}</h6>
-                                    <p>
-                                        {{ item.text.substring(0, 200) }}.....
-                                    </p>
-                                    <div class="user">
-                                        <img :src=item.head alt="" />
-                                        <div class="user-info">
-                                            <h5>{{ item.name }}</h5>{{ utils.parseDateToPast(item.time) }}
-                                            <small>{{ utils.parseDate(item.time) }}</small>
+                                    <div class="card-body">
+                                        <div style="display: flex" v-if="item.label !== null">
+                                            <template v-for="(tag, index) in item.label.split(',')" :key="index">
+                                                <span class="tag tag-teal">{{ tag }}</span>
+                                            </template>
+                                        </div>
+                                        <h6>{{ item.id + item.title }}</h6>
+                                        <p>
+                                            {{ item.text.substring(0, 200) }}.....
+                                        </p>
+                                        <div class="user">
+                                            <img :src=item.head alt="" />
+                                            <div class="user-info">
+                                                <h5>{{ item.name }}</h5>{{ utils.parseDateToPast(item.time) }}
+                                                <small>{{ utils.parseDate(item.time) }}</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </q-intersection>
+                            </template>
+                            <!-- </q-intersection> -->
+                        </Waterfall>
                     </div>
                 </div>
             </div>
@@ -86,33 +88,27 @@
         </div>
         <!--vlog添加-->
         <q-page-sticky class="add-button" position="bottom-right" :offset="fabPos">
-            <q-fab
-              icon="add"
-              direction="up"
-              color="accent"
-              :disable="draggingFab"
-              v-touch-pan.prevent.mouse="moveFab"
-            >
+            <q-fab icon="add" direction="up" color="accent" :disable="draggingFab" v-touch-pan.prevent.mouse="moveFab">
             </q-fab>
-      </q-page-sticky>
+        </q-page-sticky>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { gsap, ScrollTrigger, ScrollToPlugin } from "gsap/all"
-import LoadingComp from '@/components/tools/LoadingComp.vue';
-import PersonalDialog from '@/components/Profile/PersonalDialog'
+import LoadingComp from '@/components/tools/LoadingComp.vue'
+import PersonalDialog from '@/components/Detail/DetailCard.vue'
 import api from '@/js/api/vlog'
+import { LazyImg, Waterfall } from 'vue-waterfall-plugin-next'
+import 'vue-waterfall-plugin-next/dist/style.css'
+import 'animate.css';
 import utils from '@/js/utils/utils'
+import { message } from 'ant-design-vue'
 
 const showDataFlag = ref(false)
 const cards = ref([])
 const dialogRef = ref(null)
-
-const findWithPage = async (page) => {
-    return await api.findWithPage(page)
-}
 
 const showDialog = (item) => {
     dialogRef.value.show(item)
@@ -155,22 +151,45 @@ const onLoad = (index, done) => {
     }
     Promise.resolve().then(async () => {
         try {
-            var res = await findWithPage(index); // Your asynchronous data retrieval method
+            var res = await api.findWithPage(8,index); // Your asynchronous data retrieval method
+            if(res.code == 'ERR_NETWORK'){
+                message.error('网络错误,请稍后重试')
+                done()
+                return
+            }
+            //没有更多数据了
             if (res == null || res == undefined) {
                 done()
                 showDataFlag.value = true
                 return
             }
-            cards.value.push(...res)
-            done()
+            cards.value.push(...res.data)
+            await done()
         } catch (error) {
-            console.error(error)
+            console.log(error)
+            message.error('出错了,请稍后重试')
         }
     });
 };
 </script>
 
 <style lang="sass" scoped>
+.lazy__img[lazy=loading]
+  padding: 5em 0
+  width: 48px
+
+.lazy__img[lazy=loaded]
+  width: 100%
+
+
+.lazy__img[lazy=error] 
+  padding: 5em 0
+  width: 48px
+
+.vlog-container
+    max-width: 1400px
+    margin: 0 auto
+
 .example-item
     width: 300px
 
@@ -206,6 +225,7 @@ body
   justify-content: center
   height: 100vh
   margin: 0
+
 </style>
 
 <style scoped>
@@ -220,11 +240,12 @@ body
     border-radius: 10px;
     box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    transition: 1s;
 }
 
-.card:hover{
-  background-color: rgba(0, 0, 0, 0.3);
-  transition: 2s;
+.card:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+    transition: all 1s;
 }
 
 .card-header img {

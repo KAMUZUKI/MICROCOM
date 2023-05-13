@@ -300,18 +300,19 @@ const subscribe = utils.debounce(async ()=>{
 },1000)
 
 const initSubscribe = async ()=>{
-    var subButton = document.querySelector('.subscribe-button');
-    var subbedClass = 'subbed';
-    var text;
+    var subButton = document.querySelector('.subscribe-button')
+    if(subButton==null) return
+    var subbedClass = 'subbed'
+    var text
     var res = await followApi.isFollow(userId,props.detail.id)
     if (res.data) {
-        subButton.classList.add(subbedClass);
-        text = '已关注';
+        subButton.classList.add(subbedClass)
+        text = '已关注'
     } else {
-        subButton.classList.remove(subbedClass);
-        text = '关注';
+        subButton.classList.remove(subbedClass)
+        text = '关注'
     }
-    subButton.querySelector('.subscribe-text').innerHTML = text;
+    subButton.querySelector('.subscribe-text').innerHTML = text
 }
 
 // 监听用户输入的变化

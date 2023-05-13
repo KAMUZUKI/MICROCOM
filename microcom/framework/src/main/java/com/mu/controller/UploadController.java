@@ -1,5 +1,6 @@
 package com.mu.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.util.SaResult;
 import com.mu.service.impl.UploadServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
-@CrossOrigin
 @RequestMapping("/upload/")
 public class UploadController {
 
@@ -26,13 +26,25 @@ public class UploadController {
      * 上传图片
      * @param file 文件
      */
+    @SaCheckLogin
     @PostMapping("image")
     public SaResult uploadImage(@RequestPart(value = "file") final MultipartFile file){
         String url=uploadService.uploadImage(file);
         log.info("返回地址：【{}】",url);
         if (url==null){
-            return SaResult.ok("图片上传失败");
+            return SaResult.error("图片上传失败");
         }
         return SaResult.ok("图片上传成功").setData(url);
+    }
+
+    /**
+     * 上传图片
+     * @param file 文件
+     */
+    @SaCheckLogin
+    @PostMapping("test")
+    public SaResult uploadImageTest(@RequestPart(value = "file") final MultipartFile file){
+        log.info("图片上传成功");
+        return SaResult.ok("图片上传成功").setData("http://www.kamuzuki.top");
     }
 }

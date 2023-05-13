@@ -1,26 +1,27 @@
-import axios from 'axios';
-
-const httpPath = 'http://localhost:8080/microcom/vlog/'
+import request from '@/js/api/request'
 
 let api = {
-    async findWithPage(page) {
+    async findWithPage(size,page) {
         try {
-            const response = await axios.get(httpPath + "findWithPage/" + page)
-            return response.data.data
+            const response = await request.get("vlog/findWithPage/" + size + "/" + page)
+            return response
         }catch (err) {
             return err
         }
     },
+    findWithPageNow(size,page) {
+        return request.get("vlog/findWithPage/" + size + "/" + page)
+    },
     add(vlog) {
-        axios.get(httpPath + "add",vlog)
+        request.get("vlog/add",vlog)
     },
     delete(vlogId) {
-        axios.delete(httpPath + "delete/" + vlogId)
+        request.delete("vlog/delete/" + vlogId)
     },
-    async findWithPageById(userId,page) {
+    async findWithPageById(userId,size,page) {
         try {
-            const response = await axios.get(httpPath + "findWithPageById/" + userId + "/" + page)
-            return response.data.data
+            const response = await request.get("vlog/findWithPageById/" + userId + "/" + size + "/" + page)
+            return response
         }catch (err) {
             return err
         }

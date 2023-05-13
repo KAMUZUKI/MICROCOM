@@ -40,16 +40,14 @@
                                         placeholder="请选择关键词" :options="keywords">
                                     </a-select>
                                 </a-form-item>
+                                <q-uploader :factory="factoryFn" @factory-failed="failed" max-files="1"
+                                    color="blue" label="文章图片" field-name="file" :uploadProgressLabel="uplaodProcess"
+                                    style="max-width: 250px;margin-bottom:20px;" />
                                 <a-form-item>
                                     <a-button shape="round" type="primary" html-type="submit">提交</a-button>
                                 </a-form-item>
                             </a-form>
-                            <q-uploader
-                                url="http://localhost:8080/microcom/upload/test"
-                                label="Individual upload"
-                                field-name="image"
-                                style="max-width: 300px"
-                              />
+
                         </a-card>
                     </a-col>
                 </a-space>
@@ -88,6 +86,7 @@ const tmpCategorys = ref([])
 const keywordOptions = ref([])
 const categoryOptions = ref()
 const mode = ref(true)
+const uplaodProcess = ref('10')
 const formState = reactive({
     user: {
         author: '',
@@ -99,7 +98,29 @@ const formState = reactive({
         titleImgs: '',
         createTime: '',
     }
-});
+})
+
+const factoryFn = async (files) => {
+  try {
+    const res = await upload.uploadImage(files[0])
+    if (res.code === 200) {
+      uplaodProcess.value = '100'
+      formState.user.titleImgs = res.data
+      message.success("图片上传成功")
+      return res.data
+    } else {
+      message.error(res.msg)
+    }
+  } catch (error) {
+    console.error('文件上传失败：', error)
+    message.error('文件上传失败，请重试')
+  }
+}
+
+
+const failed = ()=>{
+    message.success("图片上传失败")
+}
 
 const judgeMode = () => {
     const editInfo = route.query.articleId ?? '0'
@@ -248,3 +269,9 @@ const validateMessages = {
 onBeforeUnmount(() => {
 })
 </script>
+
+<style scoped>
+.q-uploader__header {
+    background-color: #0395cf !important
+}
+</style>

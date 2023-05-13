@@ -21,11 +21,11 @@
             <li>
               <span class="profile-stat-count">{{ userInfo.posts }}</span> 作品
             </li>
-            <li @click="show(userInfo.id,1)">
+            <li @click="showInfo(userInfo.id,1)">
               <span class="profile-stat-count">{{ userInfo.followers }}</span>
               粉丝
             </li>
-            <li @click="show(userInfo.id,0)">
+            <li @click="showInfo(userInfo.id,0)">
               <span class="profile-stat-count">{{ userInfo.following }}</span>
               关注
             </li>
@@ -44,7 +44,7 @@
     <!-- End of container -->
   </header>
 
-  <personal-dialog ref="showDialog"></personal-dialog>
+  <personal-follow ref="showFollow"></personal-follow>
 
   <main>
     <div class="container">
@@ -98,7 +98,7 @@
       </q-infinite-scroll>
     </div>
     
-    <personal-dialog ref="dialogRef" />
+    <detail-card ref="dialogRef" />
     <div v-if="showDataFlag" style="text-align: center;">
       <p>没有更多数据了...</p>
     </div>
@@ -107,19 +107,25 @@
 </template>
   
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import LoadingComp from "@/components/tools/LoadingComp.vue"
-import PersonalDialog from '@/components/Profile/PersonalDialog'
+import DetailCard from '@/components/Detail/DetailCard.vue'
+import PersonalFollow from "@/components/Profile/PersonalFollow.vue"
 import vlogApi from "@/js/api/vlog"
 import utils from "@/js/utils/utils";
 
-const dialogRef = ref(null)
+//显示数据是否显示完全的标记
 const showDataFlag = ref(false)
+const dialogRef = ref(null)
+const showFollow = ref(null)
 
 const showDetail = (item) => {
-  console.log(dialogRef)
   dialogRef.value.show(item)
-};
+}
+
+const showInfo = (id,mode)=>{
+  showFollow.value.showFollow(id,mode)
+}
 
 const userInfo = {
   id: 1,
@@ -144,19 +150,15 @@ const onLoad = async (index, done) => {
     done()
     return
   }
-  let res = await vlogApi.findWithPageById(1, index)
+  let res = await vlogApi.findWithPageById(1,9,index)
   if (res == null || res == undefined) {
     done();
     showDataFlag.value = true;
     return;
   }
-  list.value.push(...res);
+  list.value.push(...res.data);
   await done();
 };
-
-onMounted(() => {
-
-});
 </script>
   
 <style scoped>

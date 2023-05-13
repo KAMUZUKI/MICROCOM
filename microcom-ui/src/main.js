@@ -26,7 +26,7 @@ import hljs from 'highlight.js';
 import { Quasar } from 'quasar'
 import quasarUserOptions from './quasar-user-options'
 // 瀑布流
-import { VueMasonryPlugin } from 'vue-masonry';
+import vueWaterfallEasy from 'vue-waterfall-easy'
 
 // 选择使用主题
 VMdPreview.use(githubTheme, {
@@ -50,5 +50,5 @@ app.use(Antd)
   .use(VueCookies)
   .use(VMdPreview)
   .use(store)
-  .use(VueMasonryPlugin)
+  .use(vueWaterfallEasy)
   .mount('#app');
