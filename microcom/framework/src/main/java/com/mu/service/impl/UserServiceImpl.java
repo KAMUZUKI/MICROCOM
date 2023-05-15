@@ -73,6 +73,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.updateById(user);
     }
 
+    public User getUserById(String userId) {
+        return userMapper.selectById(userId);
+    }
+
     /**
      * 获取用户喜欢的文章列表
      *
@@ -109,34 +113,41 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public List<SimpleUser> getFollowers(String userId) {
-        List<SimpleUser> followers = new ArrayList<>();
         String key = UserConstant.FOLLOWERS + userId;
         Set<Object> followerIds = redisTemplate.opsForZSet().range(key, 0, -1);
-        for (Object followerId : followerIds) {
-            Double score = Double.valueOf(followerId.toString());
-            Set<Object> objs = redisTemplate.opsForZSet().rangeByScore(UserConstant.USER_PREFIX, score, score);
-            if (objs == null || objs.size() == 0) {
-                continue;
-            }
-            followers.add((JSON.parseObject(objs.iterator().next().toString(), SimpleUser.class)));
-        }
-        return followers;
+        assert followerIds != null;
+        return parseToList(followerIds);
     }
 
     @Override
     public List<SimpleUser> getFollowing(String userId) {
-        List<SimpleUser> following = new ArrayList<>();
         String key = UserConstant.FOLLOWING + userId;
         Set<Object> followingIds = redisTemplate.opsForZSet().range(key, 0, -1);
-        for (Object followingId : followingIds) {
-            double score = Double.parseDouble(followingId.toString());
+        assert followingIds != null;
+        return parseToList(followingIds);
+    }
+
+    @Override
+    public List<SimpleUser> getInterconnections(String userId) {
+        String followerKey = UserConstant.FOLLOWERS + userId;
+        String followingKey = UserConstant.FOLLOWING + userId;
+        // 计算两个有序集合的交集并获取结果
+        Set<Object> interconnectionsId = redisTemplate.opsForZSet().intersect(followerKey, followingKey);
+        assert interconnectionsId != null;
+        return parseToList(interconnectionsId);
+    }
+
+    private List<SimpleUser> parseToList(Set<Object> set){
+        List<SimpleUser> list = new ArrayList<>();
+        for (Object followerId : set) {
+            double score = Double.parseDouble(followerId.toString());
             Set<Object> objs = redisTemplate.opsForZSet().rangeByScore(UserConstant.USER_PREFIX, score, score);
-            if (objs == null) {
+            if (objs == null || objs.isEmpty()) {
                 continue;
             }
-            following.add((JSON.parseObject(objs.iterator().next().toString(), SimpleUser.class)));
+            list.add((JSON.parseObject(objs.iterator().next().toString(), SimpleUser.class)));
         }
-        return following;
+        return list;
     }
 }
 

@@ -9,7 +9,6 @@ import cn.hutool.extra.servlet.ServletUtil;
 import com.mu.domain.User;
 import com.mu.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -99,6 +98,11 @@ public class UserController {
         return SaResult.ok("获取喜欢列表成功").setData(userService.getLikeList(id));
     }
 
+    @RequestMapping("getUserById/{userId}")
+    public SaResult getUserById(@PathVariable("userId") String userId) {
+        return SaResult.ok("获取用户成功").setData(userService.getUserById(userId));
+    }
+
     //    @SaCheckLogin
     @RequestMapping("follow/{userId}/{followUserId}")
     public SaResult follow(@PathVariable("userId") String userId, @PathVariable("followUserId") String followUserId) {
@@ -135,5 +139,10 @@ public class UserController {
     @RequestMapping("getFollowing/{userId}")
     public SaResult getFollowing(@PathVariable("userId") String userId) {
         return SaResult.ok("获取关注列表").setData(userService.getFollowing(userId));
+    }
+
+    @RequestMapping("getInterconnection/{userId}")
+    public SaResult getInterconnection(@PathVariable("userId") String userId) {
+        return SaResult.ok("获取互相关注列表").setData(userService.getInterconnections(userId));
     }
 }

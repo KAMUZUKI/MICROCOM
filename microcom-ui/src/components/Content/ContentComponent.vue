@@ -107,11 +107,11 @@ export default defineComponent({
             localStorage.setItem('keywords', JSON.stringify(Array.from(keywordSet)))
             initDataByCategory('all')
           } else {
-            message.error(res.data.msg);
+            message.error("无法拉取文章" + res.data.msg);
           }
         })
         .catch(function (error) {
-          message.error(error);
+          message.error("获取文章异常" + error);
         });
     }
 

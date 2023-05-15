@@ -1,5 +1,7 @@
 # 系统级别的配置文件，在 容器启动时读取, 优先级高
 spring:
+#  main:
+#    web-application-type: reactive
   application:
     name: chat
   profiles:

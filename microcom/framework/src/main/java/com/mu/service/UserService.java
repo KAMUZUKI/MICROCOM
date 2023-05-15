@@ -54,4 +54,11 @@ public interface UserService extends IService<User> {
      * @return 关注列表
      */
     List<SimpleUser> getFollowing(String userId);
+
+    /**
+     * 获取用户的互相关注列表
+     * @param userId 用户ID
+     * @return 互相关注列表
+     */
+    List<SimpleUser> getInterconnections(String userId);
 }

@@ -32,6 +32,11 @@
                     <text>{{ props.detail.text }}</text>
                 </div>
             </div>
+            <div style="display: flex" v-if="props.detail.label !== null">
+                <template v-for="(tag, index) in props.detail.label.split(',')" :key="index">
+                    <span class="tag tag-teal">{{ tag }}</span>
+                </template>
+            </div>
             <div style="margin: 10px 0 0 10px;">评论</div>
             <q-separator spaced inset />
             <q-infinite-scroll @load="onLoad" :offset="1" scroll-target=".comment-section">
@@ -144,6 +149,10 @@ const newCommentText = ref("")
 const comments = reactive([]);
 
 const onLoad = (index, done) => {
+    if (showDataFlag.value) {
+        done();
+        return;
+    }
     setTimeout(async () => {
         var res = await vlogComment.findByVlogId(props.detail.id, index + 1)
         if (res.data.length == 0) {
@@ -353,6 +362,22 @@ onMounted(() => {
 </script>
   
 <style lang="scss" scoped>
+//tags start
+.tag {
+    background-color: #ccc;
+    color: #fff;
+    border-radius: 50px;
+    font-size: 12px;
+    margin: 0 5px;
+    padding: 2px 10px;
+    text-transform: uppercase;
+}
+
+.tag-teal {
+    background-color: #92d4e4;
+}
+//tag end
+
 .container {
 	margin: 140px auto;
 	width: 100px;

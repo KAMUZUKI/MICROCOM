@@ -13,7 +13,9 @@ spring:
         file-extension: yaml
         namespace: ba4ee4b8-8a2c-49a2-b55e-2ed4fe45cf3d
 
-
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
 
 
 

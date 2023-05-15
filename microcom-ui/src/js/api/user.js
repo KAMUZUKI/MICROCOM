@@ -17,6 +17,15 @@ let api = {
             console.log(err);
         }
     },
+    async getInterconnection(userId){
+        try{
+            let res = await request.post("user/getInterconnection/" + userId)
+            return res
+        }
+        catch(err){
+            console.log(err);
+        }
+    },
     async isFollow (userId,targetId){
         try {
             let res = await request.post("user/isFollow/" + userId + "/" + targetId)

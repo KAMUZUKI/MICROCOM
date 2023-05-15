@@ -24,7 +24,12 @@
               </q-item-section>
               <q-item-section side>
                 <div v-if="title == '粉丝'">
-                  <q-btn @click="follow(item.id)" push color="white" text-color="dark" label="关注" />
+                  <div v-if="judgeInteraction(item.id)">
+                    <q-btn @click="unfollow(item.id)" push color="white" text-color="dark" label="取消关注" />
+                  </div>
+                  <div v-else>
+                    <q-btn @click="follow(item.id)" push color="white" text-color="dark" label="关注" />
+                  </div>
                 </div>
                 <div v-else>
                   <q-btn @click="unfollow(item.id)" push color="white" text-color="dark" label="取消关注" />
@@ -47,8 +52,10 @@ import utils from "@/js/utils/utils"
 const fixed = ref(false)
 const items = ref([])
 const title = ref("")
+const interconnection = ref([])
 const userId = JSON.parse(localStorage.getItem("user")).id
 
+//初始化显示的数据
 const initData = async (id, mode) => {
   let res
   if (mode == 1) {
@@ -58,9 +65,22 @@ const initData = async (id, mode) => {
     res = await followApi.getFollowing(id)
     title.value = "关注"
   }
-  items.value = res
+  items.value = res.data
 }
 
+const initIntersection = async () => {
+  let res = await followApi.getInterconnection(userId)
+  res.data.forEach((item) => {
+    interconnection.value.push(item.id)
+  })
+}
+
+//判断是否互为关注
+const judgeInteraction = (id)=>{
+  return interconnection.value.includes(id)
+}
+
+//显示关注或粉丝列表
 const showFollow = (id, mode) => {
   initData(id, mode)
   fixed.value = true
@@ -85,6 +105,7 @@ defineExpose({
 })
 
 onMounted(() => {
+  initIntersection()
   initData(userId, 1)
 })
 </script>

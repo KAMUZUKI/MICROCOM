@@ -41,7 +41,7 @@ public class UploadController {
      * 上传图片
      * @param file 文件
      */
-    @SaCheckLogin
+//    @SaCheckLogin
     @PostMapping("test")
     public SaResult uploadImageTest(@RequestPart(value = "file") final MultipartFile file){
         log.info("图片上传成功");

@@ -151,13 +151,13 @@ const onLoad = async (index, done) => {
     return
   }
   let res = await vlogApi.findWithPageById(1,9,index)
-  if (res == null || res == undefined) {
-    done();
-    showDataFlag.value = true;
-    return;
+  if (res.code == 200) {
+    list.value.push(...res.data)
+    await done()
+    return
   }
-  list.value.push(...res.data);
-  await done();
+  done();
+  showDataFlag.value = true
 };
 </script>
   

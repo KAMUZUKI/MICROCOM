@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mu.domain.Article;
 import com.mu.mapper.ArticleMapper;
 import com.mu.service.ArticleService;
-import com.mu.constant.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
