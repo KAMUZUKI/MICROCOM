@@ -1,3 +1,4 @@
+## 此配置文件为备份文件，使用的配置在nacos配置中心  gateway-prod.yaml
 #server:
 #  port: 9999
 #
@@ -25,9 +26,17 @@
 #      globalcors:
 #        cors-configurations:
 #          '[/**]':
-#            allowedOrigins: "*"
-#            allowedMethods: "*"
-#            allowedHeaders: "*"
+#            allowedOrigins: "http://localhost:8081"
+#            allowedMethods:
+#              - GET
+#              - POST
+#              - PUT
+#              - DELETE
+#            allowedHeaders:
+#              - Content-Type
+#              - Authorization
+#              - X-Requested-With
+#            allowCredentials: true
 #
 #management:
 #  endpoints:
