@@ -16,7 +16,8 @@ export default {
       positive: '#ccff99',
       negative: '#ff6666',
       info: '#99ccff',
-      warning: '#ffffcc'
+      warning: '#ffffcc',
+      blue: '#1890ff'
     }
   },
   plugins: {

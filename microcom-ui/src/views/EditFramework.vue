@@ -40,17 +40,14 @@
                                         placeholder="请选择关键词" :options="keywords">
                                     </a-select>
                                 </a-form-item>
+                                <q-uploader :factory="factoryFn" @factory-failed="failed" max-files="1"
+                                    color="blue" label="文章图片" field-name="file" :uploadProgressLabel="uplaodProcess"
+                                    style="max-width: 250px;margin-bottom:20px;" />
                                 <a-form-item>
                                     <a-button shape="round" type="primary" html-type="submit">提交</a-button>
                                 </a-form-item>
                             </a-form>
-                            <q-uploader
-                                url="http://localhost:8080/upload/test"
-                                label="Individual upload"
-                                field-name="file"
-                                multiple
-                                style="max-width: 300px"
-                              />
+
                         </a-card>
                     </a-col>
                 </a-space>
@@ -69,6 +66,7 @@ import { useRoute } from 'vue-router'
 import { onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
+import upload from '@/js/api/upload'
 
 // const props = defineProps({
 //     openNotificationWithIcon: {
@@ -88,6 +86,7 @@ const tmpCategorys = ref([])
 const keywordOptions = ref([])
 const categoryOptions = ref()
 const mode = ref(true)
+const uplaodProcess = ref('10')
 const formState = reactive({
     user: {
         author: '',
@@ -99,7 +98,29 @@ const formState = reactive({
         titleImgs: '',
         createTime: '',
     }
-});
+})
+
+const factoryFn = async (files) => {
+  try {
+    const res = await upload.uploadImage(files[0])
+    if (res.code === 200) {
+      uplaodProcess.value = '100'
+      formState.user.titleImgs = res.data
+      message.success("图片上传成功")
+      return res.data
+    } else {
+      message.error(res.msg)
+    }
+  } catch (error) {
+    console.error('文件上传失败：', error)
+    message.error('文件上传失败，请重试')
+  }
+}
+
+
+const failed = ()=>{
+    message.success("图片上传失败")
+}
 
 const judgeMode = () => {
     const editInfo = route.query.articleId ?? '0'
@@ -125,32 +146,18 @@ const judgeMode = () => {
     }
 }
 
-const handleUploadImage = (event, insertImage, file) => {
+const handleUploadImage = async (event, insertImage, file) => {
     // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
-    console.log(file);
-    const formData = new FormData()
-    formData.append('image', file) // file 是一个 File 对象
-    axios.post('http://localhost:8080/microcom/upload/test', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    }).then(res => {
-        if (res.code == 200) {
-            insertImage({
-                url: res.data,
-                desc: '图片描述',
-            });
-        } else {
-            message.error(res.data.msg)
-        }
-    })
-    axios.post('http://localhost:8080/microcom/upload/datatest','zhangsan').then(res => {
-        if (res.code == 200) {
-            message.error(res.data.msg)
-        } else {
-            message.error(res.data.msg)
-        }
-    })
+    let res = await upload.uploadImage(file[0])
+    if (res.code == 200) {
+        insertImage({
+            url: res.data,
+            desc: '图片描述',
+        });
+        message.success(res.msg)
+    } else {
+        message.error(res.msg)
+    }
 }
 
 var ws
@@ -262,3 +269,9 @@ const validateMessages = {
 onBeforeUnmount(() => {
 })
 </script>
+
+<style scoped>
+.q-uploader__header {
+    background-color: #0395cf !important
+}
+</style>

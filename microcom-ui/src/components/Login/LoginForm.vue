@@ -189,6 +189,7 @@ const login = () => {
           head: userinfo.head,
           type: userinfo.type,
         };
+        localStorage.setItem("tokeninfo", res.data.msg);
         likeList.value = userinfo.likeList;
         localStorage.setItem("user", JSON.stringify(userinfo));
         store.state.user = user.value;
@@ -199,7 +200,7 @@ const login = () => {
         openNotification.value.openNotificationWithIcon(
           "success",
           "登录",
-          res.data.msg
+          "登录成功"
         );
       } else {
         openNotification.value.openNotificationWithIcon(

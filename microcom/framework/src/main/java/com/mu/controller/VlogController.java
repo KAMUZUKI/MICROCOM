@@ -1,7 +1,6 @@
 package com.mu.controller;
 
 import cn.dev33.satoken.util.SaResult;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mu.domain.Vlog;
@@ -24,17 +23,20 @@ public class VlogController {
     @Autowired
     private VlogServiceImpl vlogService;
 
-    @GetMapping("findAll")
-    public SaResult findAll() {
-        return SaResult.ok().setData(vlogService.list());
+    @GetMapping("findWithPage/{size}/{page}")
+    public SaResult findWithPage(@PathVariable("size") Integer size,@PathVariable("page") Integer page) {
+        IPage<Vlog> userEntityIPage = vlogService.findWithPage(new Page<>(page, size));
+        if (page > userEntityIPage.getPages()) {
+            return SaResult.error().setMsg("没有更多数据了");
+        }
+        return SaResult.ok().setData(userEntityIPage.getRecords());
     }
 
-    @GetMapping("findWithPage/{page}")
-    public SaResult findWithPage(@PathVariable("page") Integer page) {
-        QueryWrapper<Vlog> queryWrapper = new QueryWrapper<>();
-        IPage<Vlog> userEntityIPage = vlogService.findWithPage(new Page<>(page, 8), queryWrapper);
+    @GetMapping("findWithPageById/{id}/{size}/{page}")
+    public SaResult findWithPageById(@PathVariable("id") Integer id,@PathVariable("size") Integer size,@PathVariable("page") Integer page) {
+        IPage<Vlog> userEntityIPage = vlogService.findWithPageById(id,new Page<>(page, size));
         if (page > userEntityIPage.getPages()) {
-            return SaResult.ok().setMsg("没有更多数据了");
+            return SaResult.error().setMsg("没有更多数据了");
         }
         return SaResult.ok().setData(userEntityIPage.getRecords());
     }

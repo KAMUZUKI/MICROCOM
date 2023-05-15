@@ -76,9 +76,10 @@ const jumpTo = (path) => {
 }
 
 const logout = () => {
-  sessionStorage.removeItem("user");
-  sessionStorage.removeItem("articleDetail");
-  sessionStorage.removeItem("likeList");
+  localStorage.removeItem("user");
+  localStorage.removeItem("articleDetail");
+  localStorage.removeItem("likeList");
+  localStorage.removeItem("OAuthToken");
   store.state.isCertified = false;
   store.state.isLogin = false;
   message.success("退出成功");

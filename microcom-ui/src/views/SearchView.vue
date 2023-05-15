@@ -60,11 +60,12 @@ const initInstantSearch = () => {
     indexName: searchIndexName.value,
     searchClient: instantMeiliSearch(
       "http://localhost:7700",
-      "k6WtAi5jh5YXDxYAA87XslL5pGlJtj2w_KbsClfAs6E"
+      "143748744220020440238"
     ),
   });
 
   if (searchIndex.value == "电影") {
+    // 电影搜索
     search.addWidgets([
       searchBox({
         container: "#searchbox",
@@ -116,6 +117,7 @@ const initInstantSearch = () => {
       }),
     ]);
   } else {
+    // 文章搜索
     search.addWidgets([
       searchBox({
         container: "#searchbox",

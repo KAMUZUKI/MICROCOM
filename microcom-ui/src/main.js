@@ -23,10 +23,10 @@ import '@kangc/v-md-editor/lib/theme/style/github.css';
 
 // 代码高亮
 import hljs from 'highlight.js';
+
+//Quasar
 import { Quasar } from 'quasar'
 import quasarUserOptions from './quasar-user-options'
-// 瀑布流
-import { VueMasonryPlugin } from 'vue-masonry';
 
 // 选择使用主题
 VMdPreview.use(githubTheme, {
@@ -50,5 +50,4 @@ app.use(Antd)
   .use(VueCookies)
   .use(VMdPreview)
   .use(store)
-  .use(VueMasonryPlugin)
   .mount('#app');

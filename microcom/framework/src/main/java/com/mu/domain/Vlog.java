@@ -1,11 +1,12 @@
 package com.mu.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
 import lombok.experimental.Accessors;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -26,5 +27,5 @@ public class Vlog implements Serializable {
     private String img;
     private String name;
     private String head;
-    private Date time;
+    private String time;
 }

@@ -11,7 +11,7 @@
                 <q-item-label caption>{{ user.time }}</q-item-label>
             </q-item-section>
             <q-item-section side>
-                <div @click="subscribe()">
+                <div v-if="userId!==user.createId" @click="subscribe()">
                     <a class="subscribe-button">
                         <svg xmlns="http://www.w3.org/2000/svg">
                           <g>
@@ -31,6 +31,11 @@
                 <div class="desc">
                     <text>{{ props.detail.text }}</text>
                 </div>
+            </div>
+            <div style="display: flex" v-if="props.detail.label !== null">
+                <template v-for="(tag, index) in props.detail.label.split(',')" :key="index">
+                    <span class="tag tag-teal">{{ tag }}</span>
+                </template>
             </div>
             <div style="margin: 10px 0 0 10px;">评论</div>
             <q-separator spaced inset />
@@ -130,6 +135,8 @@ const props = defineProps({
 })
 
 const user = ref({
+    id: props.detail.id,
+    createId: props.detail.createId,
     author: props.detail.name,
     time: utils.parseDate(props.detail.time),
     content: props.detail.content,
@@ -142,6 +149,10 @@ const newCommentText = ref("")
 const comments = reactive([]);
 
 const onLoad = (index, done) => {
+    if (showDataFlag.value) {
+        done();
+        return;
+    }
     setTimeout(async () => {
         var res = await vlogComment.findByVlogId(props.detail.id, index + 1)
         if (res.data.length == 0) {
@@ -298,18 +309,19 @@ const subscribe = utils.debounce(async ()=>{
 },1000)
 
 const initSubscribe = async ()=>{
-    var subButton = document.querySelector('.subscribe-button');
-    var subbedClass = 'subbed';
-    var text;
+    var subButton = document.querySelector('.subscribe-button')
+    if(subButton==null) return
+    var subbedClass = 'subbed'
+    var text
     var res = await followApi.isFollow(userId,props.detail.id)
     if (res.data) {
-        subButton.classList.add(subbedClass);
-        text = '已关注';
+        subButton.classList.add(subbedClass)
+        text = '已关注'
     } else {
-        subButton.classList.remove(subbedClass);
-        text = '关注';
+        subButton.classList.remove(subbedClass)
+        text = '关注'
     }
-    subButton.querySelector('.subscribe-text').innerHTML = text;
+    subButton.querySelector('.subscribe-text').innerHTML = text
 }
 
 // 监听用户输入的变化
@@ -350,6 +362,22 @@ onMounted(() => {
 </script>
   
 <style lang="scss" scoped>
+//tags start
+.tag {
+    background-color: #ccc;
+    color: #fff;
+    border-radius: 50px;
+    font-size: 12px;
+    margin: 0 5px;
+    padding: 2px 10px;
+    text-transform: uppercase;
+}
+
+.tag-teal {
+    background-color: #92d4e4;
+}
+//tag end
+
 .container {
 	margin: 140px auto;
 	width: 100px;

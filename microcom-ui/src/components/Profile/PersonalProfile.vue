@@ -21,11 +21,11 @@
             <li>
               <span class="profile-stat-count">{{ userInfo.posts }}</span> 作品
             </li>
-            <li @click="show(userInfo.id,1)">
+            <li @click="showInfo(userInfo.id,1)">
               <span class="profile-stat-count">{{ userInfo.followers }}</span>
               粉丝
             </li>
-            <li @click="show(userInfo.id,0)">
+            <li @click="showInfo(userInfo.id,0)">
               <span class="profile-stat-count">{{ userInfo.following }}</span>
               关注
             </li>
@@ -44,15 +44,15 @@
     <!-- End of container -->
   </header>
 
-  <personal-dialog ref="showDialog"></personal-dialog>
+  <personal-follow ref="showFollow"></personal-follow>
 
   <main>
     <div class="container">
-      <q-infinite-scroll @load="onLoad">
+      <q-infinite-scroll :debounce="2000" @load="onLoad" :offset="100">
         <div class="gallery">
-          <div v-for="item in list" :key="item.id">
-            <div class="gallery-item" tabindex="0">
-              <img :src="item.imgUrl" class="gallery-image" alt="" />
+          <q-intersection v-for="item,index in list" :key="index" once transition="scale" class="example-item">
+            <div class="gallery-item" tabindex="0" @click="showDetail(item)">
+              <img :src=utils.getImg(item.img)[0] class="gallery-image" alt="" />
               <div class="gallery-item-info">
                 <div class="views">
                   <span><svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -63,11 +63,10 @@
                         d="M24 29C26.7614 29 29 26.7614 29 24C29 21.2386 26.7614 19 24 19C21.2386 19 19 21.2386 19 24C19 26.7614 21.2386 29 24 29Z"
                         fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round" />
                     </svg></span>
-                  <span>{{ item.views }}</span>
+                  <span>{{ }}</span>
                 </div>
-                <div class="love" @click="agreePost(item)">
-                  <svg :class="{ 'liked': item.isLiked }" width="30" height="30" viewBox="0 0 48 48" fill="#ffffff"
-                    xmlns="http://www.w3.org/2000/svg">
+                <div class="love">
+                  <svg width="30" height="30" viewBox="0 0 48 48" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M4.18898 22.1733C4.08737 21.0047 5.00852 20 6.18146 20H10C11.1046 20 12 20.8954 12 22V41C12 42.1046 11.1046 43 10 43H7.83363C6.79622 43 5.93102 42.2068 5.84115 41.1733L4.18898 22.1733Z"
                       stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
@@ -75,7 +74,7 @@
                       d="M18 21.3745C18 20.5388 18.5194 19.7908 19.2753 19.4345C20.9238 18.6574 23.7329 17.0938 25 14.9805C26.6331 12.2569 26.9411 7.33595 26.9912 6.20878C26.9982 6.05099 26.9937 5.89301 27.0154 5.73656C27.2861 3.78446 31.0543 6.06492 32.5 8.47612C33.2846 9.78471 33.3852 11.504 33.3027 12.8463C33.2144 14.2825 32.7933 15.6699 32.3802 17.0483L31.5 19.9845H42.3569C43.6832 19.9845 44.6421 21.2518 44.2816 22.5281L38.9113 41.5436C38.668 42.4051 37.8818 43 36.9866 43H20C18.8954 43 18 42.1046 18 41V21.3745Z"
                       stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
-                  <span>{{ item.likes }}</span>
+                  <span>{{ }}</span>
                 </div>
                 <div class="comments">
                   <svg width="30" height="30" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -86,35 +85,50 @@
                     <path d="M12 22H18" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
                     <path d="M12 14H24" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
                   </svg>
-                  <span>{{ item.comments }}</span>
+                  <span>{{ }}</span>
                 </div>
               </div>
             </div>
-          </div>
+          </q-intersection>
+          <!-- End of gallery -->
         </div>
         <template v-slot:loading>
-          <loading-comp />
-        </template>
+        <loading-comp />
+      </template>
       </q-infinite-scroll>
-      <!-- End of gallery -->
+    </div>
+    
+    <detail-card ref="dialogRef" />
+    <div v-if="showDataFlag" style="text-align: center;">
+      <p>没有更多数据了...</p>
     </div>
     <!-- End of container -->
   </main>
 </template>
   
 <script setup>
-import { ref,onMounted } from "vue";
-import LoadingComp from "@/components/tools/LoadingComp.vue";
-import PersonalDialog from "./PersonalDialog.vue";
+import { ref } from "vue";
+import LoadingComp from "@/components/tools/LoadingComp.vue"
+import DetailCard from '@/components/Detail/DetailCard.vue'
+import PersonalFollow from "@/components/Profile/PersonalFollow.vue"
+import vlogApi from "@/js/api/vlog"
+import utils from "@/js/utils/utils";
 
-const showDialog = ref()
+//显示数据是否显示完全的标记
+const showDataFlag = ref(false)
+const dialogRef = ref(null)
+const showFollow = ref(null)
 
-const show = (id,mode)=>{
-  showDialog.value.showDialog(id,mode)
+const showDetail = (item) => {
+  dialogRef.value.show(item)
+}
+
+const showInfo = (id,mode)=>{
+  showFollow.value.showFollow(id,mode)
 }
 
 const userInfo = {
-  id:1,
+  id: 1,
   username: "KAMUZUKI",
   avatarUrl:
     "https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces",
@@ -124,214 +138,27 @@ const userInfo = {
   signs: "I'm a photographer and a web developer.",
 };
 
-const agreePost = (item) => {
-  item.isLiked = !item.isLiked;
-  item.likes += ((item.isLiked) ? 1 : -1);
+// const agreePost = (item) => {
+//   item.isLiked = !item.isLiked;
+//   item.likes += ((item.isLiked) ? 1 : -1);
+// };
+
+const list = ref([]);
+
+const onLoad = async (index, done) => {
+  if (showDataFlag.value) {
+    done()
+    return
+  }
+  let res = await vlogApi.findWithPageById(1,9,index)
+  if (res.code == 200) {
+    list.value.push(...res.data)
+    await done()
+    return
+  }
+  done();
+  showDataFlag.value = true
 };
-
-const list = ref([
-  {
-    id: 1,
-    imgUrl:
-      "https://images.unsplash.com/photo-1497445462247-4330a224fdb1?w=500&h=500&fit=crop",
-    views: 2907,
-    likes: 23,
-    comments: 12,
-    isLiked: true,
-  },
-  {
-    id: 2,
-    imgUrl:
-      "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=500&h=500&fit=crop",
-    views: 2907,
-    likes: 23,
-    comments: 12,
-    isLiked: false,
-  },
-  {
-    id: 3,
-    imgUrl:
-      "https://images.unsplash.com/photo-1502630859934-b3b41d18206c?w=500&h=500&fit=crop",
-    views: 2907,
-    likes: 23,
-    comments: 12,
-    isLiked: false,
-  },
-  {
-    id: 4,
-    imgUrl:
-      "https://images.unsplash.com/photo-1498471731312-b6d2b8280c61?w=500&h=500&fit=crop",
-    views: 2907,
-    likes: 23,
-    comments: 12,
-    isLiked: false,
-  },
-  {
-    id: 5,
-    imgUrl:
-      "https://images.unsplash.com/photo-1515023115689-589c33041d3c?w=500&h=500&fit=crop",
-    views: 2907,
-    likes: 23,
-    comments: 12,
-    isLiked: false,
-  },
-  {
-    id: 6,
-    imgUrl:
-      "https://images.unsplash.com/photo-1504214208698-ea1916a2195a?w=500&h=500&fit=crop",
-    views: 2907,
-    likes: 23,
-    comments: 12,
-    isLiked: false,
-  },
-  {
-    id: 7,
-    imgUrl:
-      "https://images.unsplash.com/photo-1515814472071-4d632dbc5d4a?w=500&h=500&fit=crop",
-    views: 2907,
-    likes: 23,
-    comments: 12,
-    isLiked: false,
-  },
-  {
-    id: 8,
-    imgUrl:
-      "https://images.unsplash.com/photo-1511407397940-d57f68e81203?w=500&h=500&fit=crop",
-    views: 2907,
-    likes: 23,
-    comments: 12,
-    isLiked: false,
-  },
-  {
-    id: 9,
-    imgUrl:
-      "https://images.unsplash.com/photo-1518481612222-68bbe828ecd1?w=500&h=500&fit=crop",
-    views: 2907,
-    likes: 23,
-    comments: 12,
-    isLiked: false,
-  },
-  {
-    id: 10,
-    imgUrl:
-      "https://images.unsplash.com/photo-1505058707965-09a4469a87e4?w=500&h=500&fit=crop",
-    views: 2907,
-    likes: 23,
-    comments: 12,
-    isLiked: false,
-  },
-  {
-    id: 11,
-    imgUrl:
-      "https://images.unsplash.com/photo-1423012373122-fff0a5d28cc9?w=500&h=500&fit=crop",
-    views: 2907,
-    likes: 23,
-    comments: 12,
-    isLiked: false,
-  },
-  {
-    id: 12,
-    imgUrl:
-      "https://images.unsplash.com/photo-1505058707965-09a4469a87e4?w=500&h=500&fit=crop",
-    views: 2907,
-    likes: 23,
-    comments: 12,
-    isLiked: false,
-  },
-]);
-
-const onLoad = (index, done) => {
-  setTimeout(() => {
-    list.value.push(
-      {
-        id: 1,
-        imgUrl:
-          "https://images.unsplash.com/photo-1497445462247-4330a224fdb1?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 2,
-        imgUrl:
-          "https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 3,
-        imgUrl:
-          "https://images.unsplash.com/photo-1502630859934-b3b41d18206c?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 4,
-        imgUrl:
-          "https://images.unsplash.com/photo-1498471731312-b6d2b8280c61?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 5,
-        imgUrl:
-          "https://images.unsplash.com/photo-1515023115689-589c33041d3c?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 6,
-        imgUrl:
-          "https://images.unsplash.com/photo-1504214208698-ea1916a2195a?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 7,
-        imgUrl:
-          "https://images.unsplash.com/photo-1515814472071-4d632dbc5d4a?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 8,
-        imgUrl:
-          "https://images.unsplash.com/photo-1511407397940-d57f68e81203?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      },
-      {
-        id: 9,
-        imgUrl:
-          "https://images.unsplash.com/photo-1497445462247-4330a224fdb1?w=500&h=500&fit=crop",
-        views: 2907,
-        likes: 23,
-        comments: 12,
-        isLiked: false,
-      }
-    );
-    done();
-  }, 2000);
-};
-
-onMounted(() => {
-  
-});
 </script>
   
 <style scoped>
@@ -489,6 +316,8 @@ img {
   margin: 1rem;
   color: #fff;
   cursor: pointer;
+  overflow: hidden;
+  height: 22rem;
 }
 
 .gallery-item:hover .gallery-item-info,

@@ -15,8 +15,8 @@ import java.util.Arrays;
  * @date : 2023-05-07 19:36
  **/
 
-@Configuration
-@PropertySource("classpath:cors.properties")
+//@Configuration
+//@PropertySource("classpath:cors.properties")
 public class CorsConfig {
 
     @Value("${cors.allowed.origin.patterns}")

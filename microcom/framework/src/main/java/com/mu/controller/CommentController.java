@@ -28,7 +28,6 @@ public class CommentController {
     @Autowired
     SensitiveFilter sensitiveFilter;
 
-
     @SaCheckLogin
     @RequestMapping(value = "/addComment")
     public SaResult addComment(HttpServletRequest request) {

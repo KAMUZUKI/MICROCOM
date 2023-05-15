@@ -1,0 +1,42 @@
+#server:
+#  port: 9999
+#
+#spring:
+#  cloud:
+#    nacos:
+#      discovery:
+#        enabled: true
+#        register-enabled: true
+#        server-addr: localhost:8848
+#        namespace: ba4ee4b8-8a2c-49a2-b55e-2ed4fe45cf3d
+#        group: DEFAULT_GROUP   # 读取配置的分组名称
+#    gateway:
+#      # routes: # 用来配置路由规则
+#      #   - id: framework
+#      #     uri: lb://framework
+#      #     predicates:
+#      #       - Path=/framework/**
+#      #     filters:
+#      #       - StripPrefix=1    # 去掉前缀 filter int数字 1：去掉一级， 2：去掉2级
+#      discovery:  #是否与服务发现组件进行结合，通过 serviceId(必须设置成大写) 转发到具体的服务实例。默认为false，设为true便开启通过服务中心的自动根据 serviceId 创建路由的功能。
+#        locator:   #路由访问方式：http://Gateway_HOST:Gateway_PORT/大写的serviceId/**，其中微服务应用名默认大写访问。
+#          enabled: true
+#          lower-case-service-id: true #使用小写service-id
+#      globalcors:
+#        cors-configurations:
+#          '[/**]':
+#            allowedOrigins: "*"
+#            allowedMethods: "*"
+#            allowedHeaders: "*"
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"    # 暴露gateway端点，* 是暴露全部端点
+#  endpoint:
+#    gateway:
+#      enabled: true
+#
+## 客户访问请求是先进行断言判断：如果匹配上了在进行 filter 过滤
+## StripPrefix 表示去掉路由前缀，用整数表示 1：表示去掉一级，如果是 /user/demo，则真正转发跳转的路径是/demo
