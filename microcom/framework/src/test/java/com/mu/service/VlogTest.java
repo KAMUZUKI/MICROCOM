@@ -6,6 +6,7 @@ import com.mu.domain.Vlog;
 import com.mu.service.impl.VlogServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
@@ -19,6 +20,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class VlogTest {
     @Autowired
     private VlogServiceImpl vlogService;
+
+    @Value("${spring.redis.host}")
+    private String host;
 
     @Test
     public void testFindAll() {
@@ -41,5 +45,10 @@ public class VlogTest {
         System.out.println("总页数： " + userEntityIPage.getPages());
         System.out.println("总记录数： " + userEntityIPage.getTotal());
         userEntityIPage.getRecords().forEach(System.out::println);
+    }
+
+    @Test
+    public void config(){
+        System.out.println("host: " + host);
     }
 }

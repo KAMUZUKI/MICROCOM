@@ -5,7 +5,6 @@ import com.meilisearch.sdk.Config;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,12 +15,11 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "meilisearch")
 public class MeiliSearchAutoConfiguration {
 
-    @Value("${hosturl}")
+    @Value("${meilisearch.host-url}")
     private String hostUrl;
-    @Value("${apikey}")
+    @Value("${meilisearch.api-key}")
     private String apiKey;
 
     @Bean

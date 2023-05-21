@@ -157,7 +157,6 @@ export default defineComponent({
 
     // 3.服务器每次返回信息都会执行一次onmessage方法
     ws.onmessage = function (res) {
-      console.log("服务器返回的信息: " + res.data);
       //获取最新数据
       if (res.data !== null) {
         initDataList.value = []

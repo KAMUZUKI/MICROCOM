@@ -24,11 +24,18 @@ public class RedisConfig extends CachingConfigurerSupport {
 
     @Value("${spring.redis.host}")
     private String host;
+
+    @Value("${spring.redis.port}")
+    private String port;
+
+    @Value("${spring.redis.password}")
+    private String password;
+
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, 6379);
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, Integer.parseInt(port));
         config.setDatabase(2);
-        config.setPassword("muzuki2002");
+        config.setPassword(password);
         return new LettuceConnectionFactory(config);
     }
 

@@ -1,5 +1,6 @@
 package com.mu.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,10 +20,24 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig extends CachingConfigurerSupport {
+    @Value("${spring.redis.database}")
+    private String database;
+
+    @Value("${spring.redis.host}")
+    private String host;
+
+    @Value("${spring.redis.port}")
+    private String port;
+
+    @Value("${spring.redis.password}")
+    private String password;
+
+
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration("localhost", 6379);
-        config.setDatabase(2);
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, Integer.parseInt(port));
+        config.setDatabase(Integer.parseInt(database));
+        config.setPassword(password);
         LettuceConnectionFactory factory = new LettuceConnectionFactory(config);
         return factory;
     }

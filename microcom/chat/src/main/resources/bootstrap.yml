@@ -8,15 +8,12 @@ spring:
     active: prod
   cloud:
     nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
-        namespace: ba4ee4b8-8a2c-49a2-b55e-2ed4fe45cf3d
       config:
-        server-addr: 127.0.0.1:8848
+        server-addr: 175.178.212.207:8848
         #maven依赖坐标： groupid - artifactid -版本号
         #namespace - group - 文件
         file-extension: yaml
-        namespace: ba4ee4b8-8a2c-49a2-b55e-2ed4fe45cf3d
+        namespace: 346d5bf4-17af-4346-8aae-f12ce48ea903
 
 
 

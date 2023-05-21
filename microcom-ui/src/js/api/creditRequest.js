@@ -1,7 +1,7 @@
 import axios from 'axios';
-
+import constant from '@/js/api/config'
 const creditRequest = axios.create({
-  baseURL: 'http://localhost:9999/framework/',
+  baseURL: constant.getUrl,
   timeout: 5000,
   withCredentials: true,
 });

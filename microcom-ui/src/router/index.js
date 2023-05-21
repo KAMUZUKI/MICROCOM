@@ -62,11 +62,45 @@ const routes = [
         props: true
     },
     {
+        path: '/personal',
+        name: 'personalview',
+        component: () => import('@/views/PersonalView.vue'),
+        meta: {
+            title: '用户信息',
+            // requireAuth: true,
+            transition_enter: 'animate__fadeInLeft',
+            transition_leave: 'animate__fadeOutLeft',
+        },
+        children: [
+            {
+                path: '',
+                name: 'personalInfo',
+                component: () => import('@/components/Profile/PersonalInfo.vue'),
+                meta: {
+                    title: '个人信息',
+                    transition_enter: 'animate__fadeInDown',
+                    transition_leave: 'animate__fadeOutDown',
+                }
+            },
+            {
+                path: 'timeline',
+                name: 'timeline',
+                component: () => import('@/components/Personal/TimeLine.vue'),
+                meta: {
+                    title: '时间线',
+                    // requireAuth: true,
+                    transition_enter: 'animate__fadeInLeft',
+                    transition_leave: 'animate__fadeOutLeft',
+                }
+            },
+        ]
+    },
+    {
         path: '/profileview',
         name: 'profileview',
         component: () => import('@/views/ProfileView.vue'),
         meta: {
-            title: '用户信息',
+            title: '用户主页',
             // requireAuth: true,
             transition_enter: 'animate__fadeInLeft',
             transition_leave: 'animate__fadeOutLeft',
@@ -78,17 +112,6 @@ const routes = [
         component: () => import('@/views/SearchView.vue'),
         meta: {
             title: '搜索',
-            // requireAuth: true,
-            transition_enter: 'animate__fadeInLeft',
-            transition_leave: 'animate__fadeOutLeft',
-        }
-    },
-    {
-        path: '/timeline',
-        name: 'timeline',
-        component: () => import('@/components/Personal/TimeLine.vue'),
-        meta: {
-            title: '时间线',
             // requireAuth: true,
             transition_enter: 'animate__fadeInLeft',
             transition_leave: 'animate__fadeOutLeft',

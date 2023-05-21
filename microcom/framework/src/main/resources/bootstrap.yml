@@ -8,8 +8,6 @@ spring:
     nacos:
       config:
         server-addr: localhost:8848
-        #maven依赖坐标： groupid - artifactid -版本号
-        #namespace - group - 文件
         file-extension: yaml
         namespace: ba4ee4b8-8a2c-49a2-b55e-2ed4fe45cf3d
 

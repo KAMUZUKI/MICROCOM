@@ -3,13 +3,13 @@
     <div class="container">
       <div class="profile">
         <div class="profile-image">
-          <img :src="userInfo.avatarUrl" alt="头像" />
+          <img :src="userInfo.avatarUrl" style="width: 150px;height: 150px;" alt="头像" />
         </div>
 
         <div class="profile-user-settings">
           <h1 class="profile-user-name">{{ userInfo.username }}</h1>
 
-          <button class="btn profile-edit-btn">编辑信息</button>
+          <button class="btn profile-edit-btn" @click="jumpTo()">编辑信息</button>
 
           <button class="btn profile-settings-btn" aria-label="profile settings">
             <i class="fas fa-cog" aria-hidden="true"></i>
@@ -107,17 +107,20 @@
 </template>
   
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import LoadingComp from "@/components/tools/LoadingComp.vue"
 import DetailCard from '@/components/Detail/DetailCard.vue'
 import PersonalFollow from "@/components/Profile/PersonalFollow.vue"
 import vlogApi from "@/js/api/vlog"
-import utils from "@/js/utils/utils";
+import utils from "@/js/utils/utils"
+import { useRouter } from 'vue-router'
 
 //显示数据是否显示完全的标记
 const showDataFlag = ref(false)
 const dialogRef = ref(null)
 const showFollow = ref(null)
+const router = useRouter()
+const currentIndex = ref(1)
 
 const showDetail = (item) => {
   dialogRef.value.show(item)
@@ -127,16 +130,23 @@ const showInfo = (id,mode)=>{
   showFollow.value.showFollow(id,mode)
 }
 
+const user = JSON.parse(localStorage.getItem("user"))
+
 const userInfo = {
   id: 1,
-  username: "KAMUZUKI",
-  avatarUrl:
-    "https://images.unsplash.com/photo-1513721032312-6a18a42c8763?w=152&h=152&fit=crop&crop=faces",
+  username: user.name,
+  avatarUrl: user.head,
   posts: 32,
   followers: 188,
   following: 206,
   signs: "I'm a photographer and a web developer.",
 };
+
+const jumpTo = () => {
+  router.push({
+    path: '/personal'
+  })
+}
 
 // const agreePost = (item) => {
 //   item.isLiked = !item.isLiked;
@@ -150,15 +160,27 @@ const onLoad = async (index, done) => {
     done()
     return
   }
-  let res = await vlogApi.findWithPageById(1,9,index)
+  setTimeout(async () => {
+    let res = await vlogApi.findWithPageById(1,9,currentIndex.value)
+    if (res.code == 200) {
+      list.value.push(...res.data)
+      await done()
+      currentIndex.value++
+      return
+    }
+    showDataFlag.value = true
+    done();
+  }, 500);
+};
+
+onMounted( async ()=>{
+  let res = await vlogApi.findWithPageById(1,9,currentIndex.value)
   if (res.code == 200) {
     list.value.push(...res.data)
-    await done()
+    currentIndex.value++
     return
   }
-  done();
-  showDataFlag.value = true
-};
+})
 </script>
   
 <style scoped>

@@ -1,7 +1,7 @@
 import axios from 'axios';
-
+import config from '@/js/api/config'
 const request = axios.create({
-  baseURL: 'http://localhost:9999/framework/',
+  baseURL: config.getUrl,
   timeout: 5000,
 });
 

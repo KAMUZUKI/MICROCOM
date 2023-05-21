@@ -5,7 +5,7 @@
                 <a-space :size="small" direction="horizontal" align="start">
                     <a-col>
                         <div style="border: 1px solid #ccc;text-align:left;height:800px;min-width:1000px;max-width:1100px">
-                            <v-md-editor v-model="formState.user.content" :disabled-menus="[]"
+                            <v-md-editor v-model="formState.user.content" :include-level="[3, 4]" :disabled-menus="[]"
                                 @upload-image="handleUploadImage" height="800px">
                             </v-md-editor>
                         </div>
@@ -262,6 +262,7 @@ const validateMessages = {
 
 // 组件销毁时，也及时销毁编辑器
 onBeforeUnmount(() => {
+
 })
 </script>
 

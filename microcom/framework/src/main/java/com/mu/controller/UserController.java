@@ -10,6 +10,7 @@ import com.mu.domain.User;
 import com.mu.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
@@ -51,24 +52,23 @@ public class UserController {
     /**
      * 查询 Token 信息  ---- http://localhost:8081/user/tokenInfo
      */
-    @RequestMapping("tokenInfo")
-    public SaResult tokenInfo() {
-        return SaResult.data(StpUtil.getTokenInfo());
+    @RequestMapping("tokenInfo/{token}")
+    public SaResult tokenInfo(@PathVariable String token) {
+        return SaResult.ok().setData(StpUtil.getLoginIdByToken(token));
     }
 
     /**
      * 注销  ---- http://localhost:8081/user/logout
      */
-    @RequestMapping("logout")
-    public SaResult logout() {
-        StpUtil.logout();
-        return SaResult.ok();
+    @RequestMapping("logout/{token}")
+    public SaResult logout(@PathVariable String token) {
+        StpUtil.logoutByTokenValue(token);
+        return SaResult.ok().setMsg("退出成功");
     }
 
     @SaCheckLogin
     @RequestMapping("updateUserById")
-    public SaResult updateUserById(HttpServletRequest request) {
-        User user = ServletUtil.toBean(request, User.class, true);
+    public SaResult updateUserById(@RequestBody User user) {
         if (userService.updateUserById(user) == 1) {
             return SaResult.ok("修改成功").setData(true);
         }

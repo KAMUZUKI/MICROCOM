@@ -24,6 +24,8 @@ import '@kangc/v-md-editor/lib/theme/style/github.css';
 // 代码高亮
 import hljs from 'highlight.js';
 
+import VueCropper from 'vue-cropper'
+
 //Quasar
 import { Quasar } from 'quasar'
 import quasarUserOptions from './quasar-user-options'
@@ -35,6 +37,11 @@ VMdPreview.use(githubTheme, {
 
 VMdEditor.use(githubTheme, {
   Hljs: hljs,
+  config: {
+    toc: {
+      includeLevel: [3, 4],
+    },
+  },
 });
 //MARKED END
 
@@ -50,4 +57,5 @@ app.use(Antd)
   .use(VueCookies)
   .use(VMdPreview)
   .use(store)
+  .use(VueCropper)
   .mount('#app');

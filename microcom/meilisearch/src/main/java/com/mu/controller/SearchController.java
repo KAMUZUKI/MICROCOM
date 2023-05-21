@@ -1,4 +1,4 @@
-package com.mu;
+package com.mu.controller;
 
 import com.meilisearch.sdk.SearchRequest;
 import com.meilisearch.sdk.model.SearchResult;
@@ -35,7 +35,7 @@ public class SearchController {
     }
     @RequestMapping("/init")
     public String initLoading() {
-        searchService.initLoading("movies","src/main/resources/static/movies.json");
+        searchService.initLoading("movies","D:\\Gitresp\\MICROCOM\\microcom\\framework\\src\\main\\resources\\static\\movies.json");
         return "初始化成功";
     }
 }
