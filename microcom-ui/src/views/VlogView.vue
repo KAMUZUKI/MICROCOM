@@ -59,7 +59,7 @@
                                                 <span class="tag tag-teal">{{ tag }}</span>
                                             </template>
                                         </div>
-                                        <h6>{{ item.id + item.title }}</h6>
+                                        <h6>{{ item.title }}</h6>
                                         <p>{{ item.text.substring(0, 200) }}.....</p>
                                         <div class="user">
                                             <img :src="item.head" alt="" />

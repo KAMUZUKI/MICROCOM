@@ -64,7 +64,7 @@ import V3Emoji from 'vue3-emoji'
 import 'vue3-emoji/dist/style.css'
 
 const userId = JSON.parse(localStorage.getItem("user")).id
-
+const imgs = ref([])  
 const vlog = reactive({
   createId: userId,
   title: '',
@@ -112,7 +112,7 @@ const handlePreview = async file => {
 const uploadImage = async (e) => {
   let res = await uploadApi.uploadImage(e.file)
   if (res.code == 200) {
-    vlog.img += res.data + ','
+    imgs.value.push(res.data)
     e.onSuccess(res.data, e);
   } else {
     e.onError(res.msg);
@@ -122,6 +122,7 @@ const uploadImage = async (e) => {
 //处理vlog上传
 const handleSubmit = async () => {
   vlog.label = state.tags.join(',')
+  vlog.img = imgs.value.join(',')
   vlog.time = new Date().toLocaleString()
   // let object = JSON.stringify(vlog)
   let res = await vlogApi.add(vlog)
