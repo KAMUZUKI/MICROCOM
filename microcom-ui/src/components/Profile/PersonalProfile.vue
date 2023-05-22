@@ -105,7 +105,7 @@
     <!-- End of container -->
   </main>
 </template>
-  
+  \
 <script setup>
 import { onMounted, ref } from "vue";
 import LoadingComp from "@/components/tools/LoadingComp.vue"
