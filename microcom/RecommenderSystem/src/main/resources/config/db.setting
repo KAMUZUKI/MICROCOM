@@ -1,0 +1,5 @@
+## db.setting文件
+
+url = jdbc:mysql://localhost:3306/microcom
+user = root
+pass = muzuki

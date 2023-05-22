@@ -1,4 +1,4 @@
-import creditRequest from "@/js/api/request"
+import creditRequest from "@/js/api/creditRequest"
 
 let api = {
     async uploadImage(file) {
