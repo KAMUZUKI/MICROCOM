@@ -24,8 +24,6 @@ import '@kangc/v-md-editor/lib/theme/style/github.css';
 // 代码高亮
 import hljs from 'highlight.js';
 
-import VueCropper from 'vue-cropper'
-
 //Quasar
 import { Quasar } from 'quasar'
 import quasarUserOptions from './quasar-user-options'
@@ -57,5 +55,4 @@ app.use(Antd)
   .use(VueCookies)
   .use(VMdPreview)
   .use(store)
-  .use(VueCropper)
   .mount('#app');
