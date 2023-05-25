@@ -3,7 +3,7 @@ package com.mu.controller;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.util.SaResult;
 import cn.hutool.extra.servlet.ServletUtil;
-import com.mu.domain.Category;
+import com.mu.entity.Category;
 import com.mu.service.impl.CategoryServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

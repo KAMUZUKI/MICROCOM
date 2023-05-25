@@ -3,7 +3,7 @@ package com.mu.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mu.constant.VlogConstant;
-import com.mu.domain.DingtalkUser;
+import com.mu.entity.DingtalkUser;
 
 import java.text.SimpleDateFormat;
 import java.util.*;

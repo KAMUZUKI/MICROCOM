@@ -1,7 +1,7 @@
 package com.mu.controller;
 
 import cn.dev33.satoken.util.SaResult;
-import com.mu.domain.VlogComment;
+import com.mu.entity.VlogComment;
 import com.mu.service.impl.VlogCommentServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

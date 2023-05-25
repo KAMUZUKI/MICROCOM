@@ -4,7 +4,7 @@ import cn.dev33.satoken.util.SaResult;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.mu.domain.DingtalkUser;
+import com.mu.entity.DingtalkUser;
 import com.mu.service.impl.DingtalkServiceImpl;
 import com.mu.utils.SystemUtils;
 import com.xkcoding.justauth.AuthRequestFactory;

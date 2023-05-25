@@ -2,7 +2,7 @@ package com.mu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.mu.domain.Comment;
+import com.mu.entity.Comment;
 import com.mu.mapper.CommentMapper;
 import com.mu.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;

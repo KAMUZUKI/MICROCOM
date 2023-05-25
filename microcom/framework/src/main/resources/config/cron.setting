@@ -1,0 +1,3 @@
+# 我是注释
+[com.mu.cron]
+UserPreferencesCron.run = 0/1 * * * * ?

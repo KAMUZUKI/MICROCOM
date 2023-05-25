@@ -9,7 +9,6 @@
         <module>gateway</module>
         <module>meilisearch</module>
         <module>RecommenderSystem</module>
-        <module>Librec</module>
     </modules>
 
     <parent>

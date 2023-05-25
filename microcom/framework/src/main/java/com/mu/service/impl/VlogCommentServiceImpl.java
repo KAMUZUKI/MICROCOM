@@ -3,7 +3,7 @@ package com.mu.service.impl;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.mu.constant.VlogConstant;
-import com.mu.domain.VlogComment;
+import com.mu.entity.VlogComment;
 import com.mu.utils.CoreUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.Cursor;

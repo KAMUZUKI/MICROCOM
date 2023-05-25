@@ -3,11 +3,13 @@ package com.mu.controller;
 import cn.dev33.satoken.util.SaResult;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.mu.domain.Vlog;
+import com.mu.entity.Vlog;
 import com.mu.service.impl.VlogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author MUZUKI
@@ -39,6 +41,11 @@ public class VlogController {
             return SaResult.error().setMsg("没有更多数据了");
         }
         return SaResult.ok().setData(userEntityIPage.getRecords());
+    }
+
+    @GetMapping("findVlogWithList")
+    public SaResult findVlogWithList(@RequestBody List<Long> vlogIds) {
+        return SaResult.ok().setData(vlogService.findVlogWithList(vlogIds));
     }
 
     @PostMapping("add")

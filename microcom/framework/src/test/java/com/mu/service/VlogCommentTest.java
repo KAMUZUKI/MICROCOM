@@ -1,6 +1,6 @@
 package com.mu.service;
 
-import com.mu.domain.VlogComment;
+import com.mu.entity.VlogComment;
 import com.mu.service.impl.VlogCommentServiceImpl;
 import com.mu.utils.CoreUtils;
 import org.junit.jupiter.api.Test;

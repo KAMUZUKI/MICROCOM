@@ -1,7 +1,7 @@
 package com.mu.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.mu.domain.DingtalkUser;
+import com.mu.entity.DingtalkUser;
 import com.mu.mapper.DingtalkMapper;
 import com.mu.service.DingtalkService;
 import org.springframework.stereotype.Service;

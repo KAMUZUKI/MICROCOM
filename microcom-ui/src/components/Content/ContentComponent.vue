@@ -74,7 +74,6 @@ export default defineComponent({
     const listData = ref([])
     const clickLimitCount = ref()
     const initDataList = ref([])
-    const newData = ref({})
     const store = useStore()  // 该方法用于返回store 实例
     const likeList = ref([])  //用户点赞的文章id
     const keywords = ref([])
@@ -150,24 +149,6 @@ export default defineComponent({
       pageSize: 5,
     };
 
-    // 1.建立链接 -- 携带cookie参数
-    var ws = new WebSocket(
-      store.state.wspath + `/websocket`
-    );
-
-    // 3.服务器每次返回信息都会执行一次onmessage方法
-    ws.onmessage = function (res) {
-      //获取最新数据
-      if (res.data !== null) {
-        initDataList.value = []
-        newData.value = JSON.parse(res.data)
-        listData.value.unshift(JSON.parse(newData.value))
-        initDataByCategory('all')
-      } else {
-        return
-      }
-    };
-
     // var i = 1
     onMounted(() => {
       initData()
@@ -187,9 +168,6 @@ export default defineComponent({
 
     onBeforeUnmount(() => {
       initDataList.value = [];
-      ws.onclose = function () {
-        console.log("Connection closed.");
-      };
     });
 
     const changeContentByCategory = (type) => {

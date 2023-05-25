@@ -1,7 +1,7 @@
 package com.mu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.mu.domain.User;
+import com.mu.entity.User;
 
 /**
 * @author MUZUKI

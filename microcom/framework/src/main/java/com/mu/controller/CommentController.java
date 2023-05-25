@@ -4,7 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.util.SaResult;
 import cn.hutool.extra.servlet.ServletUtil;
 import com.mu.SensitiveWord.SensitiveFilter;
-import com.mu.domain.Comment;
+import com.mu.entity.Comment;
 import com.mu.service.impl.CommentServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
