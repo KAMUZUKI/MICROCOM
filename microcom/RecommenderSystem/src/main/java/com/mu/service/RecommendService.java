@@ -19,7 +19,7 @@ public interface RecommendService {
      * @return 推荐列表
      * @throws Exception 异常
      */
-    List recommendByUser (Long userId, Integer size) throws Exception;
+    List<Long> recommendByUser (Long userId, Integer size) throws Exception;
 
     /**
      * 基于物品的协同过滤算法
@@ -29,7 +29,7 @@ public interface RecommendService {
      * @return 推荐列表
      * @throws Exception 异常
      */
-    List recommendByItem (Long userId,Long itemId,Integer size) throws Exception;
+    List<Long> recommendByItem (Long userId,Long itemId,Integer size) throws Exception;
 
     /**
      * 基于用户的协同过滤算法,基于余弦相似度

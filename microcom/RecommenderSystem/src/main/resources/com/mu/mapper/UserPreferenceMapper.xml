@@ -15,7 +15,7 @@
     </update>
 
     <select id="getIidListByUserId" resultType="java.lang.Long">
-        select iid from recommend where uid=#{userId} limit 10;
+        select iid from recommend where uid=#{userId} order by value desc limit 5;
     </select>
 
     <select id="getUidList" resultType="java.lang.Long">

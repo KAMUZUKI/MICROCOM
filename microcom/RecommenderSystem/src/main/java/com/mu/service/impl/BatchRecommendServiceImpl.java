@@ -35,6 +35,6 @@ public class BatchRecommendServiceImpl extends AbstractRecommendService{
         List<Long> itemIdList = userPreferenceMapper.getIidListByUserId(userId);
         //创建数据模型
         DataModel model = this.createDataModel(userList);
-        return this.batchRecommendByItem(model, userId, itemIdList, size);
+        return this.absBatchRecommendByItem(model, userId, itemIdList, size);
     }
 }

@@ -46,5 +46,5 @@ public class UserAction implements Serializable {
      * 用户对文章的操作的最后时间
      * @Description 用于向用户推荐时，根据时间对评分进行衰减计算
      */
-    private Date time;
+    private Long time;
 }

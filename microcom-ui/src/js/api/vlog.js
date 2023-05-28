@@ -9,6 +9,14 @@ let api = {
             return err
         }
     },
+    async recommendWithPage(userId,size, page) {
+        try {
+            const response = await request.get("vlog/recommendWithPage/" + userId + "/" + size + "/" + page)
+            return response
+        } catch (err) {
+            return err
+        }
+    },
     findWithPageNow(size, page) {
         return request.get("vlog/findWithPage/" + size + "/" + page)
     },

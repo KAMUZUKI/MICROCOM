@@ -24,21 +24,20 @@ public class UserActionServiceImpl implements UserActionService {
     public void evaluationScore(Integer userId, Integer vlogId,Double level) {
         UserAction userAction = userArticleMapper.getUserActionByUserIdAndVlogId(userId,vlogId);
         if (userAction!=null) {
-            // 定义一个误差范围
-            double eps = 1e-6;
+            double maxScore = 10.0;
             // 已经存在数据,更新评分,评分最高为10
-            if (Math.abs(userAction.getValue()+level - 10.0) < eps) {
+            if (Double.compare(userAction.getValue()+level,maxScore)>0) {
                 // 评分超过10，设置为10
                 userAction.setValue(10.0);
             }else {
                 userAction.setValue(userAction.getValue()+level);
             }
             // 更新时间
-            userAction.setTime(new Date());
+            userAction.setTime(System.currentTimeMillis());
             userArticleMapper.updateByUserIdAndVlogId(userAction);
         } else {
             // 不存在数据，插入数据
-            userArticleMapper.insert(new UserAction(userId,vlogId,level,new Date()));
+            userArticleMapper.insert(new UserAction(userId,vlogId,level,System.currentTimeMillis()));
         }
     }
 }

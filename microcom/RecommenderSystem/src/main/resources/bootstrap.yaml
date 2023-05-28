@@ -7,10 +7,10 @@ spring:
   cloud:
     nacos:
       config:
-        #        server-addr: 175.178.212.207:8848
+#        server-addr: 175.178.212.207:8848
         server-addr: localhost:8848
         file-extension: yaml
-        #        namespace: 346d5bf4-17af-4346-8aae-f12ce48ea90303
+#        namespace: 346d5bf4-17af-4346-8aae-f12ce48ea903
         namespace: ba4ee4b8-8a2c-49a2-b55e-2ed4fe45cf3d
 #          maven依赖坐标： groupid - artifactid -版本号
 #          namespace - group - 文件

@@ -2,9 +2,11 @@ package com.mu.service.impl;
 
 import com.mu.entity.UserAction;
 import com.mu.mapper.UserPreferenceMapper;
+import com.mu.mapper.VlogMapper;
 import com.mu.service.AbstractRecommendService;
 import com.mu.service.RecommendService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.mahout.cf.taste.impl.model.jdbc.MySQLJDBCDataModel;
 import org.apache.mahout.cf.taste.model.DataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,29 +25,29 @@ import java.util.List;
 public class RecommendServiceImpl extends AbstractRecommendService implements RecommendService {
 
     @Autowired(required = false)
-    private UserPreferenceMapper userArticleMapper;
+    private UserPreferenceMapper userPreferenceMapper;
 
     @Override
-    public List<Long> recommendByUser (Long userId,Integer size) throws Exception {
-        List<UserAction> userList = userArticleMapper.getAllUserPreference();
+    public List<Long> recommendByUser (Long userId,Integer size) {
+        List<UserAction> userList = userPreferenceMapper.getAllUserPreference();
         //创建数据模型
         DataModel model = this.createDataModel(userList);
-        return this.recommendByUser(model, userId, size);
+        return this.absRecommendByUser(model, userId, size);
     }
 
     @Override
-    public List<Long> recommendByItem (Long userId,Long itemId,Integer size) throws Exception{
-        List<UserAction> userList = userArticleMapper.getAllUserPreference();
+    public List<Long> recommendByItem (Long userId,Long itemId,Integer size) {
+        List<UserAction> userList = userPreferenceMapper.getAllUserPreference();
         //创建数据模型
         DataModel model = this.createDataModel(userList);
-        return this.recommendByItem(model, userId, itemId, size);
+        return this.absRecommendByItem(model, userId, itemId, size);
     }
 
     @Override
-    public List<Long> recommendByUserWithUncenteredCosine(Long userId,Integer size) throws Exception {
-        List<UserAction> userList = userArticleMapper.getAllUserPreference();
+    public List<Long> recommendByUserWithUncenteredCosine(Long userId,Integer size) {
+        List<UserAction> userList = userPreferenceMapper.getAllUserPreference();
         //创建数据模型
         DataModel dataModel = this.createDataModel(userList);
-        return this.recommendByUserWithUncenteredCosine(dataModel, userId, size);
+        return this.absRecommendByUserWithUncenteredCosine(dataModel, userId, size);
     }
 }

@@ -1,14 +1,16 @@
 package com.mu.service;
 
-import cn.hutool.core.exceptions.DependencyException;
 import com.mu.entity.UserAction;
 import com.mu.exception.RecommendException;
-import lombok.val;
+import com.mu.extra.PreferenceWithTimestamp;
+import com.mu.extra.TimeDecayRescorer;
+import com.mu.mapper.VlogMapper;
 import org.apache.mahout.cf.taste.common.TasteException;
 import org.apache.mahout.cf.taste.impl.common.FastByIDMap;
 import org.apache.mahout.cf.taste.impl.model.GenericDataModel;
 import org.apache.mahout.cf.taste.impl.model.GenericPreference;
 import org.apache.mahout.cf.taste.impl.model.GenericUserPreferenceArray;
+import org.apache.mahout.cf.taste.impl.model.jdbc.MySQLJDBCDataModel;
 import org.apache.mahout.cf.taste.impl.neighborhood.NearestNUserNeighborhood;
 import org.apache.mahout.cf.taste.impl.recommender.CachingRecommender;
 import org.apache.mahout.cf.taste.impl.recommender.GenericItemBasedRecommender;
@@ -18,14 +20,16 @@ import org.apache.mahout.cf.taste.impl.similarity.UncenteredCosineSimilarity;
 import org.apache.mahout.cf.taste.model.DataModel;
 import org.apache.mahout.cf.taste.model.PreferenceArray;
 import org.apache.mahout.cf.taste.neighborhood.UserNeighborhood;
+import org.apache.mahout.cf.taste.recommender.IDRescorer;
 import org.apache.mahout.cf.taste.recommender.RecommendedItem;
 import org.apache.mahout.cf.taste.recommender.Recommender;
 import org.apache.mahout.cf.taste.similarity.ItemSimilarity;
 import org.apache.mahout.cf.taste.similarity.UserSimilarity;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author MUZUKI
@@ -42,7 +46,7 @@ public abstract class AbstractRecommendService {
      * @param size   推荐数量
      * @return 推荐列表
      */
-    protected List<Long> recommendByUser(DataModel model, Long userId, Integer size) {
+    protected List<Long> absRecommendByUser(DataModel model, Long userId, Integer size) {
         List<RecommendedItem> recommendedItems;
         try {
             UserSimilarity similarity = new PearsonCorrelationSimilarity(model);
@@ -57,6 +61,31 @@ public abstract class AbstractRecommendService {
     }
 
     /**
+     * 基于用户的协同过滤算法,根据时间衰减
+     * @param model 数据模型
+     * @param userId 用户ID
+     * @param itemId 商品ID
+     * @param size 推荐数量
+     * @return 推荐列表
+     */
+    protected List<Long> absRecommendByItemWithTimeDecay(VlogMapper vlogMapper,MySQLJDBCDataModel model, Long userId, Long itemId, Integer size){
+        List<RecommendedItem> recommendedItems;
+        try {
+            // 创建相似度计算器
+            PearsonCorrelationSimilarity similarity = new PearsonCorrelationSimilarity(model);
+            // 创建推荐器
+            GenericItemBasedRecommender recommender = new GenericItemBasedRecommender(model, similarity);
+            // 创建IDRescorer
+            IDRescorer rescorer = new TimeDecayRescorer(vlogMapper);
+            // 为用户推荐物品
+            recommendedItems = recommender.recommend(userId, size, rescorer);
+        }catch (TasteException e){
+            throw new RecommendException("recommendByUser:推荐失败" + e);
+        }
+        return recommendedItems.stream().map(RecommendedItem::getItemID).collect(Collectors.toList());
+    }
+
+    /**
      * 基于物品的协同过滤算法
      *
      * @param userId 用户ID
@@ -64,7 +93,7 @@ public abstract class AbstractRecommendService {
      * @param size   推荐数量
      * @return 推荐列表
      */
-    protected List<Long> recommendByItem(DataModel model, Long userId, Long itemId, Integer size) {
+    protected List<Long> absRecommendByItem(DataModel model, Long userId, Long itemId, Integer size) {
         List<RecommendedItem> recommendedItems;
         //获取用户相似程度
         try {
@@ -86,8 +115,8 @@ public abstract class AbstractRecommendService {
      * @param size   推荐数量
      * @return 推荐集合
      */
-    protected List<Long> batchRecommendByItem(DataModel model, Long userId, List<Long> itemIdList, Integer size){
-        Set<Long> itemIdSet = new HashSet<>();
+    protected List<Long> absBatchRecommendByItem(DataModel model, Long userId, List<Long> itemIdList, Integer size){
+        Map<Long,Float> itemHashMap = new ConcurrentHashMap<>();
         //获取用户相似程度
         try{
             ItemSimilarity itemSimilarity = new PearsonCorrelationSimilarity(model);
@@ -98,7 +127,7 @@ public abstract class AbstractRecommendService {
                         try {
                             List<RecommendedItem> recommendedItems = itemRecommender.recommendedBecause(userId, itemId, size);
                             recommendedItems.forEach(
-                                    item -> itemIdSet.add(item.getItemID())
+                                    item -> itemHashMap.put(item.getItemID(), item.getValue())
                             );
                         } catch (TasteException e) {
                             throw new RecommendException("batchRecommendByItem:批量推荐失败" + e);
@@ -108,7 +137,11 @@ public abstract class AbstractRecommendService {
         } catch (TasteException e) {
             throw new RecommendException("batchRecommendByItem:批量推荐失败" + e);
         }
-        return itemIdSet.stream().limit(size).collect(Collectors.toList());
+        return itemHashMap.entrySet().stream()
+                .sorted(Map.Entry.<Long, Float>comparingByValue().reversed())
+                .limit(size)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -117,7 +150,7 @@ public abstract class AbstractRecommendService {
      * @param userId 用户ID
      * @return 推荐列表
      */
-    protected List<Long> recommendByUserWithUncenteredCosine(DataModel model, Long userId, Integer size) {
+    protected List<Long> absRecommendByUserWithUncenteredCosine(DataModel model, Long userId, Integer size) {
         List<RecommendedItem> recommendedItems;
         try {
             //获取用户相似程度
@@ -126,7 +159,7 @@ public abstract class AbstractRecommendService {
             UserNeighborhood userNeighborhood = new NearestNUserNeighborhood(3, similarity, model);
             //构建推荐器
             Recommender recommender = new GenericUserBasedRecommender(model, userNeighborhood, similarity);
-            //推荐2个
+            //推荐个数
             recommendedItems = recommender.recommend(userId, size);
         }catch (TasteException e){
             throw new RecommendException("recommendByUserWithUncenteredCosine:推荐失败" + e);
@@ -145,10 +178,10 @@ public abstract class AbstractRecommendService {
         Map<Integer, List<UserAction>> map = userArticleOperations.stream().collect(Collectors.groupingBy(UserAction::getUid));
         Collection<List<UserAction>> list = map.values();
         for (List<UserAction> userPreferences : list) {
-            GenericPreference[] array = new GenericPreference[userPreferences.size()];
+            PreferenceWithTimestamp[] array = new PreferenceWithTimestamp[userPreferences.size()];
             for (int i = 0; i < userPreferences.size(); i++) {
                 UserAction userPreference = userPreferences.get(i);
-                GenericPreference item = new GenericPreference(userPreference.getUid(), userPreference.getIid(), userPreference.getValue().floatValue());
+                PreferenceWithTimestamp item = new PreferenceWithTimestamp(userPreference.getUid(), userPreference.getIid(), userPreference.getValue().floatValue(),userPreference.getTime());
                 array[i] = item;
             }
             fastByIdMap.put(array[0].getUserID(), new GenericUserPreferenceArray(Arrays.asList(array)));

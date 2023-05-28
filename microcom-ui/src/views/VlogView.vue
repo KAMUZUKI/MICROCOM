@@ -59,7 +59,7 @@
                                                 <span class="tag tag-teal">{{ tag }}</span>
                                             </template>
                                         </div>
-                                        <h6>{{ item.title }}</h6>
+                                        <h6>{{ item.id + item.title }}</h6>
                                         <p>{{ item.text.substring(0, 200) }}.....</p>
                                         <div class="user">
                                             <img :src="item.head" alt="" />
@@ -112,6 +112,7 @@ const showDataFlag = ref(false)
 const cards = ref([])
 const dialogRef = ref(null)
 const currentIndex = ref(1)
+const userId = JSON.parse(localStorage.getItem("user")).id
 
 const showDialog = (item) => {
     dialogRef.value.show(item);
@@ -200,7 +201,8 @@ const onLoad = (index, done) => {
         return;
     }
     setTimeout(async () => {
-        var res = await api.findWithPage(8, currentIndex.value); // Your asynchronous data retrieval method
+        var res = await api.recommendWithPage(userId,8, currentIndex.value);
+        // var res = await api.findWithPage(8, currentIndex.value);
         if (res.code == "ERR_NETWORK") {
             message.error("网络错误,请稍后重试");
             done();

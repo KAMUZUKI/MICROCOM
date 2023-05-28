@@ -10,4 +10,5 @@ import com.mu.entity.Vlog;
  */
 
 public interface VlogService extends IService<Vlog> {
+
 }

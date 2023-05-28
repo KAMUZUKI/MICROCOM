@@ -8,7 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -21,15 +21,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ServletComponentScan("com.mu.filter")
 @EnableTransactionManagement
 @EnableDiscoveryClient
-@EnableFeignClients
-public class McirocomApplication implements ApplicationRunner {
+@EnableScheduling //开启定时任务
+public class McirocomApplication{
     public static void main(String[] args) {
         SpringApplication.run(McirocomApplication.class, args);
-    }
-
-    @Override
-    public void run(ApplicationArguments args) {
-        CronUtil.start();
     }
 
     @ExceptionHandler(value = Exception.class)

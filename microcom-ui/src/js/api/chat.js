@@ -1,10 +1,10 @@
 import axios from 'axios'
 // let wsPath = "ws://localhost:7070/chat/"
-let httpPath = "http://172.16.124.68:7070/chat/"
+let httpPath = "http://175.178.212.207:9999/chat/"
 let api = {
 
     websocket(id) {
-        return 'ws://172.16.124.68:7070/chat/' + id;
+        return 'ws://175.178.212.207:9999/chat/' + id;
     },
 
     /**
