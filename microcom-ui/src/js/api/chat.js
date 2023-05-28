@@ -1,10 +1,11 @@
 import axios from 'axios'
-// let wsPath = "ws://localhost:7070/chat/"
-let httpPath = "http://175.178.212.207:9999/chat/"
+import config from '@/js/api/config'
+
+let httpPath = config.getChatUrl
 let api = {
 
     websocket(id) {
-        return 'ws://175.178.212.207:9999/chat/' + id;
+        return config.getChatWsUrl + id;
     },
 
     /**

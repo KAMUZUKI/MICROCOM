@@ -33,8 +33,9 @@
                                 <a-form-item :name="['user', 'categorys']" label="栏目选择">
                                     <a-select showSearch v-model:value="categoryOptions" mode="single" style="width: 100%"
                                         placeholder="请选择栏目" :options="categorys">
-                                        {{ categorys }}
+                                        {{ categorys }} 
                                     </a-select>
+                                    {{ categoryOptions }}
                                 </a-form-item>
                                 <a-form-item :name="['user', 'keywords']" label="关键词">
                                     <a-select showSearch v-model:value="keywordOptions" mode="multiple" style="width: 100%"
@@ -122,8 +123,12 @@ const judgeMode = () => {
         //TODO:通过articleId获取文章详情  修改文章
         var params = new URLSearchParams();
         params.append('articleId', editInfo);
-        axios.post(store.state.path + '/article/getArticleById', params)
-            .then(res => {
+        axios.post(store.state.path + '/article/getArticleById', params
+        ,{
+            headers:{
+            'satoken': localStorage.getItem('tokeninfo')
+            }
+        }).then(res => {
                 if (res.data.code == 200) {
                     formState.user = res.data.data
                     keywordOptions.value = res.data.data.label.split(',')
@@ -191,7 +196,7 @@ const onFinish = (values) => {
     console.log(values)
     var params = new URLSearchParams();
     if (mode.value) {
-        params.append('author', JSON.parse(localStorage.getItem("user")).username);
+        params.append('author', JSON.parse(localStorage.getItem("user")).name);
         params.append('title', formState.user.title)
         params.append('content', formState.user.content)
         params.append('description', formState.user.description)
@@ -199,10 +204,14 @@ const onFinish = (values) => {
         params.append('label', keywordOptions.value ?? '')
         params.append('titleImgs', formState.user.titleImgs ?? JSON.parse(localStorage.getItem("user")).head)
         params.append('createTime', formState.user.createTime)
-        axios.post(store.state.path + '/article/addArticle', params)
-            .then(res => {
+        axios.post(store.state.path + '/article/addArticle', params
+        ,{
+            headers:{
+            'satoken': localStorage.getItem('tokeninfo')
+            }
+        }).then(res => {
                 if (res.data.code == 200) {
-                    formState.user.author = JSON.parse(localStorage.getItem("user")).username
+                    formState.user.author = JSON.parse(localStorage.getItem("user")).name
                     formState.user.category = categoryOptions.value
                     formState.user.keywords = keywordOptions.value
                     let submitCode = JSON.stringify({
@@ -229,7 +238,7 @@ const onFinish = (values) => {
             });
     } else {
         params.append('id', route.query.articleId);
-        params.append('author', JSON.parse(localStorage.getItem("user")).username);
+        params.append('author', JSON.parse(localStorage.getItem("user")).name);
         params.append('title', formState.user.title)
         params.append('content', formState.user.content)
         params.append('description', formState.user.description)
@@ -237,8 +246,12 @@ const onFinish = (values) => {
         params.append('label', keywordOptions.value ?? '')
         params.append('titleImgs', formState.user.titleImgs ?? JSON.parse(localStorage.getItem("user")).head)
         params.append('createTime', formState.user.createTime)
-        axios.post(store.state.path + '/article/alterArticle', params)
-            .then(res => {
+        axios.post(store.state.path + '/article/alterArticle', params
+        ,{
+            headers:{
+            'satoken': localStorage.getItem('tokeninfo')
+            }
+        }).then(res => {
                 if (res.data.code == 200) {
                     message.success('文章修改成功')
                     router.push('/')

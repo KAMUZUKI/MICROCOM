@@ -7,9 +7,7 @@ import com.mu.entity.VlogComment;
 import com.mu.service.AbstractRedisService;
 import com.mu.utils.CoreUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 

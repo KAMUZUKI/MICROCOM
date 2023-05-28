@@ -1,9 +1,7 @@
 package com.mu.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.mu.constant.VlogConstant;
 import com.mu.entity.Vlog;
-import com.mu.entity.VlogComment;
 import com.mu.service.AbstractRedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,7 +25,7 @@ public class VlogRedisServiceImpl extends AbstractRedisService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    public List<Vlog> findByVlogId(Long userId,int pageSize,int pageNum) {
+    public List<Vlog> findByVlogId(Long userId, int pageSize, int pageNum) {
         String hashKey = RECOMMEND_PREFIX + userId;
         List<Vlog> vlogList = new ArrayList<>();
         getHashEntriesByPage(redisTemplate,hashKey, pageSize, pageNum).forEach(entry -> {

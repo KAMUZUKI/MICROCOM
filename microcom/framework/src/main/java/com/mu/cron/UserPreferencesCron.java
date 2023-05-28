@@ -1,19 +1,14 @@
 package com.mu.cron;
 
-import cn.hutool.core.thread.ExecutorBuilder;
-import com.mu.mapper.UserMapper;
 import com.mu.service.impl.RecommendToRedisServiceImpl;
 import com.mu.service.impl.UserServiceImpl;
 import com.mu.utils.ApplicationContextUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
 
 /**
  * @author MUZUKI

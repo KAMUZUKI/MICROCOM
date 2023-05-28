@@ -2,7 +2,7 @@ import axios from 'axios';
 import config from '@/js/api/config'
 const request = axios.create({
   baseURL: config.getUrl,
-  timeout: 5000000000,
+  timeout: 30000,
 });
 
 request.interceptors.request.use(

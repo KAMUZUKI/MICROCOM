@@ -1,10 +1,8 @@
 package com.mu.controller;
 
 import cn.dev33.satoken.util.SaResult;
-import com.mu.entity.Vlog;
 import com.mu.entity.VlogComment;
 import com.mu.service.impl.VlogCommentServiceImpl;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
