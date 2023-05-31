@@ -1,4 +1,3 @@
-## 此配置文件为备份文件，使用的配置在nacos配置中心  gateway-prod.yaml
 #server:
 #  port: 9999
 #
@@ -8,9 +7,11 @@
 #      discovery:
 #        enabled: true
 #        register-enabled: true
-#        server-addr: localhost:8848
-#        namespace: ba4ee4b8-8a2c-49a2-b55e-2ed4fe45cf3d
 #        group: DEFAULT_GROUP   # 读取配置的分组名称
+#        namespace: 346d5bf4-17af-4346-8aae-*************
+#        server-addr: 175.178.212.207:8848
+#        ip: 175.178.212.207
+#        port: 9999
 #    gateway:
 #      # routes: # 用来配置路由规则
 #      #   - id: framework
@@ -36,6 +37,8 @@
 #              - Content-Type
 #              - Authorization
 #              - X-Requested-With
+#              - satoken
+#              - userId
 #            allowCredentials: true
 #
 #management:

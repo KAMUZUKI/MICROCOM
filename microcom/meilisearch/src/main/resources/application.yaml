@@ -1,6 +1,0 @@
-server:
-  port: 8082
-
-meilisearch:
-  host-url: 175.178.212.207:7700
-  api-key: AYp0zkq8s7xgn1oO6XZnU4eY9uVj7EKH68Xsz7sj9d0

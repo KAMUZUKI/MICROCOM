@@ -1,13 +1,16 @@
+#server:
+#  port: 8082
+#
 #spring:
 #  datasource:
 #    driver-class-name: com.mysql.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/microcom?useSSL=true&serverTimezone=Asia/Shanghai
-#    username: root
-#    password: muzuki
+#    url: jdbc:mysql://175.178.212.207:3306/microcom?useSSL=false&serverTimezone=Asia/Shanghai
+#    username: *************
+#    password: *************
 #  redis:
 #    host: 175.178.212.207
 #    port: 6379
-#    password: muzuki2002
+#    password: *************
 #    # 连接超时时间（记得添加单位，Duration）
 #    timeout: 10000ms
 #    # Redis默认情况下有16个分片，这里配置具体使用的分片
@@ -22,8 +25,18 @@
 #        max-idle: 8
 #        # 连接池中的最小空闲连接 默认 0
 #        min-idle: 0
-#server:
-#  port: 8082
+#  cloud:
+#    nacos:
+#      discovery:
+#        enabled: true
+#        register-enabled: true
+#        server-addr: 175.178.212.207:8848
+#        ip: 175.178.212.207
+#        port: 8082
+#        username: nacos
+#        password: nacos
+#        namespace: 346d5bf4-17af-4346-8aae-*************
+#        group: DEFAULT_GROUP
 #
 #logging:
 #  config: classpath:logback.xml

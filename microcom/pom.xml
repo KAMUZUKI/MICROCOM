@@ -6,7 +6,6 @@
     <modules>
         <module>framework</module>
         <module>gateway</module>
-        <module>meilisearch</module>
         <module>RecommenderSystem</module>
     </modules>
 
