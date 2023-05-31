@@ -2,8 +2,6 @@ package com.mu.utils;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
-import javax.sql.DataSource;
-
 /**
  * @author MUZUKI
  * @Classname DataSourceUtil
