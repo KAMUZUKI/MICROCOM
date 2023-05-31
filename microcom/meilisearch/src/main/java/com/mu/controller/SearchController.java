@@ -1,3 +1,4 @@
+<<<<<<< HEAD:microcom/meilisearch/src/main/java/com/mu/controller/SearchController.java
 package com.mu.controller;
 
 import com.meilisearch.sdk.SearchRequest;
@@ -39,3 +40,5 @@ public class SearchController {
         return "初始化成功";
     }
 }
+=======
+>>>>>>> main:microcom/meilisearch/src/main/java/com/mu/SearchController.java

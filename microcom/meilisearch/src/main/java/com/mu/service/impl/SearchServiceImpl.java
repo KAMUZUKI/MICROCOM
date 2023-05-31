@@ -1,3 +1,4 @@
+<<<<<<< HEAD:microcom/meilisearch/src/main/java/com/mu/service/impl/SearchServiceImpl.java
 package com.mu.service.impl;
 
 import cn.hutool.core.io.file.FileReader;
@@ -55,3 +56,5 @@ public class SearchServiceImpl implements SearchService {
         }
     }
 }
+=======
+>>>>>>> main:microcom/meilisearch/src/main/java/com/mu/service/SearchServiceImpl.java
