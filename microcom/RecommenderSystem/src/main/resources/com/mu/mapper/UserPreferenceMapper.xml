@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mu.mapper.UserPreferenceMapper">
+    <select id="getAllUserPreference" resultType="com.mu.entity.UserAction">
+        SELECT uid,iid,value,time FROM recommend group by uid,iid;
+    </select>
+
+    <select id="getUserActionByUserIdAndVlogId" resultType="com.mu.entity.UserAction">
+        SELECT uid,iid,value,time FROM recommend where uid=#{userId} and iid=#{vlogId};
+    </select>
+
+    <update id="updateByUserIdAndVlogId">
+        update recommend set value=#{value},time=#{time} where uid=#{uid} and iid=#{iid};
+    </update>
+
+    <select id="getIidListByUserId" resultType="java.lang.Long">
+        select iid from recommend where uid=#{userId} order by value desc limit 5;
+    </select>
+
+    <select id="getUidList" resultType="java.lang.Long">
+        select id from user;
+    </select>
+</mapper>

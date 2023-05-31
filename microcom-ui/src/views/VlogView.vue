@@ -111,6 +111,8 @@ import "animate.css";
 const showDataFlag = ref(false)
 const cards = ref([])
 const dialogRef = ref(null)
+const currentIndex = ref(1)
+const userId = JSON.parse(localStorage.getItem("user")).id
 
 const showDialog = (item) => {
     dialogRef.value.show(item);
@@ -199,7 +201,8 @@ const onLoad = (index, done) => {
         return;
     }
     setTimeout(async () => {
-        var res = await api.findWithPage(8, index); // Your asynchronous data retrieval method
+        var res = await api.recommendWithPage(userId,8, currentIndex.value);
+        // var res = await api.findWithPage(8, currentIndex.value);
         if (res.code == "ERR_NETWORK") {
             message.error("网络错误,请稍后重试");
             done();
@@ -212,6 +215,7 @@ const onLoad = (index, done) => {
             return;
         }
         cards.value.push(...res.data);
+        currentIndex.value++
         await done();
     }, 1000);
 };

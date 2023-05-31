@@ -48,7 +48,7 @@
                             </q-item-section>
                             <q-item-section>
                                 <q-item-label>
-                                    <span>{{ comment.author }}</span>
+                                    <span>{{ comment.author + comment.id }}</span>
                                     <span class="comment-header">{{ comment.time }}</span>
                                     <span class="comment-header" @click="prepareAdd(index, comment.id)">回复</span>
                                 </q-item-label>
@@ -208,6 +208,7 @@ const addComment = async () => {
 const addReply = async (commentIndex, parentId) => {
     var res = await vlogComment.save({
         vlogId: props.detail.id,
+        userId: userId,
         parentId: parentId,
         author: username,
         time: utils.getTime(),
@@ -231,6 +232,7 @@ const addReply = async (commentIndex, parentId) => {
 const addReplyWith = async (commentIndex, parentId, replyName) => {
     var res = await vlogComment.save({
         vlogId: props.detail.id,
+        userId: userId,
         parentId: parentId,
         author: username + "-" + replyName,
         time: utils.getTime(),

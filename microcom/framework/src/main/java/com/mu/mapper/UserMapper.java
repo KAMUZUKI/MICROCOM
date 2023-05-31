@@ -1,7 +1,9 @@
 package com.mu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.mu.domain.User;
+import com.mu.entity.User;
+
+import java.util.List;
 
 /**
 * @author MUZUKI
@@ -10,7 +12,11 @@ import com.mu.domain.User;
 * @Entity generator.domain.User
 */
 public interface UserMapper extends BaseMapper<User> {
-
+    /**
+     * 获取所有用户id
+     * @return List<Long> 用户id列表
+     */
+    List<Long> getUidList();
 }
 
 

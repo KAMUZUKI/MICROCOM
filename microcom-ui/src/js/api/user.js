@@ -1,4 +1,7 @@
 import request from "@/js/api/request";
+import creditRequest from "@/js/api/creditRequest";
+
+const token = localStorage.getItem('tokeninfo');
 
 let api = {
     async getFollowers (userId) {
@@ -45,6 +48,30 @@ let api = {
     async unfollow (userId,targetId){
         try {
             let res = await request.post("user/unfollow/" + userId + "/" + targetId)
+            return res
+        }catch (err) {
+            console.log(err);
+        }
+    },
+    async updateUserById (user){
+        try{
+            let res = await creditRequest.post("user/updateUserById",user)
+            return res
+        }catch (err) {
+            console.log(err);
+        }
+    },
+    async getTokenInfo(){
+        try{
+            let res = await request.post("user/tokenInfo/" + token)
+            return res
+        }catch (err) {
+            console.log(err);
+        }
+    },
+    logout: function () {
+        try{
+            let res = request.post("user/logout/" + token)
             return res
         }catch (err) {
             console.log(err);

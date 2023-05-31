@@ -3,7 +3,7 @@ package com.mu.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.util.SaResult;
 import cn.hutool.extra.servlet.ServletUtil;
-import com.mu.domain.Article;
+import com.mu.entity.Article;
 import com.mu.service.impl.ArticleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

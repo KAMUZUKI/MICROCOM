@@ -35,6 +35,9 @@ import PersonalMenu from "@/components/Personal/PersonalMenu.vue"
 import HeadRight from "@/components/Header/HeadRight.vue"
 import LoginView from "@/views/LoginView.vue"
 import chat from "@/js/api/chat"
+import userApi from "@/js/api/user"
+import system from "@/js/utils/system"
+import { message } from "ant-design-vue"
 
 const rightDrawerOpen = ref(false)
 const store = useStore()
@@ -42,7 +45,20 @@ const toggleRightDrawer = () => {
   rightDrawerOpen.value = !rightDrawerOpen.value
 }
 
-onMounted(() => {
+onMounted(async () => {
+  let res = await userApi.getTokenInfo()
+  if (res.code == 200) {
+    if(parseInt(res.data) !== JSON.parse(localStorage.getItem("user")).id) {
+      system.logout()
+      store.state.isCertified = false;
+      store.state.isLogin = false;
+      message.info("登录已过期，请重新登录！");
+      return
+    }
+  }else{
+    message.error("服务器出错，请稍后重试！")
+    return
+  }
   if (localStorage.getItem("user") != null) {
     store.state.user = JSON.parse(localStorage.getItem("user"));
     store.state.isLogin = true;

@@ -2,7 +2,7 @@ package com.mu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.mu.domain.Article;
+import com.mu.entity.Article;
 import com.mu.mapper.ArticleMapper;
 import com.mu.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;

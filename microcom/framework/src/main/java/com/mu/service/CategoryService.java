@@ -1,7 +1,7 @@
 package com.mu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.mu.domain.Category;
+import com.mu.entity.Category;
 
 /**
 * @author MUZUKI

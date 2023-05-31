@@ -1,7 +1,7 @@
 package com.mu.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.mu.domain.Category;
+import com.mu.entity.Category;
 import com.mu.mapper.CategoryMapper;
 import com.mu.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;

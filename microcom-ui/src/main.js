@@ -35,6 +35,11 @@ VMdPreview.use(githubTheme, {
 
 VMdEditor.use(githubTheme, {
   Hljs: hljs,
+  config: {
+    toc: {
+      includeLevel: [3, 4],
+    },
+  },
 });
 //MARKED END
 

@@ -5,7 +5,7 @@
                 <a-space :size="small" direction="horizontal" align="start">
                     <a-col>
                         <div style="border: 1px solid #ccc;text-align:left;height:800px;min-width:1000px;max-width:1100px">
-                            <v-md-editor v-model="formState.user.content" :disabled-menus="[]"
+                            <v-md-editor v-model="formState.user.content" :include-level="[3, 4]" :disabled-menus="[]"
                                 @upload-image="handleUploadImage" height="800px">
                             </v-md-editor>
                         </div>
@@ -28,12 +28,14 @@
                                     <a-input v-model:value="formState.user.description" />
                                 </a-form-item>
                                 <a-form-item :name="['user', 'articleImg']" label="文章图片">
-                                    <a-input v-model:value="formState.user.titleImgs" placeholder="空则使用默认图片" />
+                                    <a-input v-model:value="formState.user.titleImgs" disabled placeholder="未上传则使用默认图片" />
                                 </a-form-item>
                                 <a-form-item :name="['user', 'categorys']" label="栏目选择">
                                     <a-select showSearch v-model:value="categoryOptions" mode="single" style="width: 100%"
                                         placeholder="请选择栏目" :options="categorys">
+                                        {{ categorys }} 
                                     </a-select>
+                                    {{ categoryOptions }}
                                 </a-form-item>
                                 <a-form-item :name="['user', 'keywords']" label="关键词">
                                     <a-select showSearch v-model:value="keywordOptions" mode="multiple" style="width: 100%"
@@ -67,13 +69,7 @@ import { onBeforeUnmount } from 'vue'
 import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
 import upload from '@/js/api/upload'
-
-// const props = defineProps({
-//     openNotificationWithIcon: {
-//         type: Function,
-//         required: true,
-//     },
-// })
+import categoryApi from '@/js/api/category'
 
 const router = useRouter()
 const route = useRoute()
@@ -82,7 +78,6 @@ const openNotification = ref()
 const categorys = ref([])
 const keywords = ref([])
 const tmpKeywords = ref([])
-const tmpCategorys = ref([])
 const keywordOptions = ref([])
 const categoryOptions = ref()
 const mode = ref(true)
@@ -117,7 +112,6 @@ const factoryFn = async (files) => {
   }
 }
 
-
 const failed = ()=>{
     message.success("图片上传失败")
 }
@@ -129,13 +123,17 @@ const judgeMode = () => {
         //TODO:通过articleId获取文章详情  修改文章
         var params = new URLSearchParams();
         params.append('articleId', editInfo);
-        axios.post(store.state.path + '/article/getArticleById', params)
-            .then(res => {
+        axios.post(store.state.path + '/article/getArticleById', params
+        ,{
+            headers:{
+            'satoken': localStorage.getItem('tokeninfo')
+            }
+        }).then(res => {
                 if (res.data.code == 200) {
                     formState.user = res.data.data
                     keywordOptions.value = res.data.data.label.split(',')
-                    categoryOptions.value = JSON.parse(sessionStorage.getItem("categorys"))[res.data.data.categoryId]
-                    sessionStorage.setItem("articleDetail", JSON.stringify(formState));
+                    categoryOptions.value = JSON.parse(localStorage.getItem("categorys"))[res.data.data.categoryId]
+                    localStorage.setItem("articleDetail", JSON.stringify(formState));
                 } else {
                     console.log(res.data.msg)
                 }
@@ -160,20 +158,29 @@ const handleUploadImage = async (event, insertImage, file) => {
     }
 }
 
+const initData = ()=>{
+    categoryApi.getCategory().then(res=>{
+        if(res.code == 200){
+            localStorage.setItem("categorys", JSON.stringify(res.data));
+            Object.entries(res.data).forEach(([key, value]) => {
+                categorys.value.push({ index: key, value: value.name })
+            })
+        }else{
+            console.log(res.msg)
+        }
+    })
+}
+
 var ws
 onMounted(() => {
     //撰写文章的分类以及关键词加载
     formState.user.content = formState.user.content ?? ''
-    tmpKeywords.value = JSON.parse(sessionStorage.getItem("keywords")) ?? []
+    tmpKeywords.value = JSON.parse(localStorage.getItem("keywords")) ?? []
     Object.entries(tmpKeywords.value).forEach(([key, value]) => {
         keywords.value.push({ index: key, value: value })
     })
-    tmpCategorys.value = JSON.parse(sessionStorage.getItem("categorys")) ?? []
-    Object.entries(tmpCategorys.value).forEach(([key, value]) => {
-        categorys.value.push({ index: key, value: value })
-    })
     judgeMode()
-
+    initData()
     //连接websocket
     ws = new WebSocket(
         store.state.wspath + `/websocket`
@@ -189,18 +196,22 @@ const onFinish = (values) => {
     console.log(values)
     var params = new URLSearchParams();
     if (mode.value) {
-        params.append('author', JSON.parse(sessionStorage.getItem("user")).username);
+        params.append('author', JSON.parse(localStorage.getItem("user")).name);
         params.append('title', formState.user.title)
         params.append('content', formState.user.content)
         params.append('description', formState.user.description)
-        params.append('categoryId', (JSON.parse(sessionStorage.getItem('categorys')).indexOf(categoryOptions.value)) + 1 ?? 1)
+        params.append('categoryId', (JSON.parse(localStorage.getItem('categorys')).indexOf(categoryOptions.value)) + 1 ?? 1)
         params.append('label', keywordOptions.value ?? '')
-        params.append('titleImgs', formState.user.titleImgs ?? JSON.parse(sessionStorage.getItem("user")).head)
+        params.append('titleImgs', formState.user.titleImgs ?? JSON.parse(localStorage.getItem("user")).head)
         params.append('createTime', formState.user.createTime)
-        axios.post(store.state.path + '/article/addArticle', params)
-            .then(res => {
+        axios.post(store.state.path + '/article/addArticle', params
+        ,{
+            headers:{
+            'satoken': localStorage.getItem('tokeninfo')
+            }
+        }).then(res => {
                 if (res.data.code == 200) {
-                    formState.user.author = JSON.parse(sessionStorage.getItem("user")).username
+                    formState.user.author = JSON.parse(localStorage.getItem("user")).name
                     formState.user.category = categoryOptions.value
                     formState.user.keywords = keywordOptions.value
                     let submitCode = JSON.stringify({
@@ -209,7 +220,7 @@ const onFinish = (values) => {
                         title: formState.user.title,
                         content: formState.user.content,
                         description: formState.user.description,
-                        category: JSON.parse(sessionStorage.getItem('categorys')).indexOf(formState.user.category),
+                        category: JSON.parse(localStorage.getItem('categorys')).indexOf(formState.user.category),
                         keywords: formState.user.keywords,
                         titleImgs: formState.user.titleImgs,
                         createTime: formState.user.createTime,
@@ -227,16 +238,20 @@ const onFinish = (values) => {
             });
     } else {
         params.append('id', route.query.articleId);
-        params.append('author', JSON.parse(sessionStorage.getItem("user")).username);
+        params.append('author', JSON.parse(localStorage.getItem("user")).name);
         params.append('title', formState.user.title)
         params.append('content', formState.user.content)
         params.append('description', formState.user.description)
-        params.append('categoryId', (JSON.parse(sessionStorage.getItem('categorys')).indexOf(categoryOptions.value)) + 1 ?? 1)
+        params.append('categoryId', (JSON.parse(localStorage.getItem('categorys')).indexOf(categoryOptions.value)) + 1 ?? 1)
         params.append('label', keywordOptions.value ?? '')
-        params.append('titleImgs', formState.user.titleImgs ?? JSON.parse(sessionStorage.getItem("user")).head)
+        params.append('titleImgs', formState.user.titleImgs ?? JSON.parse(localStorage.getItem("user")).head)
         params.append('createTime', formState.user.createTime)
-        axios.post(store.state.path + '/article/alterArticle', params)
-            .then(res => {
+        axios.post(store.state.path + '/article/alterArticle', params
+        ,{
+            headers:{
+            'satoken': localStorage.getItem('tokeninfo')
+            }
+        }).then(res => {
                 if (res.data.code == 200) {
                     message.success('文章修改成功')
                     router.push('/')
@@ -256,17 +271,11 @@ const onFinishFailed = errorInfo => {
 
 const validateMessages = {
     required: '${label} is required!',
-    types: {
-        email: '${label} is not a valid email!',
-        number: '${label} is not a valid number!',
-    },
-    number: {
-        range: '${label} must be between ${min} and ${max}',
-    },
 };
 
 // 组件销毁时，也及时销毁编辑器
 onBeforeUnmount(() => {
+
 })
 </script>
 

@@ -3,12 +3,11 @@ package com.mu.service.impl;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson.JSON;
 import com.mu.constant.VlogConstant;
-import com.mu.domain.VlogComment;
+import com.mu.entity.VlogComment;
+import com.mu.service.AbstractRedisService;
 import com.mu.utils.CoreUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ import java.util.*;
  */
 
 @Service
-public class VlogCommentServiceImpl {
+public class VlogCommentServiceImpl extends AbstractRedisService {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -42,7 +41,7 @@ public class VlogCommentServiceImpl {
     public List<VlogComment> findByVlogId(Long vlogId, int pageNum) {
         String hashKey = VlogConstant.COMMENT_PREFIX + vlogId;
         List<VlogComment> commentList = new ArrayList<>();
-        getHashEntriesByPage(hashKey, 10, pageNum).forEach(entry -> {
+        getHashEntriesByPage(redisTemplate,hashKey, 10, pageNum).forEach(entry -> {
             VlogComment vlogComment = JSON.parseObject(entry.getValue().toString(), VlogComment.class);
             vlogComment.setHasReply(hasChildren(vlogId, vlogComment.getId()));
             commentList.add(vlogComment);
@@ -50,52 +49,17 @@ public class VlogCommentServiceImpl {
         return commentList;
     }
 
-    public List<Map.Entry<Object, Object>> getHashEntriesByPage(String key, int pageSize, int pageNum) {
-        Cursor<Map.Entry<Object, Object>> cursor = redisTemplate.opsForHash().scan(key, ScanOptions.scanOptions().count(pageSize).build());
-        int count = 0;
-        int startIndex = (pageNum - 1) * pageSize;
-        List<Map.Entry<Object, Object>> result = new ArrayList<>();
-        while (cursor.hasNext()) {
-            Map.Entry<Object, Object> entry = cursor.next();
-            if (count >= startIndex && count < startIndex + pageSize) {
-                result.add(entry);
-            } else if (count >= startIndex + pageSize) {
-                break;
-            }
-            count++;
-        }
-        return result;
-    }
-
     public List<VlogComment> findChildren(Long vlogId, Long parentId, int pageNum) {
         String zsetKey = CoreUtils.replyKey(vlogId, parentId);
         List<VlogComment> childrenObjects = new ArrayList<>();
-        Set<ZSetOperations.TypedTuple<Object>> result = getMembersByPage(zsetKey, 2, pageNum);
+        Set<ZSetOperations.TypedTuple<Object>> result = getMembersByPage(redisTemplate,zsetKey, 2, pageNum);
         result.forEach(item -> childrenObjects.add(JSON.parseObject(item.getValue().toString(), VlogComment.class)));
         return childrenObjects;
     }
 
     public boolean hasChildren(Long vlogId, Long parentId) {
         String zsetKey = CoreUtils.replyKey(vlogId, parentId);
-        return !getMembersByPage(zsetKey, 2, 1).isEmpty();
-    }
-
-    public Set<ZSetOperations.TypedTuple<Object>> getMembersByPage(String key, int pageSize, int pageNum) {
-        Cursor<ZSetOperations.TypedTuple<Object>> cursor = redisTemplate.opsForZSet().scan(key, ScanOptions.scanOptions().count(pageSize).build());
-        int count = 0;
-        int start = (pageNum - 1) * pageSize;
-        int end = start + pageSize - 1;
-        Set<ZSetOperations.TypedTuple<Object>> result = new LinkedHashSet<>();
-        while (cursor.hasNext()) {
-            ZSetOperations.TypedTuple<Object> item = cursor.next();
-            if (count >= start && count <= end) {
-                result.add(item);
-            } else if (count > end) {
-                break;
-            }
-            count++;
-        }
-        return result;
+        return !getMembersByPage(redisTemplate,zsetKey, 2, 1).isEmpty();
     }
 
     public boolean deleteComment(VlogComment comment) {

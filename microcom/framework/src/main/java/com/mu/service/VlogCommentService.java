@@ -1,6 +1,6 @@
 package com.mu.service;
 
-import com.mu.domain.VlogComment;
+import com.mu.entity.VlogComment;
 
 import java.util.List;
 

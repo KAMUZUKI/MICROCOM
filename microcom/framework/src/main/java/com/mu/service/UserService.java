@@ -1,8 +1,8 @@
 package com.mu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.mu.domain.SimpleUser;
-import com.mu.domain.User;
+import com.mu.entity.SimpleUser;
+import com.mu.entity.User;
 
 import java.util.List;
 

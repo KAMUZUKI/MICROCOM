@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mu.constant.Constants;
 import com.mu.constant.UserConstant;
-import com.mu.domain.SimpleUser;
-import com.mu.domain.User;
+import com.mu.entity.SimpleUser;
+import com.mu.entity.User;
 import com.mu.mapper.UserMapper;
 import com.mu.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.Set;
  * @description 针对表【user】的数据库操作Service实现
  * @createDate 2023-03-05 19:20:49
  */
-@Service
+@Service("userServiceImpl")
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Autowired(required = false)
@@ -73,8 +73,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.updateById(user);
     }
 
+    /**
+     * 通过id获取用户信息
+     * @param userId 用户id
+     * @return 用户信息
+     */
     public User getUserById(String userId) {
         return userMapper.selectById(userId);
+    }
+
+    /**
+     * 获取用户id列表
+     * @return 用户id列表
+     */
+    public List<Long> getUidList() {
+        return userMapper.getUidList();
     }
 
     /**

@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 175.178.212.207:8848
+        ip: 175.178.212.207
+        port: 7070
+        namespace: 346d5bf4-17af-4346-8aae-f12ce48ea903
+  redis:
+    database: 2
+    host: 175.178.212.207
+    port: 6379
+    password: muzuki2002
+server:
+  port: 7070

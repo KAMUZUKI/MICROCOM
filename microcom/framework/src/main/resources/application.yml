@@ -1,34 +1,45 @@
 ## application.yml
+#redis:
+#  host: localhost
+#  port: 6379
+#
 #server:
 #  port: 8080
-#  servlet:
-#    context-path: /microcom
+#  # servlet:
+#  #   context-path: /microcom
 #
 #spring:
-#  application:
-#    name: framework
-#  profiles:
-#    active: prod
 #  cloud:
 #    nacos:
 #      discovery:
 #        enabled: true
 #        register-enabled: true
-#        server-addr: 127.0.0.1:8848
-#        namespace: ba4ee4b8-8a2c-49a2-b55e-2ed4fe45cf3d
+#        server-addr: 175.178.212.207:8848
+#        ip: 175.178.212.207
+#        port: 8081
+#        username: **************
+#        password: **************
+#        namespace: 346d5bf4-17af-4346-8aae-**************
 #        group: DEFAULT_GROUP
+#    gateway:
+#      discovery:
+#        locator:
+#          enabled: true
+#          # 是否使用service-id的小写，默认是大写
+#          lower-case-service-id: true
 #  servlet:
 #    multipart:
 #      max-file-size: 10MB        # 设置单个文件最大大小为10MB
 #      max-request-size: 100MB    # 设置多个文件大小为100MB
 #  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/microcom?serverTimezone=Asia/Shanghai
-#    username: root
-#    password: muzuki
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://175.178.212.207:3306/microcom?serverTimezone=Asia/Shanghai
+#    username: **************
+#    password: **************
 #  redis:
-#    host: localhost
+#    host: 175.178.212.207
 #    port: 6379
+#    password: **************
 #    # 连接超时时间（记得添加单位，Duration）
 #    timeout: 10000ms
 #    # Redis默认情况下有16个分片，这里配置具体使用的分片
@@ -67,8 +78,8 @@
 #
 #qcloud:
 #  #初始化用户身份信息 前往控制台密钥管理查看
-#  secretId: "AKIDKSM1SggWCftwn32425"
-#  secretKey: "qTvBCzZw62kDUYdfXBcoq3423435"
+#  secretId: "AKIDEMK7j**************"
+#  secretKey: "AC4mOq9JRPA**************"
 #  # 指定要上传到的存储桶
 #  bucketName: "mu-1310320682"
 #  # 地区选择
@@ -76,7 +87,7 @@
 #
 #meilisearch:
 #  host-url: http://localhost:7700
-#  api-key: k0AiJ9urNCLA7DoKKZLw1MZXxkDiDkyzwsJoNjMKtkc
+#  api-key: k0AiJ9urNCLA7DoKKZLw1**************
 #
 #justauth:
 #  cache:
@@ -89,10 +100,10 @@
 #  type:
 #    GITHUB:
 #      client-id: f5ac19dd3d2c51884dde
-#      client-secret: e71624531c93720a08f69acbbf8c924081a2ce4d
-#      redirect-uri: http://localhost:8080/microcom/oauth/github/callback
+#      client-secret: e71624531c93720a08f6**************
+#      redirect-uri: http://175.178.212.207:9999/framework/oauth/github/callback
 #    DINGTALK:
 #      client-id: dingexis9lxwy68c18qv
-#      client-secret: bGTWH6LqhNNNp3wSw1Jk55Pt8LmD5DHiexeU4Yl01Da0c6PvV5wfUphLf3-IvHqx
-#      redirect-uri: http://localhost:8080/microcom/oauth/dingtalk/callback
+#      client-secret: bGTWH6LqhNNNp3wSw1Jk55Pt**************
+#      redirect-uri: http://175.178.212.207:9999/framework/oauth/dingtalk/callback
 #

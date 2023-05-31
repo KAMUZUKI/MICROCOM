@@ -6,6 +6,7 @@
     <modules>
         <module>framework</module>
         <module>gateway</module>
+        <module>RecommenderSystem</module>
     </modules>
 
     <parent>

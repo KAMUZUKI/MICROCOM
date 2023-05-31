@@ -10,7 +10,7 @@
     <q-select
       class="select"
       rounded
-      standout
+      borderless
       v-model="searchIndex"
       :options="options"
     />
@@ -59,8 +59,8 @@ const initInstantSearch = () => {
   const search = instantsearch({
     indexName: searchIndexName.value,
     searchClient: instantMeiliSearch(
-      "http://localhost:7700",
-      "143748744220020440238"
+      "http://175.178.212.207:7700",
+      "7eH0GEwZup_u78j2AjOOZtupX7ayHBvmxnRCc8opotk"
     ),
   });
 
@@ -213,6 +213,7 @@ onMounted(() => {
   font-size: 16px;
   outline: none;
   margin-left: 30px;
+  background-color: #edeff2;
 }
 
 /* 样式 */
@@ -227,7 +228,6 @@ onMounted(() => {
 </style>
   
 <style lang="scss">
-@import url("https://fonts.googleapis.com/css?family=Montserrat:300,400,700,800");
 
 html,
 body {

@@ -113,7 +113,8 @@
           </div>
           <q-footer>
             <q-toolbar class="bg-grey-3 text-black row">
-              <q-btn round flat icon="insert_emoticon" class="q-mr-sm" />
+              <V3Emoji class="emoji" v-model="newCommentText" size="mid" @click-emoji="appendText" :recent="true"
+                fixPos="upright" />
               <q-input rounded outlined dense class="WAL__field col-grow q-mr-sm" bg-color="white" v-model="inputMessage"
                 placeholder="Type a message" />
               <q-btn round flat @click="commitMessage()">
@@ -128,7 +129,6 @@
           </q-footer>
         </div>
       </q-page-container>
-
     </q-layout>
   </div>
 </template>
@@ -138,6 +138,8 @@ import { useQuasar } from 'quasar'
 import { ref, computed, onBeforeMount, onMounted, watch, onUnmounted, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import { message } from 'ant-design-vue'
+import V3Emoji from 'vue3-emoji'
+import 'vue3-emoji/dist/style.css'
 import mockData from '@/js/data/mockData'
 import chat from '@/js/api/chat'
 import utils from '@/js/utils/utils'
@@ -155,6 +157,10 @@ const store = useStore()
 const messages = ref()
 const inputMessage = ref('')
 var websocket = null
+
+const appendText = (value) => {
+  inputMessage.value += value;
+}
 
 const currentConversation = computed(() => {
   return conversations.value[currentConversationIndex.value]
@@ -300,6 +306,12 @@ watch(() => currentChatId.value,async (newVal) => {
 </script>
   
 <style lang="sass">
+  .emoji 
+      height: 30px
+      width: 30px
+      bottom: 5px
+  
+
   .WAL
     width: 100%
     height: 100%
