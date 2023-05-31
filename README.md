@@ -1,4 +1,5 @@
 # MICROCOM
+
 ### 微社区网站
 
 #### 介绍
@@ -11,12 +12,12 @@
 - [x] 使用SpringMVC
 - [x] 使用Mybatis-plus
 - [x] 引入第三方登录框架 JustAuth
-- [ ] 引入权限认证框架Sa-Token
+- [x] 引入权限认证框架Sa-Token
 - [ ] 后端管理界面
 - [ ] 前端使用Nuxt构建
-- [ ] nacos服务注册与发现
-- [ ] 将后端各个模块微服务化
-- [ ] 容器化
+- [x] nacos服务注册与发现
+- [x] 将后端各个模块微服务化
+- [x] 容器化
 
 #### 项目结构
 
@@ -66,4 +67,3 @@ mu
 [MeiliSearch： A lightning-fast search engine that fits effortlessly into your apps, websites, and workflow](https://github.com/meilisearch/meilisearch)
 
 [MeiliSync: Realtime sync data from MySQL/PostgreSQL/MongoDB to meilisearch ](https://github.com/long2ice/meilisync)
-
