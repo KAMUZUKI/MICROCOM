@@ -177,6 +177,32 @@ npm install
 npm run serve
 ```
 
+### 5、界面
+
+#### 5.1 登录
+
+![image-20230601104202411](img/image-20230601104202411.png)
+
+#### 5.2 动态浏览
+
+![image-20230601103925332](img/image-20230601103925332.png)
+
+#### 5.3 发布动态
+
+![image-20230601103945564](img/image-20230601103945564.png)
+
+#### 5.4 发布博客
+
+![image-20230601104122687](img/image-20230601104122687.png)
+
+#### 5.5 聊天界面
+
+![image-20230601104142600](img/image-20230601104142600.png)
+
+#### 5.6 搜索
+
+![image-20230601104241849](img/image-20230601104241849.png)
+
 > 工具地址
 
 [MeiliSearch： A lightning-fast search engine that fits effortlessly into your apps, websites, and workflow](https://github.com/meilisearch/meilisearch)
