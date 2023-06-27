@@ -2,6 +2,8 @@
 
 ### 微社区网站
 
+![Alt](https://repobeats.axiom.co/api/embed/d25f4fc3a22bc27a18c8ae0f71a44cfe7faa4ba9.svg "Repobeats analytics image")
+
 ### 1、基本介绍
 
 ​		一个微社区网站，用户可以发布动态以及博客。使用Mahout推荐算法对用户进行动态推荐。本项目作为JAVAEE课程设计以及软件工程毕业设计。后续将会不断完善，添加新的功能。
