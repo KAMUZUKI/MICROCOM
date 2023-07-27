@@ -166,6 +166,7 @@ services:
       - gateway
 ```
 
+**部署Nacos**
 ```sh
 docker-compose -f microcom-compose.yml up -d
 ```
