@@ -170,6 +170,23 @@ services:
 docker-compose -f microcom-compose.yml up -d
 ```
 
+> 注意/myDocker/nacos/conf为nacos配置文件根据自身修改
+
+```sh
+docker run --name nacos -p 8848:8848 -p 9848:9848 -p 9849:9849 \
+--privileged=true \
+--restart=always \
+-e JVM_XMS=256m \
+-e JVM_XMX=256m \
+-e MODE=standalone \
+-e PREFER_HOST_MODE=hostname \
+-v /myDocker/nacos/logs:/home/nacos/logs \
+-v /myDocker/nacos/conf:/home/nacos/conf \
+-d nacos/nacos-server:v2.2.0
+```
+
+其它请参考[文章](http://175.178.212.207/index.php/2023/05/31/147.html)
+
 ##### 4.2.2 前端
 
 **进入microcom-ui**
