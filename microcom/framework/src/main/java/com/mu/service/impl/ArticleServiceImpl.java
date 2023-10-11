@@ -2,6 +2,7 @@ package com.mu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
 import com.mu.entity.Article;
 import com.mu.mapper.ArticleMapper;
 import com.mu.service.ArticleService;

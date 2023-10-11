@@ -64,8 +64,8 @@ import { defineComponent, onMounted, ref, toRaw, onBeforeUnmount, watch } from '
 import { message } from 'ant-design-vue';
 import { useStore } from 'vuex' // 引入useStore 方法
 import { useRouter } from 'vue-router'
+import {getAllArticle,userLike} from '@/js/api/article'
 import utils from '@/js/utils/utils'
-import axios from 'axios'
 export default defineComponent({
   setup() {
 
@@ -88,9 +88,7 @@ export default defineComponent({
         })
       }
       // TODO:获取文章列表   listData
-      var params = new URLSearchParams();
-      axios.post(store.state.path + '/article/getAllArticle', params)
-        .then(res => {
+      getAllArticle().then(res => {
           console.log(res)
           if (res.data.code == 200) {
             listDataTmp.value = res.data.data
@@ -205,11 +203,11 @@ export default defineComponent({
           return
         }
         if (mode == 1) {
-          var params = new URLSearchParams();
-          params.append('articleId', articleId);
-          params.append('userId', JSON.parse(localStorage.getItem("user")).id);
-          axios.post(store.state.path + '/article/changeData', params)
-            .then(res => {
+          var params = {
+            'articleId': articleId,
+            'userId': JSON.parse(localStorage.getItem("user")).id
+          }
+          userLike(params).then(res => {
               if (res.data.code == 200) {
                 //点赞执行成功
                 initDataList.value.forEach((item) => {

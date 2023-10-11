@@ -1,6 +1,7 @@
 package com.mu.controller;
 
 import cn.dev33.satoken.util.SaResult;
+import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
 import com.mu.entity.Message;
 import com.mu.entity.SimpleUser;
 import com.mu.service.ChatSessionService;
@@ -62,6 +63,7 @@ public class ChatController {
     @PostMapping("push/{toId}")
     public SaResult push(@PathVariable("toId") String toId, @RequestBody Message message) {
         WebsocketServerEndpoint endpoint = new WebsocketServerEndpoint();
+        message.setMessage(SensitiveWordHelper.replace(message.getMessage()));
         endpoint.sendTo(toId, message);
         return SaResult.ok();
     }

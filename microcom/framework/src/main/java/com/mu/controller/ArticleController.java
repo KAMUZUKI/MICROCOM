@@ -3,6 +3,7 @@ package com.mu.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.util.SaResult;
 import cn.hutool.extra.servlet.ServletUtil;
+import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
 import com.mu.entity.Article;
 import com.mu.service.impl.ArticleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +30,12 @@ public class ArticleController {
     public SaResult addArticle(HttpServletRequest request) {
         Article article = ServletUtil.toBean(request, Article.class, true);
         try {
+            if (SensitiveWordHelper.contains(article.getContent())){
+                return SaResult.error("文章内容包含敏感词汇");
+            }
             return SaResult.ok("添加文章成功").setData(articleService.addArticle(article));
         } catch (Exception e) {
-            return SaResult.error("添加文章失败");
+            return SaResult.error("添加文章失败" + e.getMessage());
         }
     }
 

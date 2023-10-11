@@ -23,7 +23,7 @@
     "gsap": "^3.11.5",
     "instantsearch.css": "^8.0.0",
     "lwaterfall": "^1.0.6",
-    "meilisearch": "^0.32.2",
+    "meilisearch": "^0.32.5",
     "quasar": "^2.0.0",
     "socket.io-client": "^4.6.1",
     "vue": "^3.2.41",

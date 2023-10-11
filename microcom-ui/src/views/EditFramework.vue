@@ -70,6 +70,7 @@ import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
 import upload from '@/js/api/upload'
 import categoryApi from '@/js/api/category'
+import articleApi from '@/js/api/article'
 
 const router = useRouter()
 const route = useRoute()
@@ -121,26 +122,31 @@ const judgeMode = () => {
     if (editInfo !== '0') {
         mode.value = false
         //TODO:通过articleId获取文章详情  修改文章
-        var params = new URLSearchParams();
-        params.append('articleId', editInfo);
-        axios.post(store.state.path + '/article/getArticleById', params
-        ,{
-            headers:{
-            'satoken': localStorage.getItem('tokeninfo')
+        // var params = new URLSearchParams();
+        // params.append('articleId', editInfo);
+        // axios.post(store.state.path + '/article/getArticleById', params).then(res => {
+        //         if (res.data.code == 200) {
+        //             formState.user = res.data.data
+        //             keywordOptions.value = res.data.data.label.split(',')
+        //             categoryOptions.value = JSON.parse(localStorage.getItem("categorys"))[res.data.data.categoryId]
+        //             localStorage.setItem("articleDetail", JSON.stringify(formState));
+        //         } else {
+        //             console.log(res.data.msg)
+        //         }
+        //     })
+        //     .catch(function (error) {
+        //         console.log(error);
+        //     });
+        articleApi.getArticleById(editInfo).then(res=>{
+            if(res.code == 200){
+                formState.user = res.data
+                keywordOptions.value = res.data.label.split(',')
+                categoryOptions.value = JSON.parse(localStorage.getItem("categorys"))[res.data.categoryId]
+                localStorage.setItem("articleDetail", JSON.stringify(formState));
+            }else{
+                console.log(res.msg)
             }
-        }).then(res => {
-                if (res.data.code == 200) {
-                    formState.user = res.data.data
-                    keywordOptions.value = res.data.data.label.split(',')
-                    categoryOptions.value = JSON.parse(localStorage.getItem("categorys"))[res.data.data.categoryId]
-                    localStorage.setItem("articleDetail", JSON.stringify(formState));
-                } else {
-                    console.log(res.data.msg)
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        })
     }
 }
 
@@ -179,8 +185,9 @@ onMounted(() => {
     Object.entries(tmpKeywords.value).forEach(([key, value]) => {
         keywords.value.push({ index: key, value: value })
     })
-    judgeMode()
+    
     initData()
+    judgeMode()
     //连接websocket
     ws = new WebSocket(
         store.state.wspath + `/websocket`

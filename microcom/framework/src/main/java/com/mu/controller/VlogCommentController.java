@@ -1,6 +1,7 @@
 package com.mu.controller;
 
 import cn.dev33.satoken.util.SaResult;
+import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
 import com.mu.entity.VlogComment;
 import com.mu.service.impl.VlogCommentServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class VlogCommentController {
 
     @PostMapping("save")
     public SaResult saveComment(@RequestHeader("userId") Long userId,@RequestBody VlogComment comment) {
+        if (SensitiveWordHelper.contains(comment.getContent())){
+            return SaResult.error("评论内容包含敏感词汇");
+        }
         boolean res = vlogCommentService.saveComment(comment);
         if (res){
             //从nacos中获取服务地址

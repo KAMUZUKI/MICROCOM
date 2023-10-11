@@ -14,7 +14,7 @@ import { useRoute } from 'vue-router'
 import { useRouter } from 'vue-router'
 import CommentComponent from "@/components/Comment/CommentComponent.vue"
 import PageHeader from "@/components/Article/PageHeader.vue"
-import axios from "axios"
+import {getActionInfo} from "@/components/Article/ArticleComponent.vue"
 export default defineComponent({
   name: 'ArticleComponent',
   setup() {
@@ -45,19 +45,29 @@ export default defineComponent({
         //TODO:通过articleId获取文章详情
         var params = new URLSearchParams();
         params.append('articleId', articleId);
-        axios.post(store.state.path+"/article/getArticleById",params)
-          .then(res => {
-            console.log(res)
-            if (res.data.code == 200) {
-              detail.value = res.data.data
-              sessionStorage.setItem("articleDetail", JSON.stringify(detail.value));
-            } else {
-              console.log(res.data.msg)
-            }
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+        // axios.post(store.state.path+"/article/getArticleById",params)
+        //   .then(res => {
+        //     console.log(res)
+        //     if (res.data.code == 200) {
+        //       detail.value = res.data.data
+        //       sessionStorage.setItem("articleDetail", JSON.stringify(detail.value));
+        //     } else {
+        //       console.log(res.data.msg)
+        //     }
+        //   })
+        //   .catch(function (error) {
+        //     console.log(error);
+        //   });
+        getActionInfo(params).then(res => {
+          if (res.data.code == 200) {
+            detail.value = res.data.data
+            sessionStorage.setItem("articleDetail", JSON.stringify(detail.value));
+          } else {
+            console.log(res.data.msg)
+          }
+        }).catch(function (error) {
+          console.log(error);
+        });
 
         setTimeout(() => {
           isShow.value = !isShow.value

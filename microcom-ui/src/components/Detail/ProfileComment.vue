@@ -48,7 +48,7 @@
                             </q-item-section>
                             <q-item-section>
                                 <q-item-label>
-                                    <span>{{ comment.author + comment.id }}</span>
+                                    <span>{{ comment.author}}</span>
                                     <span class="comment-header">{{ comment.time }}</span>
                                     <span class="comment-header" @click="prepareAdd(index, comment.id)">回复</span>
                                 </q-item-label>

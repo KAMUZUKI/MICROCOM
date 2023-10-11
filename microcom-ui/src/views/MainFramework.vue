@@ -21,10 +21,10 @@
               <AvatarComponent v-if="avatarVisible" style="width: 100%">
               </AvatarComponent>
               <AwordComp></AwordComp>
-              <SiderTag
+              <!-- <SiderTag
                 :showContentByKeyword="showContentByKeyword"
                 :showContent="showContent"
-              ></SiderTag>
+              ></SiderTag> -->
             </a-space>
           </a-col>
         </a-space>

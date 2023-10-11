@@ -3,6 +3,7 @@ package com.mu.controller;
 import cn.dev33.satoken.util.SaResult;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
 import com.mu.constant.Message;
 import com.mu.entity.Vlog;
 import com.mu.service.impl.VlogRedisServiceImpl;
@@ -71,6 +72,9 @@ public class VlogController {
 
     @PostMapping("add")
     public SaResult add(@RequestBody Vlog vlog) {
+        if (SensitiveWordHelper.contains(vlog.getText())){
+            return SaResult.error().setMsg("内容包含敏感词");
+        }
         return SaResult.ok().setMsg(vlogService.save(vlog) ? "添加成功" : "添加失败");
     }
 

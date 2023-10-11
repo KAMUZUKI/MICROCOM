@@ -122,6 +122,7 @@ import { reactive, ref, onMounted, watch, defineProps } from "vue";
 import { useStore } from "vuex"; // 引入useStore 方法
 import NotificationComponent from "@/components/tools/NotificationComponent.vue";
 import axios from "axios";
+import { getLikeList, userLogin,oauthLogin,oauthVerify } from "@/js/api/user";
 
 // 声明props
 const props = defineProps({
@@ -145,14 +146,10 @@ const toRegister = ()=>{
 };
 
 //login start
-const getLikeList = () => {
+const initLikeList = () => {
   var userId = JSON.parse(localStorage.getItem("user")).id;
-  var params = new URLSearchParams();
-  params.append("userId", userId);
   //TODO: 获取用户喜欢的列表
-  axios
-    .post(store.state.path + "/user/getLikeList", params)
-    .then((res) => {
+  getLikeList(userId).then((res) => {
       if (res.data.code == 200) {
         likeList.value = res.data.data;
         localStorage.setItem(
@@ -173,54 +170,50 @@ const getLikeList = () => {
 
 const login = () => {
   sign.value = true;
-  var params = new URLSearchParams();
-  params.append("account", formState.username);
-  params.append("password", formState.password);
-  //TODO: Login
-  axios
-    .post(store.state.path + "/user/login", params)
-    .then((res) => {
-      if (res.data.code == 200) {
-        var userinfo = res.data.data;
-        user.value = {
-          id: userinfo.id,
-          username: userinfo.username,
-          email: userinfo.email,
-          head: userinfo.head,
-          type: userinfo.type,
-        };
-        localStorage.setItem("tokeninfo", res.data.msg);
-        likeList.value = userinfo.likeList;
-        localStorage.setItem("user", JSON.stringify(userinfo));
-        store.state.user = user.value;
-        store.state.user = JSON.parse(localStorage.getItem("user"));
-        store.state.isLogin = true;
-        store.state.isCertified = true;
-        props.setModal1Visible(false);
-        openNotification.value.openNotificationWithIcon(
-          "success",
-          "登录",
-          "登录成功"
-        );
-      } else {
-        openNotification.value.openNotificationWithIcon(
-          "error",
-          "登录",
-          res.data.msg
-        );
-        sign.value = false;
-      }
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+  var params = {
+    "account": formState.username,
+    "password": formState.password
+  }
+  userLogin(params).then((res) => {
+    if (res.data.code == 200) {
+      var userinfo = res.data.data;
+      user.value = {
+        id: userinfo.id,
+        username: userinfo.username,
+        email: userinfo.email,
+        head: userinfo.head,
+        type: userinfo.type,
+      };
+      localStorage.setItem("tokeninfo", res.data.msg);
+      likeList.value = userinfo.likeList;
+      localStorage.setItem("user", JSON.stringify(userinfo));
+      store.state.user = user.value;
+      store.state.user = JSON.parse(localStorage.getItem("user"));
+      store.state.isLogin = true;
+      store.state.isCertified = true;
+      props.setModal1Visible(false);
+      openNotification.value.openNotificationWithIcon(
+        "success",
+        "登录",
+        "登录成功"
+      );
+    } else {
+      openNotification.value.openNotificationWithIcon(
+        "error",
+        "登录",
+        res.data.msg
+      );
+      sign.value = false;
+    }
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
 };
 
 const loginWith = (source) => {
   authSign.value = true;
-  axios
-    .get(store.state.path + "/oauth/login/" + source)
-    .then(({ data }) => {
+  oauthLogin(source).then(({ data }) => {
       if (data.code == 200) {
         window.location = data.data;
       } else {
@@ -279,7 +272,7 @@ onMounted(() => {
   // 从cookie中获取token
   token = localStorage.getItem("OAuthToken");
   if (token != undefined) {
-    axios.get(store.state.path + "/oauth/verify/" + token).then((response) => {
+    oauthVerify(token).then((response) => {
       if (response.data.code == 200) {
         let userinfo = response.data.data;
         user.value = {
@@ -314,7 +307,7 @@ onMounted(() => {
 
 watch("$store.state.isLogin", (newVal) => {
   if (newVal == true) {
-    getLikeList();
+    initLikeList();
   }
 });
 </script>

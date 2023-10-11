@@ -60,9 +60,8 @@
 
 <script setup>
 import { ref, defineProps } from "vue";
-import { useStore } from "vuex"; // 引入useStore 方法
-import axios from "axios";
 import NotificationComponent from "@/components/tools/NotificationComponent.vue";
+import { userRegister } from "@/js/api/user";
 
 // 声明props
 const props = defineProps({
@@ -77,7 +76,6 @@ const toLogin = ()=>{
 
 //register start
 const openNotification = ref();
-const store = useStore();
 const formRef = ref();
 const formRegister = ref({
   username: "",
@@ -149,14 +147,14 @@ const layout = {
 const handleFinish = (values) => {
   console.log(values, formRegister);
   //TODO:注册账号
-  var params = new URLSearchParams();
-  params.append("name", formRegister.value.username);
-  params.append("pwd", formRegister.value.pass);
-  params.append("phone", formRegister.value.phone);
-  params.append("email", formRegister.value.email);
-  params.append("head", formRegister.value.email.match(/(\w+)@/)[1]);
-  axios
-    .post(store.state.path + "/user/register", params)
+  var params = {
+    "name": formRegister.value.username,
+    "pwd": formRegister.value.pass,
+    "phone": formRegister.value.phone,
+    "email": formRegister.value.email,
+    "head": formRegister.value.email.match(/(\w+)@/)[1]
+  }
+  userRegister(params)
     .then((res) => {
       if (res.data.code == 200) {
         resetForm();

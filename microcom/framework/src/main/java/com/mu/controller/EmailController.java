@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author : MUZUKI
  * @date : 2023-03-22 16:12
+ * @description : 发送邮箱验证码
  **/
 
 @RestController

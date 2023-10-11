@@ -70,7 +70,8 @@
         <q-scroll-area style="height: calc(100% - 100px)">
           <q-list>
             <div v-for="(conversation, index) in conversations" :key="conversation.id">
-              <q-item clickable v-ripple @click="setCurrentConversation(index, conversation.id)">
+              <div v-if="userId!=conversation.id">
+                <q-item clickable v-ripple @click="setCurrentConversation(index, conversation.id)">
                 <q-item-section avatar>
                   <q-avatar>
                     <img :src="conversation.head">
@@ -95,6 +96,8 @@
                   <q-icon name="keyboard_arrow_down" />
                 </q-item-section>
               </q-item>
+              </div>
+              
             </div>
           </q-list>
         </q-scroll-area>
@@ -156,6 +159,7 @@ const currentChatId = ref(0)
 const store = useStore()
 const messages = ref()
 const inputMessage = ref('')
+const userId = store.state.user.id
 var websocket = null
 
 const appendText = (value) => {

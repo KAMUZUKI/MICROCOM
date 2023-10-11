@@ -35,7 +35,7 @@ const initInstantSearch = () => {
         indexName: searchIndex.value,
         searchClient: instantMeiliSearch(
             "http://localhost:7700",
-            "uOCFb1HVp9T5XFw-OnAcQrAWAz6zWsszJdW5G0UVQH4 ",
+            "ugODeaVOpa6qq6BaP8UP9jtOJL7EndUJk0pBYeLEAE4",
         ),
     });
 
