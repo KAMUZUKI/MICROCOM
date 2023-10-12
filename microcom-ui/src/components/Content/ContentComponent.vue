@@ -1,6 +1,5 @@
 <template>
-  <a-list style="max-width:1000px;min-width: 700px" item-layout="vertical" size="large" :pagination="pagination"
-    :data-source="initDataList">
+  <a-list style="max-width:1000px;min-width: 700px" item-layout="vertical" size="large" :pagination="paginationOpt" :data-source="initDataList">
     <template #renderItem="{ item }">
       <a-list-item key="item.title" class="article">
         <template #actions>
@@ -25,7 +24,7 @@
         <a-list-item-meta :description=utils.parseDateToPast(item.createTime)>
           <template #title>
             <router-link class="nav-link" :to="'/article/' + item.id" @click="pushToDetail(item)">
-              {{ item.title }}
+              {{ item.id }} + {{ item.title }}
             </router-link>
           </template>
           <template #avatar>
@@ -40,23 +39,6 @@
   </a-list>
 </template>
 
-<style>
-.article {
-  margin-top: 10px;
-  border-radius: 10px;
-  border-radius: 10px;
-  transition: 2s;
-}
-
-.article:hover{
-  border-radius: 10px;
-  background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
-  box-shadow:  30px 30px 26px #cfcece,
-               -30px -30px 26px #f3f2f2;
-  transition: all 2s;
-}
-
-</style>
 
 <script>
 import { EyeOutlined, LikeOutlined, LikeFilled, MessageOutlined } from '@ant-design/icons-vue';
@@ -64,7 +46,7 @@ import { defineComponent, onMounted, ref, toRaw, onBeforeUnmount, watch } from '
 import { message } from 'ant-design-vue';
 import { useStore } from 'vuex' // 引入useStore 方法
 import { useRouter } from 'vue-router'
-import {getAllArticle,userLike} from '@/js/api/article'
+import { getArticleByPage, userLike } from '@/js/api/article'
 import utils from '@/js/utils/utils'
 export default defineComponent({
   setup() {
@@ -79,8 +61,13 @@ export default defineComponent({
     const keywords = ref([])
     const keywordSet = new Set(keywords.value)
     const likeSet = new Set(likeList.value)
+    const currentPage = ref(1)
+    const pageSize = ref(10)
+    const total = ref(0)
 
     const initData = () => {
+      listData.value = []
+      initDataList.value = []
       likeList.value = JSON.parse(localStorage.getItem('likeList'))??''
       if (likeList.value.length > 0) {
         likeList.value.forEach(item => {
@@ -88,10 +75,14 @@ export default defineComponent({
         })
       }
       // TODO:获取文章列表   listData
-      getAllArticle().then(res => {
-          console.log(res)
-          if (res.data.code == 200) {
-            listDataTmp.value = res.data.data
+      const { defaultCurrent, defaultPageSize } = paginationOpt;
+      const params = {
+        'currentPage': defaultCurrent,
+        'pageSize': defaultPageSize,
+      }
+      getArticleByPage(params).then(res => {
+          if (res.code == 200) {
+            listDataTmp.value = res.data.records
             for (const [key, item] of Object.entries(listDataTmp.value)) {
               key
               item.colCnt = [item.readCnt, item.agreeCnt, item.commentCnt]
@@ -102,9 +93,10 @@ export default defineComponent({
                 });
             }
             localStorage.setItem('keywords', JSON.stringify(Array.from(keywordSet)))
+            paginationOpt.total = res.data.total
             initDataByCategory('all')
           } else {
-            message.error("无法拉取文章" + res.data.msg);
+            message.error("无法拉取文章" + res.msg);
           }
         })
         .catch(function (error) {
@@ -139,13 +131,26 @@ export default defineComponent({
       }
     }
 
-    const pagination = {
-      onChange: page => {
-        console.log("pages" + page);
-      },
-      simple: true,
-      pageSize: 5,
-    };
+    const paginationOpt = {
+        defaultCurrent: 1, // 默认当前页数
+        defaultPageSize: 5, // 默认当前页显示数据的大小
+        total: 0, // 总数，必须先有
+        showSizeChanger: true,
+        showQuickJumper: true,
+        pageSizeOptions: ["5", "10", "20"],
+        showTotal: (total) => `共 ${total} 条`, // 显示总数
+        onShowSizeChange: (current, pageSize) => {
+          paginationOpt.defaultCurrent = 1;
+          paginationOpt.defaultPageSize = pageSize;
+          initData(); //显示列表的接口名称
+        },
+        // 改变每页数量时更新显示
+        onChange: (current, size) => {
+          paginationOpt.defaultCurrent = current;
+          paginationOpt.defaultPageSize = size;
+          initData();
+        },
+      }
 
     // var i = 1
     onMounted(() => {
@@ -267,8 +272,11 @@ export default defineComponent({
       actions,
       likeList,
       listData,
-      pagination,
+      total,
+      pageSize,
+      currentPage,
       initDataList,
+      paginationOpt,
       toRaw,
       handleStar,
       handleLike,

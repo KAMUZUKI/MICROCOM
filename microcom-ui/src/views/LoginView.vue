@@ -52,12 +52,18 @@ import { useStore } from 'vuex'
 import { useRouter } from "vue-router";
 import RegisterForm from "@/components/Login/RegisterForm.vue";
 import LoginForm from "@/components/Login/LoginForm.vue";
+import bus from 'vue3-eventbus'
 const modal1Visible = ref(false)
 const isLogin = ref(false)
 const cardRotate = ref()
 const store = useStore()
 const router = useRouter()
 const user = ref()
+
+bus.on('login', (visible) => {
+  setModal1Visible(visible)
+})
+
 const changeLogin = () => {
   cardRotate.value = 'rotateY(180deg)'
 }

@@ -173,13 +173,19 @@ const onLoad = async (index, done) => {
   }, 500);
 };
 
-onMounted( async ()=>{
-  let res = await vlogApi.findWithPageById(1,9,currentIndex.value)
-  if (res.code == 200) {
-    list.value.push(...res.data)
-    currentIndex.value++
-    return
-  }
+onMounted( ()=>{
+  vlogApi.findWithPageById(1,9,currentIndex.value).then(res => {
+    if (res.code == 200) {
+      list.value.push(...res.data)
+      currentIndex.value++
+      return
+    }
+  })
+  // if (res.code == 200) {
+  //   list.value.push(...res.data)
+  //   currentIndex.value++
+  //   return
+  // }
 })
 </script>
   

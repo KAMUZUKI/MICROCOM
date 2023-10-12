@@ -121,8 +121,7 @@
 import { reactive, ref, onMounted, watch, defineProps } from "vue";
 import { useStore } from "vuex"; // 引入useStore 方法
 import NotificationComponent from "@/components/tools/NotificationComponent.vue";
-import axios from "axios";
-import { getLikeList, userLogin,oauthLogin,oauthVerify } from "@/js/api/user";
+import { getLikeList, userLogin, oauthLogin, oauthVerify } from "@/js/api/user";
 
 // 声明props
 const props = defineProps({
@@ -175,8 +174,8 @@ const login = () => {
     "password": formState.password
   }
   userLogin(params).then((res) => {
-    if (res.data.code == 200) {
-      var userinfo = res.data.data;
+    if (res.code == 200) {
+      var userinfo = res.data;
       user.value = {
         id: userinfo.id,
         username: userinfo.username,
@@ -184,7 +183,7 @@ const login = () => {
         head: userinfo.head,
         type: userinfo.type,
       };
-      localStorage.setItem("tokeninfo", res.data.msg);
+      localStorage.setItem("tokeninfo", res.msg);
       likeList.value = userinfo.likeList;
       localStorage.setItem("user", JSON.stringify(userinfo));
       store.state.user = user.value;
@@ -201,7 +200,7 @@ const login = () => {
       openNotification.value.openNotificationWithIcon(
         "error",
         "登录",
-        res.data.msg
+        res.msg
       );
       sign.value = false;
     }

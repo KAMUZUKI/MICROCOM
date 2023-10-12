@@ -10,10 +10,11 @@ export function getLikeList(userId) {
     })
 }
 
-export function userLogin() {
+export function userLogin(params) {
     return request({
-        url: `user/logout/${token}`,
+        url: `user/login`,
         method: 'post',
+        params
     })
 }
 

@@ -62,8 +62,10 @@ import uploadApi from '@/js/api/upload';
 import vlogApi from '@/js/api/vlog';
 import V3Emoji from 'vue3-emoji'
 import 'vue3-emoji/dist/style.css'
+import { useStore } from "vuex";
 
-const userId = JSON.parse(localStorage.getItem("user")).id
+const store = useStore()
+const userId = store.state.userId
 const imgs = ref([])  
 const vlog = reactive({
   createId: userId,

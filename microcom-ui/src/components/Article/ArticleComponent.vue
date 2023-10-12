@@ -14,7 +14,7 @@ import { useRoute } from 'vue-router'
 import { useRouter } from 'vue-router'
 import CommentComponent from "@/components/Comment/CommentComponent.vue"
 import PageHeader from "@/components/Article/PageHeader.vue"
-import {getActionInfo} from "@/components/Article/ArticleComponent.vue"
+import { getArticleById } from '@/js/api/article'
 export default defineComponent({
   name: 'ArticleComponent',
   setup() {
@@ -58,7 +58,7 @@ export default defineComponent({
         //   .catch(function (error) {
         //     console.log(error);
         //   });
-        getActionInfo(params).then(res => {
+        getArticleById(params).then(res => {
           if (res.data.code == 200) {
             detail.value = res.data.data
             sessionStorage.setItem("articleDetail", JSON.stringify(detail.value));

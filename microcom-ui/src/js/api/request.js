@@ -8,10 +8,8 @@ const request = axios.create({
 request.interceptors.request.use(
   (config) => {
     // 在请求发送之前做一些处理，例如添加请求头等
-    const userId = JSON.parse(localStorage.getItem("user")).id
-    if (userId) {
-      config.headers['userId'] = `${userId}`;
-    }
+    // const userId = JSON.parse(localStorage.getItem("user")).id
+    config.headers['userId'] = 1;
     return config;
   },
   (error) => {

@@ -1,6 +1,6 @@
 <template>
     <div class="q-pa-md q-gutter-md container">
-        <q-infinite-scroll :debounce="2000" @load="onLoad" :offset="100">
+        <q-infinite-scroll :debounce="2000" @load="onLoad" :offset="800">
             <div class="row justify-between">
                 <div class="scrollDist"></div>
                 <div class="header-scroll">
@@ -87,7 +87,7 @@
         </div>
         <!--vlog添加-->
         <q-page-sticky v-if="buttonVisiable" class="add-button" position="bottom-right">
-            <q-fab @click="seamless = !seamless" icon="add" color="accent"> </q-fab>
+            <q-fab @click="handleVlog" icon="add" color="accent"> </q-fab>
         </q-page-sticky>
         <q-dialog v-model="seamless" seamless position="bottom">
             <vlog-compose></vlog-compose>
@@ -100,6 +100,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { gsap, ScrollTrigger, ScrollToPlugin } from "gsap/all";
 import { message } from "ant-design-vue";
 import { LazyImg, Waterfall } from "vue-waterfall-plugin-next";
+import { useStore } from "vuex";
 import LoadingComp from "@/components/tools/LoadingComp.vue";
 import PersonalDialog from "@/components/Detail/DetailCard.vue";
 import utils from "@/js/utils/utils";
@@ -107,12 +108,14 @@ import VlogCompose from "@/components/Vlog/VlogCompose.vue";
 import api from "@/js/api/vlog";
 import "vue-waterfall-plugin-next/dist/style.css";
 import "animate.css";
+import bus from 'vue3-eventbus'
 
 const showDataFlag = ref(false)
 const cards = ref([])
 const dialogRef = ref(null)
 const currentIndex = ref(1)
-const userId = JSON.parse(localStorage.getItem("user")).id
+const store = useStore()
+const userId = store.state.user.userId
 
 const showDialog = (item) => {
     dialogRef.value.show(item);
@@ -134,6 +137,15 @@ const handleScroll = () => {
         seamless.value = false;
       }
 }
+
+const handleVlog = () => {
+    if (!store.state.isLogin) {
+        // 未登录弹出登录框
+        bus.emit('login', true)
+    } else {
+        seamless.value = !seamless.value;
+    }
+};
 //addvlog end
 
 const moveToDown = () => {
@@ -201,8 +213,12 @@ const onLoad = (index, done) => {
         return;
     }
     setTimeout(async () => {
-        var res = await api.recommendWithPage(userId,8, currentIndex.value);
-        // var res = await api.findWithPage(8, currentIndex.value);
+        var res
+        if (userId == null || userId == undefined) {
+            res = await api.findWithPageNow(8, currentIndex.value);
+        } else {
+            res = await api.recommendWithPage(userId,8, currentIndex.value);
+        }
         if (res.code == "ERR_NETWORK") {
             message.error("网络错误,请稍后重试");
             done();
@@ -217,7 +233,7 @@ const onLoad = (index, done) => {
         cards.value.push(...res.data);
         currentIndex.value++
         await done();
-    }, 1000);
+    }, 200);
 };
 
 onMounted(() => {

@@ -1,8 +1,11 @@
 package com.mu.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
+import com.mu.constant.Constants;
 import com.mu.entity.Article;
 import com.mu.mapper.ArticleMapper;
 import com.mu.service.ArticleService;
@@ -10,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author MUZUKI
@@ -56,6 +61,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     /**
+     * 分页获取文章
+     */
+    public IPage getArticleByPage(Map<String,String> params) {
+        int currentPage = Integer.parseInt(params.get("currentPage"));
+        int pageSize = Integer.parseInt(params.get("pageSize"));
+        Page<Article> page = new Page<>(currentPage, pageSize);
+        return articleMapper.selectPage(page, null);
+    }
+
+    /**
      * 根据id获取文章
      */
     public Article getArticleById(int articleId) {
@@ -86,19 +101,23 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public boolean changeData(String articleId, String userId) {
         //TODO:
         try {
-//            if (Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(articleId+Constants.REDIS_ARTICLE_PRAISE, userId))) {
-//                //此用户已经对这篇文章点赞,再点就是取消
-//                //删除对文章点过赞的用户
+            if (Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(articleId+ Constants.REDIS_ARTICLE_PRAISE, userId))) {
+                //此用户已经对这篇文章点赞,再点就是取消
+                //删除对文章点过赞的用户
 //                jedis.srem(articleId + Constants.REDIS_ARTICLE_PRAISE, userId + "");
-//                //删除用户点过赞的文章
+                redisTemplate.opsForSet().remove(articleId + Constants.REDIS_ARTICLE_PRAISE, userId);
+                //删除用户点过赞的文章
 //                jedis.srem(userId + Constants.REDIS_USER_PRAISE, articleId + "");
-//            } else {
-//                //此用户没有对这篇文章点过赞
-//                //添加用户点过赞的文章
+                redisTemplate.opsForSet().remove(userId + Constants.REDIS_USER_PRAISE, articleId);
+            } else {
+                //此用户没有对这篇文章点过赞
+                //添加用户点过赞的文章
 //                jedis.sadd(userId + Constants.REDIS_USER_PRAISE, articleId + "");
-//                //添加文章被哪些用户点过赞
+                redisTemplate.opsForSet().add(userId + Constants.REDIS_USER_PRAISE, articleId);
+                //添加文章被哪些用户点过赞
 //                jedis.sadd(articleId + Constants.REDIS_ARTICLE_PRAISE, userId + "");
-//            }
+                redisTemplate.opsForSet().add(articleId + Constants.REDIS_ARTICLE_PRAISE, userId);
+            }
         } catch (Exception e) {
             return false;
         }

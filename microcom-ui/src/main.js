@@ -7,6 +7,7 @@ import VueCookies from 'vue-cookies'
 import 'ant-design-vue/dist/antd.css';
 import 'animate.css/animate.min.css';
 import 'element-plus/dist/index.css'
+import eventBus from 'vue3-eventbus'
 //引入Element-plus icons
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
@@ -55,4 +56,5 @@ app.use(Antd)
   .use(VueCookies)
   .use(VMdPreview)
   .use(store)
+  .use(eventBus)
   .mount('#app');
