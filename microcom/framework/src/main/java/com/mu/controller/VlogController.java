@@ -72,7 +72,7 @@ public class VlogController {
 
     @PostMapping("add")
     public SaResult add(@RequestBody Vlog vlog) {
-        if (SensitiveWordHelper.contains(vlog.getText())){
+        if (SensitiveWordHelper.contains(vlog.getText()) || SensitiveWordHelper.contains(vlog.getTitle())){
             return SaResult.error().setMsg("内容包含敏感词");
         }
         return SaResult.ok().setMsg(vlogService.save(vlog) ? "添加成功" : "添加失败");

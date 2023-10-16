@@ -5,7 +5,7 @@
       </q-card-section>
     <q-card-section>
       <span class="item-label">标题</span>
-      <a-input v-model:value="vlog.title" placeholder="输入主题" size="middle" maxlength="40" showCount allow-clear />
+      <a-input v-model:value="vlog.title" placeholder="输入主题" size="middle" maxlength=40 showCount allow-clear />
     </q-card-section>
     <q-card-section style="padding-bottom: 0px;padding-top: 0px;">
       <span class="item-label">内容</span>
@@ -65,10 +65,9 @@ import 'vue3-emoji/dist/style.css'
 import { useStore } from "vuex";
 
 const store = useStore()
-const userId = store.state.userId
 const imgs = ref([])  
 const vlog = reactive({
-  createId: userId,
+  createId: '',
   title: '',
   label: '',
   text: '',
@@ -123,6 +122,7 @@ const uploadImage = async (e) => {
 
 //处理vlog上传
 const handleSubmit = async () => {
+  vlog.createId = store.state.user.id
   vlog.label = state.tags.join(',')
   vlog.img = imgs.value.join(',')
   vlog.time = new Date().toLocaleString()

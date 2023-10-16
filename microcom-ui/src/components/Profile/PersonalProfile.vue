@@ -93,8 +93,8 @@
           <!-- End of gallery -->
         </div>
         <template v-slot:loading>
-        <loading-comp />
-      </template>
+          <loading-comp />
+        </template>
       </q-infinite-scroll>
     </div>
     
@@ -155,37 +155,28 @@ const jumpTo = () => {
 
 const list = ref([]);
 
-const onLoad = async (index, done) => {
-  if (showDataFlag.value) {
-    done()
-    return
-  }
-  setTimeout(async () => {
-    let res = await vlogApi.findWithPageById(1,9,currentIndex.value)
+const onLoad = (index, done) => {
+  vlogApi.findWithPageById(1,9,currentIndex.value).then(res => {
     if (res.code == 200) {
       list.value.push(...res.data)
-      await done()
+      done()
       currentIndex.value++
       return
     }
     showDataFlag.value = true
     done();
-  }, 500);
+  }
+  )
 };
 
 onMounted( ()=>{
-  vlogApi.findWithPageById(1,9,currentIndex.value).then(res => {
-    if (res.code == 200) {
-      list.value.push(...res.data)
-      currentIndex.value++
-      return
-    }
-  })
-  // if (res.code == 200) {
-  //   list.value.push(...res.data)
-  //   currentIndex.value++
-  //   return
-  // }
+  // vlogApi.findWithPageById(1,9,currentIndex.value).then(res => {
+  //   if (res.code == 200) {
+  //     list.value.push(...res.data)
+  //     currentIndex.value++
+  //     return
+  //   }
+  // })
 })
 </script>
   

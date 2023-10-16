@@ -51,10 +51,15 @@ public class VlogCommentController {
     public SaResult findByVlogId(@RequestHeader("userId") Long userId,@PathVariable("vlogId") Long vlogId, @PathVariable("pageNum") int pageNum) {
         List<VlogComment> res = vlogCommentService.findByVlogId(vlogId, pageNum);
         if (res!=null||res.size()==0) {
-            //从nacos中获取服务地址
-            ServiceInstance service = discoveryClient.getInstances("recommend").get(0);
-            String url = service.getHost() + ":" + service.getPort();
-            restTemplate.postForObject("http://" + url + "/userAction/checkOutVlog/" + userId + "/" + vlogId, null, String.class);
+            try {
+                // 从nacos中获取服务地址
+                ServiceInstance service = discoveryClient.getInstances("recommend").get(0);
+                String url = service.getHost() + ":" + service.getPort();
+                // 当前用户对该类Vlog的喜好因子影响
+                restTemplate.postForObject("http://" + url + "/userAction/checkOutVlog/" + userId + "/" + vlogId, null, String.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return SaResult.ok().setData(res);
         }
         return SaResult.error("查询评论失败");

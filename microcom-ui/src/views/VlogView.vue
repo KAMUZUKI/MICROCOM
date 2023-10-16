@@ -115,8 +115,6 @@ const cards = ref([])
 const dialogRef = ref(null)
 const currentIndex = ref(1)
 const store = useStore()
-const userId = store.state.user.userId
-
 const showDialog = (item) => {
     dialogRef.value.show(item);
 };
@@ -214,7 +212,8 @@ const onLoad = (index, done) => {
     }
     setTimeout(async () => {
         var res
-        if (userId == null || userId == undefined) {
+        const userId = store.state.user.id
+        if (store.state.isLogin) {
             res = await api.findWithPageNow(8, currentIndex.value);
         } else {
             res = await api.recommendWithPage(userId,8, currentIndex.value);

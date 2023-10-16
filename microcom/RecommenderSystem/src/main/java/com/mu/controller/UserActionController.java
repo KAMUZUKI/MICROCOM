@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author MUZUKI
  * @Classname UserActionController
- * @Description TODO
+ * @Description 用户行为计分控制器
  * @Date 2023/5/24 14:07
  */
 

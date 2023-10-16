@@ -26,7 +26,7 @@ public class UserPreferencesCron {
     /**
      * 每天10分钟执行
      */
-    @Scheduled(cron="0 0/10 * * * ?")   //每10分钟执行一次
+//    @Scheduled(cron="0 0/10 * * * ?")   //每10分钟执行一次
     public void run() throws InterruptedException {
         UserServiceImpl userService = (UserServiceImpl) ApplicationContextUtil.getBean("userServiceImpl");
         log.info("==================================");

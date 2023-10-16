@@ -1,43 +1,42 @@
 import request from '@/js/api/request'
 
 let api = {
-    async findWithPage(size, page) {
-        try {
-            const response = await request.get("vlog/findWithPage/" + size + "/" + page)
-            return response
-        } catch (err) {
-            return err
-        }
+    findWithPage(size, page) {
+        return request({
+            url: "vlog/findWithPage/" + size + "/" + page,
+            method: "get",
+        })
     },
-    async recommendWithPage(userId,size, page) {
-        try {
-            const response = await request.get("vlog/recommendWithPage/" + userId + "/" + size + "/" + page)
-            return response
-        } catch (err) {
-            return err
-        }
+    recommendWithPage(userId,size, page) {
+        return request({
+            url: "vlog/recommendWithPage/" + userId + "/" + size + "/" + page,
+            method: "get",
+        })
     },
     findWithPageNow(size, page) {
-        return request.get("vlog/findWithPage/" + size + "/" + page)
+        return request({
+            url: "vlog/findWithPage/" + size + "/" + page,
+            method: "get",
+        })
     },
-    async add(vlog) {
-        try {
-            const response = await request.post("vlog/add", vlog)
-            return response
-        } catch (err) {
-            return err
-        }
+    add(vlog) {
+        return request({
+            url: "vlog/add",
+            method: "post",
+            data: vlog
+        })
     },
     delete(vlogId) {
-        request.delete("vlog/delete/" + vlogId)
+        return request({
+            url: "vlog/delete/" + vlogId,
+            method: "delete",
+        })
     },
-    async findWithPageById(userId, size, page) {
-        try {
-            const response = await request.get("vlog/findWithPageById/" + userId + "/" + size + "/" + page)
-            return response
-        } catch (err) {
-            return err
-        }
+    findWithPageById(userId, size, page) {
+        return request({
+            url: "vlog/findWithPageById/" + userId + "/" + size + "/" + page,
+            method: "get",
+        })
     }
 }
 

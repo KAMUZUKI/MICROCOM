@@ -347,12 +347,17 @@ const updateTextareaRows = (input) => {
 };
 
 const fetchData = async () => {
-    const response = await vlogComment.findByVlogId(props.detail.id, 1)
-    response.data.forEach(vlog => {
-        vlog.replies = []
-        vlog.showReplies = false
-        comments.push(vlog)
-    });
+    vlogComment.findByVlogId(props.detail.id, 1).then(res => {
+        if (res.data.length == 0) {
+            showDataFlag.value = true
+            return
+        }
+        res.data.forEach(vlog => {
+            vlog.replies = []
+            vlog.showReplies = false
+            comments.push(vlog)
+        });
+    })
     console.log(comments)
 }
 

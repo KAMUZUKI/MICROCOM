@@ -1,8 +1,6 @@
 package com.mu.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import java.io.Serializable;
@@ -17,6 +15,7 @@ import java.io.Serializable;
 public class Vlog implements Serializable {
     @TableId(type = IdType.AUTO)
     private Integer id;
+    @TableField(insertStrategy = FieldStrategy.NOT_NULL,updateStrategy = FieldStrategy.NOT_NULL)
     private Integer createId;
     private String title;
     private String label;
