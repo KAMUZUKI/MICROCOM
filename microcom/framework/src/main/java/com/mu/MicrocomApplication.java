@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @EnableTransactionManagement
 @EnableDiscoveryClient
 @EnableScheduling //开启定时任务
-public class McirocomApplication{
+public class MicrocomApplication{
     public static void main(String[] args) {
-        SpringApplication.run(McirocomApplication.class, args);
+        SpringApplication.run(MicrocomApplication.class, args);
     }
 
     @ExceptionHandler(value = Exception.class)

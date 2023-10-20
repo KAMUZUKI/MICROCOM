@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration debug="false">
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+    <property name="LOG_HOME" value="E:/Code/log" />
+    <!--将日志写入文件的配置信息在上节中，本节就不展示了，只展示重点配置-->
+    <!-- 彩色日志 -->
+    <!-- 按照每天生成日志文件 -->
+    <!--info-->
+    <!--error appender-->
+
+    <!-- 将日志写入数据库 -->
+    <appender name="DB-CLASSIC-MYSQL-POOL" class="ch.qos.logback.classic.db.DBAppender">
+        <connectionSource class="ch.qos.logback.core.db.DataSourceConnectionSource">
+            <dataSource class="org.apache.commons.dbcp.BasicDataSource">
+                <driverClassName>com.mysql.jdbc.Driver</driverClassName>
+                <url>jdbc:mysql://localhost:3306/auge_log?characterEncoding=UTF-8</url>
+                <username>root</username>
+                <password>123456</password>
+            </dataSource>
+        </connectionSource>
+        <!--这里设置日志级别为error-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>error</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 日志输出级别 TRACE < DEBUG < INFO < WARN < ERROR < FATAL-->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="DAYINFO" />
+        <appender-ref ref="DAYERROR" />
+        <appender-ref ref="DB-CLASSIC-MYSQL-POOL" />
+    </root>
+</configuration>
