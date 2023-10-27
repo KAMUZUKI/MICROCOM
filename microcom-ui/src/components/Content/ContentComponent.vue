@@ -208,11 +208,8 @@ export default defineComponent({
           return
         }
         if (mode == 1) {
-          var params = {
-            'articleId': articleId,
-            'userId': JSON.parse(localStorage.getItem("user")).id
-          }
-          userLike(params).then(res => {
+          let userId = store.state.user.id
+          userLike(articleId, userId).then(res => {
               if (res.data.code == 200) {
                 //点赞执行成功
                 initDataList.value.forEach((item) => {

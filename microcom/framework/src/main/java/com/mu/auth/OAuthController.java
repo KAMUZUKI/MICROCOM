@@ -31,7 +31,7 @@ import java.util.Map;
 
 /**
  * @author MUZUKI
- * @Classname sd
+ * @Classname OAuthController
  * @Description TODO
  * @Date 2023/3/25 20:43
  */

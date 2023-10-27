@@ -2,7 +2,7 @@ import request from "@/js/api/request"
 
 export function getArticleById(articleId) {
   return request({
-    url: `/article/getArticleTop/${articleId}`,
+    url: `/article/getArticleById/${articleId}`,
     method: 'get',
   })
 }

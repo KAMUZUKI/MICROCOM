@@ -11,7 +11,7 @@ import lombok.Data;
  * @Author MUZUKI
  * @TableName category
  */
-@TableName(value ="category")
+@TableName("category")
 @Data
 public class Category implements Serializable {
     /**

@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 @Data
 @Accessors(chain = true)
-@TableName(value = "vlog")
+@TableName("vlog")
 public class Vlog implements Serializable {
     @TableId(type = IdType.AUTO)
     private Integer id;

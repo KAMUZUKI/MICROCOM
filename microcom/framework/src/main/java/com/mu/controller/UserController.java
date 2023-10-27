@@ -1,6 +1,7 @@
 package com.mu.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaResult;
@@ -8,21 +9,23 @@ import cn.hutool.crypto.SecureUtil;
 import cn.hutool.extra.servlet.ServletUtil;
 import com.mu.entity.User;
 import com.mu.service.impl.UserServiceImpl;
+import com.mu.utils.SystemUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * @author MUZUKI
  * @Classname UserController
- * @Description TODO
+ * @Description 用户控制类
  * @Date 2023/3/26 1:58
  */
 @RestController
 @RequestMapping("/user/")
+@Slf4j
 public class UserController {
     @Autowired
     private UserServiceImpl userService;
@@ -31,8 +34,32 @@ public class UserController {
     public SaResult login(HttpServletRequest request) {
         String username = request.getParameter("account");
         String password = request.getParameter("password");
+        String ip = SystemUtils.getClientIP(request);
         User user = userService.login(username, SecureUtil.md5(password));
-        if (user == null || user.equals("")) {
+        if (user == null) {
+            log.info("账号{}登录失败,IP地址为{}", username,ip);
+            return SaResult.error("登录失败").setData(false);
+        }
+        if (("0").equals(user.getStatus())){
+            return SaResult.error("账号已被封禁，请联系管理员").setData(false);
+        }
+        user.setPwd(null);
+        StpUtil.login(user.getId());
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+        log.info("账号{}登录成功,IP地址为{}", username,ip);
+        return SaResult.ok(tokenInfo.tokenValue).setData(user);
+    }
+
+    @RequestMapping("adminLogin")
+    public SaResult adminLogin(HttpServletRequest request) {
+        String username = request.getParameter("account");
+        String password = request.getParameter("password");
+        User user = userService.login(username, SecureUtil.md5(password));
+        if (!user.getType().equals("1")) {
+            // 用户不具有管理员权限
+            return SaResult.error("该用户不具有管理员权限").setData(false);
+        }
+        if (user==null) {
             return SaResult.error("登录失败").setData(false);
         }
         user.setPwd(null);
@@ -75,6 +102,16 @@ public class UserController {
         return SaResult.ok("修改失败").setData(false);
     }
 
+    @SaCheckRole("admin")
+    @SaCheckLogin
+    @RequestMapping("updateUserStatus/{userId}/{status}")
+    public SaResult updateUserStatus(@PathVariable("userId") String userId, @PathVariable("status") String status) {
+        if (userService.updateUserStatus(userId,status) == 1) {
+            return SaResult.ok("修改成功").setData(true);
+        }
+        return SaResult.ok("修改失败").setData(false);
+    }
+
     @RequestMapping("register")
     public SaResult register(HttpServletRequest request) {
         User user = ServletUtil.toBean(request, User.class, true);
@@ -86,9 +123,15 @@ public class UserController {
     }
 
     @SaCheckLogin
+    @SaCheckRole("admin")
     @RequestMapping("getAllUser")
-    public SaResult getAllUser() {
-        return SaResult.ok("获取成功").setData(userService.getAllUser());
+    public SaResult getAllUser(@RequestParam Map<String, String> map) {
+        return SaResult.ok("获取成功").setData(userService.getAllUser(map));
+    }
+
+    @RequestMapping("getUserRole/{userId}")
+    public SaResult getUserRole(@PathVariable("userId") String userId) {
+        return SaResult.ok("获取成功").setData(userService.getUserRole(userId));
     }
 
     @SaCheckLogin
@@ -98,8 +141,9 @@ public class UserController {
         return SaResult.ok("获取喜欢列表成功").setData(userService.getLikeList(id));
     }
 
-    @RequestMapping("getUserById/{userId}")
-    public SaResult getUserById(@PathVariable("userId") String userId) {
+    @RequestMapping("getUserInfo/{tokenInfo}")
+    public SaResult getUserInfo(@PathVariable("tokenInfo") String tokenInfo) {
+        String userId = StpUtil.getLoginIdByToken(tokenInfo).toString();
         return SaResult.ok("获取用户成功").setData(userService.getUserById(userId));
     }
 

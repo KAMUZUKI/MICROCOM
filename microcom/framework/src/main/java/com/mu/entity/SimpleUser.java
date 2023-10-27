@@ -14,7 +14,7 @@ import java.io.Serializable;
  * @description : 简单用户信息
  **/
 
-@TableName(value = "user")
+@TableName("user")
 @JSONType(orders = {"id", "name", "head"})
 @Data
 public class SimpleUser implements Serializable {

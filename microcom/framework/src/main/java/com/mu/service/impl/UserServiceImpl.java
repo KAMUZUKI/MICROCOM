@@ -2,13 +2,17 @@ package com.mu.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mu.constant.Constants;
 import com.mu.constant.UserConstant;
+import com.mu.entity.Article;
 import com.mu.entity.SimpleUser;
 import com.mu.entity.User;
 import com.mu.mapper.UserMapper;
 import com.mu.service.UserService;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -16,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -59,11 +64,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     /**
      * 获取全部用户
-     *
      * @return 用户集合
      */
-    public List<User> getAllUser() {
-        return userMapper.selectList(null);
+    public IPage getAllUser(Map<String,String> params) {
+        int currentPage = Integer.parseInt(params.get("currentPage"));
+        int pageSize = Integer.parseInt(params.get("pageSize"));
+        Page<User> page = new Page<>(currentPage, pageSize);;
+        return userMapper.selectPage(page,null);
+    }
+
+    /**
+     * 搜索用户
+     */
+    public List<User> searchUSer(Map<String,String> params) {
+        return userMapper.searchUser(params);
+    }
+
+    /**
+     * 获取用户角色
+     */
+    public String getUserRole(String id) {
+        return userMapper.selectById(id).getType();
     }
 
     /**
@@ -71,6 +92,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     public int updateUserById(User user) {
         return userMapper.updateById(user);
+    }
+
+    /**
+     * 通过id修改用户状态
+     */
+    public int updateUserStatus(String userId, String status) {
+        return userMapper.updateStatusById(userId, status);
     }
 
     /**
@@ -162,6 +190,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         return list;
     }
+
 }
 
 

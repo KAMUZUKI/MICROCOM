@@ -17,7 +17,7 @@ import java.util.Date;
  */
 
 @Data
-@TableName(value ="dingtalk_user")
+@TableName("dingtalk_user")
 @Accessors(chain = true)
 public class DingtalkUser implements Serializable{
     /**

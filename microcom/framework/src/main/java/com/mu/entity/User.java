@@ -13,7 +13,7 @@ import lombok.Data;
  * @author MUZUKI
  * @TableName user
  */
-@TableName(value ="user")
+@TableName("user")
 @Data
 public class User implements Serializable {
     /**
@@ -58,12 +58,12 @@ public class User implements Serializable {
     private Date createTime;
 
     /**
-     * 状态		0 停用	1启用
+     * 状态		0停用 1启用 2禁言 3封禁
      */
     private String status;
 
     /**
-     * 用户类型 1系统管理员		2普通管理员3一般用户
+     * 用户类型 1系统管理员	2一般用户
      */
     private String type;
 

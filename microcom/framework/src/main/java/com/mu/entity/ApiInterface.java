@@ -1,17 +1,20 @@
-package generator.domain;
+package com.mu.entity;
+
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
- * 
+ * @author MUZUKI
  * @TableName api_interface
  */
 @Data
+@TableName("api_interface")
 public class ApiInterface implements Serializable {
     /**
-     * 
+     * id
      */
     private Integer id;
 

@@ -1,7 +1,7 @@
-package generator.mapper;
+package com.mu.mapper;
 
-import generator.domain.ApiInterface;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.mu.entity.ApiInterface;
 
 /**
 * @author MUZUKI

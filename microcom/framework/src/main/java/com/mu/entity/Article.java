@@ -12,7 +12,7 @@ import lombok.Data;
  * 
  * @TableName article
  */
-@TableName(value ="article")
+@TableName("article")
 @Data
 public class Article implements Serializable {
     /**

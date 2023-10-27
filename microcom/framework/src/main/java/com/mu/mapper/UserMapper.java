@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.mu.entity.User;
 
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author MUZUKI
@@ -17,6 +18,10 @@ public interface UserMapper extends BaseMapper<User> {
      * @return List<Long> 用户id列表
      */
     List<Long> getUidList();
+
+    int updateStatusById(String userId, String status);
+
+    List<User> searchUser(Map params);
 }
 
 

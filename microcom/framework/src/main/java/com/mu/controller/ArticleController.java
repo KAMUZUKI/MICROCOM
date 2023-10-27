@@ -7,9 +7,7 @@ import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
 import com.mu.entity.Article;
 import com.mu.service.impl.ArticleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -29,8 +27,7 @@ public class ArticleController {
 
     @SaCheckLogin
     @RequestMapping(value = "/addArticle")
-    public SaResult addArticle(HttpServletRequest request) {
-        Article article = ServletUtil.toBean(request, Article.class, true);
+    public SaResult addArticle(@RequestBody Article article) {
         try {
             if (SensitiveWordHelper.contains(article.getContent())){
                 return SaResult.error("文章内容包含敏感词汇");
@@ -42,17 +39,14 @@ public class ArticleController {
     }
 
     @SaCheckLogin
-    @RequestMapping(value = "/deleteArticle")
-    public SaResult deleteArticle(HttpServletRequest request) {
-        int articleId = Integer.parseInt(request.getParameter("articleId"));
+    @RequestMapping(value = "/deleteArticle/{articleId}")
+    public SaResult deleteArticle(@PathVariable("articleId") int articleId) {
         return SaResult.ok().setCode(articleService.deleteArticle(articleId));
     }
 
     @SaCheckLogin
-    @RequestMapping(value = "/alterArticle")
-    public SaResult alterArticle(HttpServletRequest request) {
-        Article article = ServletUtil.toBean(request, Article.class, true);
-        ;
+    @RequestMapping(value = "/updateArticle")
+    public SaResult alterArticle(@RequestBody Article article) {
         return SaResult.ok().setCode(articleService.alterArticle(article));
     }
 
@@ -66,9 +60,8 @@ public class ArticleController {
         return SaResult.ok().setData(articleService.getArticleByPage(params));
     }
 
-    @RequestMapping(value = "/getArticleById")
-    public SaResult getArticleById(HttpServletRequest request) {
-        int articleId = Integer.parseInt(request.getParameter("articleId"));
+    @RequestMapping(value = "/getArticleById/{articleId}")
+    public SaResult getArticleById(@PathVariable("articleId") int articleId) {
         return SaResult.ok().setData(articleService.getArticleById(articleId));
     }
 
@@ -82,17 +75,14 @@ public class ArticleController {
         return SaResult.ok().setData(articleService.getAllTags());
     }
 
-    @RequestMapping(value = "/getByCategory")
-    public SaResult getArticleByCategory(HttpServletRequest request) {
-        int categoryId = Integer.parseInt(request.getParameter("categoryId"));
+    @RequestMapping(value = "/getByCategory/{categoryId}")
+    public SaResult getArticleByCategory(@PathVariable("categoryId") int categoryId) {
         return SaResult.ok().setData(articleService.getArticleByCategory(categoryId));
     }
 
     @SaCheckLogin
-    @RequestMapping(value = "/changeData")
-    public SaResult changeData(HttpServletRequest request) {
-        String articleId = request.getParameter("articleId");
-        String userId = request.getParameter("userId");
+    @RequestMapping(value = "/userLike/{articleId}/{userId}")
+    public SaResult changeData(@PathVariable("articleId") String articleId, @PathVariable("userId") String userId) {
         if (articleService.changeData(articleId, userId)) {
             return SaResult.ok("点赞成功");
         } else {

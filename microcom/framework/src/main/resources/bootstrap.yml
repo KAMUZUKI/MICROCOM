@@ -18,8 +18,8 @@ recommend:
   user:
     size: 100
 
-logging:
-  level:
-    root: error
-    web: error
-    com.mu: warn
+#logging:
+#  level:
+#    root: error
+#    web: error
+#    com.mu: warn

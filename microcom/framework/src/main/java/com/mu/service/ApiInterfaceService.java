@@ -1,7 +1,7 @@
-package generator.service;
+package com.mu.service;
 
-import generator.domain.ApiInterface;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.mu.entity.ApiInterface;
 
 /**
 * @author MUZUKI
