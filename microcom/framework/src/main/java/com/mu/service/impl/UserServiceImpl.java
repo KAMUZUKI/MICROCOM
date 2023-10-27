@@ -18,10 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author MUZUKI
@@ -76,8 +73,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     /**
      * 搜索用户
      */
-    public List<User> searchUSer(Map<String,String> params) {
-        return userMapper.searchUser(params);
+    public IPage searchUser(Map<String,String> params) {
+        IPage<User> page = new Page<>(Integer.parseInt(params.get("currentPage")), Integer.parseInt(params.get("pageSize")));
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        if (!Objects.equals(params.get("id"), "")){
+            queryWrapper.like("id", params.get("id"));
+        }
+        if (!Objects.equals(params.get("name"), "")){
+            queryWrapper.like("name", params.get("name"));
+        }
+        if (!Objects.equals(params.get("account"), "")){
+            queryWrapper.like("account", params.get("account"));
+        }
+        return userMapper.selectPage(page, queryWrapper);
     }
 
     /**

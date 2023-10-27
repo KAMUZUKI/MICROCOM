@@ -60,6 +60,16 @@ public class ArticleController {
         return SaResult.ok().setData(articleService.getArticleByPage(params));
     }
 
+    @RequestMapping(value = "/getReviewArticleByPage")
+    public SaResult getReviewArticleByPage(@RequestParam Map<String, String> params) {
+        return SaResult.ok().setData(articleService.getReviewArticleByPage(params));
+    }
+
+    @RequestMapping(value = "/getArticleByPageWithId")
+    public SaResult getArticleByPageWithId(@RequestParam Map<String, String> params) {
+        return SaResult.ok().setData(articleService.getArticleByPageWithId(params));
+    }
+
     @RequestMapping(value = "/getArticleById/{articleId}")
     public SaResult getArticleById(@PathVariable("articleId") int articleId) {
         return SaResult.ok().setData(articleService.getArticleById(articleId));
@@ -68,6 +78,11 @@ public class ArticleController {
     @RequestMapping(value = "/getArticleTop")
     public SaResult getArticleTop() {
         return SaResult.ok().setData(articleService.getArticleTop());
+    }
+
+    @GetMapping("/searchArticle")
+    public SaResult search(@RequestParam Map<String, String> map){
+        return SaResult.ok().setData(articleService.search(map));
     }
 
     @RequestMapping(value = "/getAllTags")

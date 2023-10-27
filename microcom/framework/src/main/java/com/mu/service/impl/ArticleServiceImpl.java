@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
+import com.mu.constant.ArticleConstant;
 import com.mu.constant.Constants;
+import com.mu.entity.ApiInterface;
 import com.mu.entity.Article;
 import com.mu.mapper.ArticleMapper;
 import com.mu.service.ArticleService;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
 * @author MUZUKI
@@ -68,6 +71,45 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         int pageSize = Integer.parseInt(params.get("pageSize"));
         Page<Article> page = new Page<>(currentPage, pageSize);
         return articleMapper.selectPage(page, null);
+    }
+
+    /**
+     * 分页获取待审核文章
+     */
+    public IPage getReviewArticleByPage(Map<String, String> params) {
+        int currentPage = Integer.parseInt(params.get("currentPage"));
+        int pageSize = Integer.parseInt(params.get("pageSize"));
+        Page<Article> page = new Page<>(currentPage, pageSize);
+        QueryWrapper<Article> wrapper = new QueryWrapper<>();
+        wrapper.eq("status", ArticleConstant.REVIEWING);
+        return articleMapper.selectPage(page, null);
+    }
+
+    /**
+     * 通过用户ID分页获取文章
+     */
+    public IPage getArticleByPageWithId(Map<String,String> params) {
+        int currentPage = Integer.parseInt(params.get("currentPage"));
+        int pageSize = Integer.parseInt(params.get("pageSize"));
+        int userId = Integer.parseInt(params.get("userId"));
+        String operationId = params.get("operationId");
+        Page<Article> page = new Page<>(currentPage, pageSize);
+        QueryWrapper<Article> wrapper = new QueryWrapper<>();
+        if (operationId.equals(ArticleConstant.DELETED)) {
+            // 已删除
+            wrapper.eq("status", ArticleConstant.DELETED);
+        } else if (operationId.equals(ArticleConstant.NORMAL)) {
+            // 正常
+            wrapper.eq("status", ArticleConstant.NORMAL);
+        } else if (operationId.equals(ArticleConstant.REVIEWING)) {
+            // 待审核
+            wrapper.eq("status", ArticleConstant.REVIEWING);
+        } else if (operationId.equals(ArticleConstant.DRAFT)) {
+            // 草稿
+            wrapper.eq("status", ArticleConstant.DRAFT);
+        }
+        wrapper.eq("user_id", userId);
+        return articleMapper.selectPage(page, wrapper);
     }
 
     /**
@@ -142,6 +184,20 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return articleMapper.selectList(wrapper);
     }
 
+    public IPage search(Map<String, String> params) {
+        IPage<Article> page = new Page<>(Integer.parseInt(params.get("currentPage")), Integer.parseInt(params.get("pageSize")));
+        QueryWrapper<Article> queryWrapper = new QueryWrapper<>();
+        if (!Objects.equals(params.get("id"), "")){
+            queryWrapper.eq("id", params.get("id"));
+        }
+        if (!Objects.equals(params.get("author"), "")){
+            queryWrapper.like("author", params.get("author"));
+        }
+        if (!Objects.equals(params.get("articleStatus"),"")){
+            queryWrapper.eq("status", params.get("articleStatus"));
+        }
+        return articleMapper.selectPage(page, queryWrapper);
+    }
 }
 
 

@@ -17,11 +17,10 @@ public class Vlog implements Serializable {
     private Integer id;
     @TableField(insertStrategy = FieldStrategy.NOT_NULL,updateStrategy = FieldStrategy.NOT_NULL)
     private Integer createId;
+    private Integer author;
     private String title;
     private String label;
     private String text;
     private String img;
-    private String name;
-    private String head;
     private String time;
 }

@@ -10,18 +10,4 @@
         select id from user;
     </select>
 
-    <select id="searchUser" resultType="com.mu.entity.User">
-        select * from user
-        <where>
-            <if test="id != null and id != ''">
-                and id = #{id}
-            </if>
-            <if test="name != null and name != ''">
-                and name = #{name}
-            </if>
-            <if test="account != null and account != ''">
-                and account = #{account}
-            </if>
-        </where>
-    </select>
 </mapper>

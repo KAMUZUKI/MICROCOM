@@ -62,7 +62,7 @@ public class Article implements Serializable {
     private String titleImgs;
 
     /**
-     * 状态
+     * 状态 0. 删除 1.正常 2.审核 3.草稿
      */
     private String status;
 

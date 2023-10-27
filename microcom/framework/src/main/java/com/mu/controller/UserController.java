@@ -129,6 +129,13 @@ public class UserController {
         return SaResult.ok("获取成功").setData(userService.getAllUser(map));
     }
 
+    @SaCheckLogin
+    @SaCheckRole("admin")
+    @RequestMapping("searchUser")
+    public SaResult searchUser(@RequestParam Map<String, String> map) {
+        return SaResult.ok("获取成功").setData(userService.searchUser(map));
+    }
+
     @RequestMapping("getUserRole/{userId}")
     public SaResult getUserRole(@PathVariable("userId") String userId) {
         return SaResult.ok("获取成功").setData(userService.getUserRole(userId));
@@ -164,7 +171,7 @@ public class UserController {
         return SaResult.ok("未关注").setData(false);
     }
 
-    //    @SaCheckLogin
+    @SaCheckLogin
     @RequestMapping("unfollow/{userId}/{followUserId}")
     public SaResult unfollow(@PathVariable("userId") String userId, @PathVariable("followUserId") String followUserId) {
         if (userService.unfollow(userId, followUserId)) {
@@ -173,18 +180,19 @@ public class UserController {
         return SaResult.error("取消关注失败").setData(false);
     }
 
-    //    @SaCheckLogin
+    @SaCheckLogin
     @RequestMapping("getFollowers/{userId}")
     public SaResult getFollowers(@PathVariable("userId") String userId) {
         return SaResult.ok("获取粉丝列表").setData(userService.getFollowers(userId));
     }
 
-    //    @SaCheckLogin
+    @SaCheckLogin
     @RequestMapping("getFollowing/{userId}")
     public SaResult getFollowing(@PathVariable("userId") String userId) {
         return SaResult.ok("获取关注列表").setData(userService.getFollowing(userId));
     }
 
+    @SaCheckLogin
     @RequestMapping("getInterconnection/{userId}")
     public SaResult getInterconnection(@PathVariable("userId") String userId) {
         return SaResult.ok("获取互相关注列表").setData(userService.getInterconnections(userId));

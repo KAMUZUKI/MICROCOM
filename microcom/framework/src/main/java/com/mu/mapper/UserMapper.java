@@ -20,8 +20,6 @@ public interface UserMapper extends BaseMapper<User> {
     List<Long> getUidList();
 
     int updateStatusById(String userId, String status);
-
-    List<User> searchUser(Map params);
 }
 
 

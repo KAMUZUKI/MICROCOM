@@ -211,16 +211,15 @@ export default defineComponent({
           let userId = store.state.user.id
           userLike(articleId, userId).then(res => {
               if (res.data.code == 200) {
-                //点赞执行成功
+                // 点赞执行成功
                 initDataList.value.forEach((item) => {
                   if (item.id === articleId) {
                     if (hasExisted(articleId)) {
-                      //用户已经点赞
-                      //取消点赞
+                      // 用户已经点赞 取消点赞
                       item.colCnt[1] -= 1;
                       likeSet.delete(item.id)
                     } else {
-                      //点赞
+                      // 点赞
                       likeSet.add(item.id)
                       item.colCnt[1] += 1;
                     }

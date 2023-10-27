@@ -27,4 +27,15 @@
         updated_at,created_by,updated_by,
         version
     </sql>
+    <select id="search" resultType="com.mu.entity.ApiInterface">
+        select * from api_interface
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="path != null and path != ''">
+                and path like concat('%', #{path}, '%')
+            </if>
+        </where>
+    </select>
 </mapper>
